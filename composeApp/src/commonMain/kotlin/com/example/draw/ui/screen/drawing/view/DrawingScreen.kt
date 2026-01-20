@@ -20,7 +20,6 @@ import cafe.adriel.voyager.core.screen.Screen
 import com.example.draw.ui.common.component.ImageButton
 import com.example.draw.ui.common.component.ToolPanel
 import com.example.draw.ui.common.preview.PreviewComponent
-import com.example.draw.ui.common.preview.PreviewWithScaffold
 import com.example.draw.ui.feature.colorPicker.mainComponent.ColorPickerButton
 import com.example.draw.ui.feature.layerConfig.mainComponent.LayerListPanelButton
 import com.example.draw.ui.feature.undoRedo.mainComponent.UndoRedoButton
