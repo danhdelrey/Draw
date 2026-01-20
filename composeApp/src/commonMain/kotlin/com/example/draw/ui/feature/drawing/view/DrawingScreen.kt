@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
-import com.example.draw.ui.preview.PreviewBackground
+import com.example.draw.ui.preview.PreviewWithScaffold
 
 class DrawingScreen : Screen {
     @Composable
@@ -22,5 +22,5 @@ class DrawingScreen : Screen {
 @Preview
 @Composable
 fun DrawingScreenPreview() {
-    PreviewBackground { DrawingScreen().Content() }
+    PreviewWithScaffold { DrawingScreen().Content() }
 }

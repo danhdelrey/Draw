@@ -1,0 +1,37 @@
+package com.example.draw.ui.common
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.example.draw.ui.feature.pickColor.mockData.colorPalette
+import com.example.draw.ui.preview.PreviewComponent
+
+@Composable
+fun WavyLinePreviewWithBackground(selectedColor: Color) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(120.dp)
+            .background(Color(0xFFF0EBF5)) // Màu nền tím nhạt
+            .padding(vertical = 24.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        WavyLinePreview(color = selectedColor)
+    }
+}
+
+@Preview
+@Composable
+fun WavyLinePreviewWithBackgroundPreview() {
+    PreviewComponent {
+        WavyLinePreviewWithBackground(selectedColor = colorPalette[2])
+    }
+}

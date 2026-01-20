@@ -11,7 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun PreviewBackground(content: @Composable () -> Unit) {
+fun PreviewWithScaffold(content: @Composable () -> Unit) {
     MaterialTheme {
         Scaffold(
             modifier = Modifier.width(412.dp).height(800.dp)
