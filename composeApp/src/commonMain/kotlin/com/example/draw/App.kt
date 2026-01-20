@@ -15,14 +15,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import cafe.adriel.voyager.navigator.Navigator
-import com.example.draw.screens.DrawingScreen
+import com.example.draw.ui.feature.drawing.view.DrawingScreen
 import org.jetbrains.compose.resources.painterResource
 
 import draw.composeapp.generated.resources.Res
 import draw.composeapp.generated.resources.compose_multiplatform
 
 @Composable
-@Preview
 fun App() {
     MaterialTheme {
         Navigator(DrawingScreen())
