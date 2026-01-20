@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
@@ -29,6 +30,7 @@ import draw.composeapp.generated.resources.solid_brush
 class DrawingScreen : Screen {
     @Composable
     override fun Content() {
+        val graphicsLayer = rememberGraphicsLayer()
         Scaffold(
             containerColor = MaterialTheme.colorScheme.surfaceDim,
             topBar = {
