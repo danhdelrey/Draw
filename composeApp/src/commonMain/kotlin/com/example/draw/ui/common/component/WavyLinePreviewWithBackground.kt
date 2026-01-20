@@ -1,4 +1,4 @@
-package com.example.draw.ui.common
+package com.example.draw.ui.common.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.draw.ui.feature.pickColor.mockData.colorPalette
-import com.example.draw.ui.preview.PreviewComponent
+import com.example.draw.ui.common.preview.PreviewComponent
 
 @Composable
 fun WavyLinePreviewWithBackground(selectedColor: Color) {

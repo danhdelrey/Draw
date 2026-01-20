@@ -1,4 +1,4 @@
-package com.example.draw.ui.preview
+package com.example.draw.ui.common.preview
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
