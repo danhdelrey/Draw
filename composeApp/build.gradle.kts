@@ -26,10 +26,7 @@ kotlin {
         }
     }
     
-    js {
-        browser()
-        binaries.executable()
-    }
+
     
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
@@ -51,6 +48,15 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+
+            // ---------- Koin ----------
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+
+            // ---------- Voyager ----------
+            implementation(libs.voyager.navigator)
+            implementation(libs.voyager.screenmodel)
+            implementation(libs.voyager.koin)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
