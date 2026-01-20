@@ -1,4 +1,4 @@
-package com.example.draw.ui.feature.colorPicker.mainComponent
+package com.example.draw.ui.feature.colorPicker.component
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
@@ -10,7 +10,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.draw.ui.common.component.CustomBottomSheet
 import com.example.draw.ui.common.component.WavyLinePreviewWithBackground
-import com.example.draw.ui.feature.colorPicker.component.ColorGrid
 import com.example.draw.ui.feature.colorPicker.mockData.colorPalette
 import com.example.draw.ui.common.preview.PreviewComponent
 

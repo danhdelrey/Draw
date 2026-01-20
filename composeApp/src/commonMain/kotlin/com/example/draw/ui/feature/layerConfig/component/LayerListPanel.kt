@@ -1,9 +1,8 @@
-package com.example.draw.ui.feature.layerConfig.mainComponent
+package com.example.draw.ui.feature.layerConfig.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,7 +22,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.draw.ui.common.preview.PreviewComponent
-import com.example.draw.ui.feature.layerConfig.component.LayerItem
 import com.example.draw.ui.feature.layerConfig.model.LayerConfig
 
 @Composable
