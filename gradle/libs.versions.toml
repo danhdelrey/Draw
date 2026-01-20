@@ -16,6 +16,8 @@ kotlin = "2.3.0"
 voyagerNavigator = "1.1.0-beta03"
 
 [libraries]
+androidx-material-icons-core = { module = "androidx.compose.material:material-icons-core" }
+androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koinCore" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koinCore" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
