@@ -1,4 +1,4 @@
-package com.example.draw.data.model.drawing.base
+package com.example.draw.data.model.base
 
 import androidx.compose.ui.geometry.Offset
 

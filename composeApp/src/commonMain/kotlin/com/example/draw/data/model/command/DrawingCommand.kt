@@ -1,6 +1,6 @@
-package com.example.draw.data.model.drawing.command
+package com.example.draw.data.model.command
 
-import com.example.draw.data.model.drawing.base.DrawingPath
+import com.example.draw.data.model.base.DrawingPath
 
 sealed class DrawingCommand {
     data class AddPath(val layerId: String, val path: DrawingPath) : DrawingCommand()

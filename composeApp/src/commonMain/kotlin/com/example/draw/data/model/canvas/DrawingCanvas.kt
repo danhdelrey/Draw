@@ -1,6 +1,6 @@
-package com.example.draw.data.model.drawing.canvas
+package com.example.draw.data.model.canvas
 
-import com.example.draw.data.model.drawing.layer.Layer
+import com.example.draw.data.model.layer.Layer
 
 data class DrawingCanvas(
     val width: Float,

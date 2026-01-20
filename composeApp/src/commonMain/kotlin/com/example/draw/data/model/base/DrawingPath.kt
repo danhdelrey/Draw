@@ -1,4 +1,4 @@
-package com.example.draw.data.model.drawing.base
+package com.example.draw.data.model.base
 
 import com.example.draw.data.model.brush.Brush
 

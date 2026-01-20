@@ -1,4 +1,4 @@
-package com.example.draw.data.model.drawing.layer
+package com.example.draw.data.model.layer
 
 sealed class Layer {
 

@@ -1,6 +1,6 @@
-package com.example.draw.data.model.drawing.layer
+package com.example.draw.data.model.layer
 
-import com.example.draw.data.model.drawing.base.DrawingPath
+import com.example.draw.data.model.base.DrawingPath
 
 data class VectorLayer(
     override val id: String,
