@@ -32,7 +32,7 @@ fun ImageButton(
             .clip(CircleShape)
             .background(MaterialTheme.colorScheme.surfaceContainer)
             .border(
-                width = 4.dp,
+                width = 5.dp,
                 color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainer,
                 shape = CircleShape
             )

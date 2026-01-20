@@ -1,4 +1,4 @@
-package com.example.draw.ui.feature.pickColor.component
+package com.example.draw.ui.feature.colorPicker.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,7 +33,7 @@ fun ColorItem(
             // Nếu được chọn thì thêm viền đậm
             .then(
                 if (isSelected) {
-                    Modifier.border(3.dp, Color(0xFF1A1A2E), CircleShape) // Viền tối màu (Dark Blue/Black)
+                    Modifier.border(5.dp, MaterialTheme.colorScheme.primary, CircleShape) // Viền tối màu (Dark Blue/Black)
                 } else Modifier
             )
     )
