@@ -40,10 +40,7 @@ class DrawingScreen : Screen {
     @Composable
     override fun Content() {
         val drawingScreenViewModel = koinScreenModel<DrawingScreenViewModel>()
-        val currentBrush = drawingScreenViewModel.currentBrush.collectAsStateWithLifecycle()
-        val currentDrawingPath = drawingScreenViewModel.currentDrawingPath.collectAsStateWithLifecycle()
-        val currentTouchPosition = drawingScreenViewModel.currentTouchPosition.collectAsStateWithLifecycle()
-        val completedDrawingPaths = drawingScreenViewModel.completedDrawingPaths.collectAsStateWithLifecycle()
+        val drawingState = drawingScreenViewModel.drawingState.collectAsStateWithLifecycle()
 
         var showLayerListPanel by remember { mutableStateOf(false) }
 
