@@ -8,6 +8,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.example.draw.data.model.brush.Brush
+import com.example.draw.data.model.brush.SolidBrush
 import com.example.draw.ui.common.component.CustomBottomSheet
 import com.example.draw.ui.common.component.WavyLinePreviewWithBackground
 import com.example.draw.ui.support_feature.colorPicker.mockData.colorPalette
@@ -18,16 +21,16 @@ import com.example.draw.ui.common.preview.PreviewComponent
 @Composable
 fun ColorPickerBottomSheet(
     onDismissRequest: () -> Unit,
-    initialColor: Color = colorPalette[2], // Mặc định chọn màu xanh như hình
-    onColorSelected: (Color) -> Unit
+    onColorSelected: (Color) -> Unit,
+    brush: Brush,
 ) {
-    var selectedColor by remember { mutableStateOf(initialColor) }
+    var selectedColor by remember { mutableStateOf(Color(brush.colorArgb)) }
 
     CustomBottomSheet(
         onDismissRequest = onDismissRequest
     ){
         // 1. Phần Header với nét vẽ (Wavy Line)
-        WavyLinePreviewWithBackground(selectedColor = selectedColor)
+        WavyLinePreviewWithBackground(selectedColor = selectedColor, strokeWidth = brush.size.dp, opacity = brush.opacity)
 
         // 2. Phần lưới chọn màu
         ColorGrid(
@@ -47,7 +50,8 @@ fun ColorPickerBottomSheetPreview() {
     PreviewComponent {
         ColorPickerBottomSheet(
             onDismissRequest = {},
-            onColorSelected = {}
+            onColorSelected = {},
+            brush = SolidBrush()
         )
     }
 }

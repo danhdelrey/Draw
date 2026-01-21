@@ -11,11 +11,12 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.draw.ui.common.preview.PreviewComponent
 
 @Composable
-fun WavyLinePreview(color: Color) {
+fun WavyLinePreview(color: Color, strokeWidth: Dp, opacity: Float) {
     Canvas(modifier = Modifier
         .fillMaxWidth(0.8f) // Chiều rộng nét vẽ chiếm 80% màn hình
         .height(50.dp)
@@ -42,10 +43,11 @@ fun WavyLinePreview(color: Color) {
             path = path,
             color = color,
             style = Stroke(
-                width = 20.dp.toPx(), // Độ dày nét vẽ
+                width = strokeWidth.toPx(), // Độ dày nét vẽ
                 cap = StrokeCap.Round, // Đầu bút tròn
                 join = StrokeJoin.Round
-            )
+            ),
+            alpha = opacity
         )
     }
 }
@@ -54,6 +56,6 @@ fun WavyLinePreview(color: Color) {
 @Composable
 fun WavyLineComponentPreview(){
     PreviewComponent {
-        WavyLinePreview(color = Color(0xFF0000CC))
+        WavyLinePreview(color = Color(0xFF0000CC), strokeWidth = 30.dp, opacity = 1f)
     }
 }

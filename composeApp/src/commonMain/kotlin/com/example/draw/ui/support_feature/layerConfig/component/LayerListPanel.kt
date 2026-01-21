@@ -1,8 +1,10 @@
 package com.example.draw.ui.support_feature.layerConfig.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -63,7 +65,9 @@ fun LayerListPanel(
 
         // --- Danh sách các Layer ---
         LazyColumn(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxSize(),
+            reverseLayout = true,
+            verticalArrangement = Arrangement.Bottom
         ) {
             items(layers) { layer ->
                 LayerItem(

@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.draw.data.model.brush.SolidBrush
 import com.example.draw.ui.common.preview.PreviewComponent
 import com.example.draw.ui.support_feature.colorPicker.component.ColorPickerBottomSheet
 import com.example.draw.ui.support_feature.colorPicker.mockData.colorPalette
@@ -53,7 +54,8 @@ fun ColorPickerButton(
             onColorSelected = { color ->
                 onColorSelected(color)
                 selectedColor = color
-            }
+            },
+            brush = SolidBrush()
         )
     }
 }

@@ -10,12 +10,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.draw.ui.support_feature.colorPicker.mockData.colorPalette
 import com.example.draw.ui.common.preview.PreviewComponent
 
 @Composable
-fun WavyLinePreviewWithBackground(selectedColor: Color) {
+fun WavyLinePreviewWithBackground(selectedColor: Color, strokeWidth: Dp, opacity: Float) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -24,7 +25,7 @@ fun WavyLinePreviewWithBackground(selectedColor: Color) {
             .padding(vertical = 24.dp),
         contentAlignment = Alignment.Center
     ) {
-        WavyLinePreview(color = selectedColor)
+        WavyLinePreview(color = selectedColor, strokeWidth = strokeWidth, opacity = opacity)
     }
 }
 
@@ -32,6 +33,6 @@ fun WavyLinePreviewWithBackground(selectedColor: Color) {
 @Composable
 fun WavyLinePreviewWithBackgroundPreview() {
     PreviewComponent {
-        WavyLinePreviewWithBackground(selectedColor = colorPalette[2])
+        WavyLinePreviewWithBackground(selectedColor = colorPalette[2], strokeWidth = 20.dp, opacity = 1f)
     }
 }

@@ -1,7 +1,6 @@
 package com.example.draw.ui.common.component
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,23 +17,29 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.draw.ui.common.preview.PreviewComponent
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SliderWithLabels(
     label: String,
-    value: String,
-    currentValue: Float,
-    onSizeChange: (Float) -> Unit,
+    valueSuffix: String = "",
+    initialValue: Float,
+    onValueChange: (Float) -> Unit,
     valueRange: ClosedFloatingPointRange<Float> = 1f..100f
 ){
     val primary = MaterialTheme.colorScheme.primary
+    var currentValue by remember { mutableStateOf(initialValue) }
 
     Column {
         Row(
@@ -42,13 +47,16 @@ fun SliderWithLabels(
         ) {
             Text(label, style = MaterialTheme.typography.labelLarge)
             Spacer(modifier = Modifier.weight(1f))
-            Text(value, style = MaterialTheme.typography.labelLarge)
+            Text("${currentValue.roundToInt()} $valueSuffix", style = MaterialTheme.typography.labelLarge)
         }
         Spacer(modifier = Modifier.height(5.dp))
         Slider(
             modifier = Modifier.height(12.dp),
             value = currentValue,
-            onValueChange = onSizeChange,
+            onValueChange = {
+                currentValue = it
+                onValueChange(it)
+            },
             valueRange = valueRange,
             colors = SliderDefaults.colors(
                 thumbColor = Color.Transparent,
@@ -97,10 +105,10 @@ fun SliderWithLabels(
 fun SliderWithLabelsPreview() {
     PreviewComponent {
         SliderWithLabels(
-            currentValue = 59f,
-            onSizeChange = {},
+            initialValue = 59f,
+            onValueChange = {},
             label = "Size",
-            value = "59"
+            valueSuffix = ""
         )
     }
 }
