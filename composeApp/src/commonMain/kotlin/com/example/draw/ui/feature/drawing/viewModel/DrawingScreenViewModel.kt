@@ -9,15 +9,20 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class DrawingScreenViewModel : ScreenModel {
-    private val _drawingState = MutableStateFlow(DrawingState())
-    val drawingState = _drawingState.asStateFlow()
+    private val _state = MutableStateFlow(DrawingState())
+    val state = _state.asStateFlow()
 
     
 
     fun onEvent(event: DrawingEvent){
         when(event){
             is DrawingEvent.StartDrawing -> {
-                
+                _state.value.copy(
+                    currentDrawingPath = event.drawingPath
+                )
+            }
+            is DrawingEvent.EndDrawing -> {
+
             }
         }
     }

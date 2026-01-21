@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,15 +18,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.rememberGraphicsLayer
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
+import com.example.draw.data.model.base.DrawingPath
+import com.example.draw.data.model.brush.SolidBrush
 import com.example.draw.ui.common.component.ImageButton
 import com.example.draw.ui.common.component.ToolPanel
 import com.example.draw.ui.common.preview.PreviewComponent
-import com.example.draw.ui.feature.drawing.event.DrawingEvent
+import com.example.draw.ui.feature.drawing.component.DrawingCanvas
+import com.example.draw.ui.feature.drawing.component.drawingInput
+import com.example.draw.ui.feature.drawing.viewModel.DrawingEvent
 import com.example.draw.ui.feature.drawing.viewModel.DrawingScreenViewModel
 import com.example.draw.ui.support_feature.brushConfig.mainComponent.BrushConfigButton
 import com.example.draw.ui.support_feature.colorPicker.mainComponent.ColorPickerButton
@@ -39,8 +45,8 @@ import draw.composeapp.generated.resources.solid_brush
 class DrawingScreen : Screen {
     @Composable
     override fun Content() {
-        val drawingScreenViewModel = koinScreenModel<DrawingScreenViewModel>()
-        val drawingState = drawingScreenViewModel.drawingState.collectAsStateWithLifecycle()
+        val viewModel = koinScreenModel<DrawingScreenViewModel>()
+        val state by viewModel.state.collectAsStateWithLifecycle()
 
         var showLayerListPanel by remember { mutableStateOf(false) }
 
@@ -94,7 +100,58 @@ class DrawingScreen : Screen {
                         .fillMaxWidth()
                         .aspectRatio(1f)
                         .background(Color.White)
-                )
+                ){
+                    DrawingCanvas(
+                        paths = state.completedDrawingPaths,
+                        currentPath = state.currentDrawingPath,
+                        isEraserMode = false,
+                        currentTouchPosition = state.currentTouchPosition,
+                        brushSize = state.currentBrush.size,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .drawingInput(
+                                onDragStart = { offset ->
+                                    viewModel.onEvent(DrawingEvent.StartDrawing(
+                                        currentTouchPosition = offset,
+                                        drawingPath = DrawingPath(
+                                            points = listOf(offset), //diem dau tien
+                                            brush = state.currentBrush
+                                        )
+                                    ))
+                                },
+                                onDrag = { offset ->
+                                    // DI CHUYỂN: Thêm điểm vào nét đang vẽ
+                                    currentTouchPosition = offset
+                                    currentPath?.let { path ->
+                                        // Tạo bản sao mới của path với điểm mới được thêm vào
+                                        currentPath = path.copy(
+                                            points = path.points + offset
+                                        )
+                                    }
+                                    viewModel.onEvent(DrawingEvent.StartDrawing(
+                                        currentTouchPosition = offset,
+                                        drawingPath = DrawingPath(
+                                            points = state.currentDrawingPath?.let {
+                                                path ->
+                                                state.currentDrawingPath = path.copy(
+                                                    points = path.points + offset
+                                                )
+                                            }, //diem dau tien
+                                            brush = state.currentBrush
+                                        )
+                                    ))
+                                },
+                                onDragEnd = {
+                                    // KẾT THÚC: Lưu nét vẽ vào danh sách chính
+                                    currentPath?.let { path ->
+                                        paths = paths + path // Thêm vào danh sách paths
+                                    }
+                                    currentPath = null // Xóa nét tạm
+                                    currentTouchPosition = null // Ẩn vị trí tay
+                                }
+                            )
+                    )
+                }
             }
         }
     }
