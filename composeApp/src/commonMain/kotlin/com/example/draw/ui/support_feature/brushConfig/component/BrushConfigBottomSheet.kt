@@ -1,4 +1,4 @@
-package com.example.draw.ui.support_feature.brushConfig.mainComponent
+package com.example.draw.ui.support_feature.brushConfig.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,12 +13,13 @@ import com.example.draw.ui.common.component.CustomBottomSheet
 import com.example.draw.ui.common.component.SliderWithLabels
 import com.example.draw.ui.common.component.WavyLinePreviewWithBackground
 import com.example.draw.ui.common.preview.PreviewComponent
-import com.example.draw.ui.support_feature.brushConfig.component.BrushSelection
 
 @Composable
-fun BrushConfigBottomSheet() {
+fun BrushConfigBottomSheet(
+    onDissmissRequest: () -> Unit = {}
+) {
     CustomBottomSheet(
-        onDismissRequest = {}
+        onDismissRequest = onDissmissRequest
     ){
         WavyLinePreviewWithBackground(selectedColor = Color.Blue)
         Column(

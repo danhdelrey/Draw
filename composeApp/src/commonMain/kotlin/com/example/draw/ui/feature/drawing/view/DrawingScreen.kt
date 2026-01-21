@@ -17,6 +17,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import com.example.draw.ui.common.component.ImageButton
 import com.example.draw.ui.common.component.ToolPanel
 import com.example.draw.ui.common.preview.PreviewComponent
+import com.example.draw.ui.support_feature.brushConfig.mainComponent.BrushConfigButton
 import com.example.draw.ui.support_feature.colorPicker.mainComponent.ColorPickerButton
 import com.example.draw.ui.support_feature.layerConfig.mainComponent.LayerListPanelButton
 import com.example.draw.ui.support_feature.undoRedo.mainComponent.UndoRedoButton
@@ -38,11 +39,7 @@ class DrawingScreen : Screen {
                 ToolPanel(
                     leftContent = {
                         ColorPickerButton()
-                        ImageButton(
-                            imageResource = Res.drawable.solid_brush,
-                            isSelected = true,
-                            onClick = {}
-                        )
+                        BrushConfigButton()
                     },
                     centerContent = {
                         // Add center content here for preview
