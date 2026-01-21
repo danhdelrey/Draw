@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -17,10 +18,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import com.example.draw.ui.common.component.ImageButton
 import com.example.draw.ui.common.component.ToolPanel
 import com.example.draw.ui.common.preview.PreviewComponent
+import com.example.draw.ui.feature.drawing.event.DrawingEvent
+import com.example.draw.ui.feature.drawing.utils.drawingInput
 import com.example.draw.ui.support_feature.brushConfig.mainComponent.BrushConfigButton
 import com.example.draw.ui.support_feature.colorPicker.mainComponent.ColorPickerButton
 import com.example.draw.ui.support_feature.layerConfig.component.LayerListPanel
@@ -75,20 +79,7 @@ class DrawingScreen : Screen {
                 )
             }
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-            ){
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1f)
-                        .background(
-                            color = Color.White
-                        )
-                        .align(Alignment.Center)
-                )
-            }
+            DrawingTestScreen()
         }
     }
 }
