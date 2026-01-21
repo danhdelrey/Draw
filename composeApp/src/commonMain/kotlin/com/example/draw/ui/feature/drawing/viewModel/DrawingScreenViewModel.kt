@@ -9,22 +9,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class DrawingScreenViewModel : ScreenModel {
-    private val _currentBrush = MutableStateFlow<Brush>(SolidBrush())
-    private val _currentDrawingPath = MutableStateFlow<DrawingPath?>(null)
-    private val _completedDrawingPaths = MutableStateFlow(listOf<DrawingPath>())
-    private val _currentTouchPosition = MutableStateFlow<Offset?>(null)
-
-    val currentBrush = _currentBrush.asStateFlow()
-    val currentDrawingPath = _currentDrawingPath.asStateFlow()
-    val completedDrawingPaths = _completedDrawingPaths.asStateFlow()
-    val currentTouchPosition = _currentTouchPosition.asStateFlow()
+    private val _drawingState = MutableStateFlow(DrawingState())
+    val drawingState = _drawingState.asStateFlow()
 
     
 
     fun onEvent(event: DrawingEvent){
         when(event){
             is DrawingEvent.StartDrawing -> {
-                //do sth
+                
             }
         }
     }
