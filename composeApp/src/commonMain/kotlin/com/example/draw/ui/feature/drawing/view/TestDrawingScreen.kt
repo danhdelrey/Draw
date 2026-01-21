@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.example.draw.data.model.base.DrawingPath
 import com.example.draw.data.model.brush.SolidBrush
 import com.example.draw.ui.feature.drawing.component.DrawingCanvas
-import com.example.draw.ui.feature.drawing.utils.drawingInput
+import com.example.draw.ui.feature.drawing.component.drawingInput
 
 
 @Composable

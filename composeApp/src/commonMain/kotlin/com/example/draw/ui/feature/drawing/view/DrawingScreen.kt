@@ -19,12 +19,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.koin.koinScreenModel
 import com.example.draw.ui.common.component.ImageButton
 import com.example.draw.ui.common.component.ToolPanel
 import com.example.draw.ui.common.preview.PreviewComponent
 import com.example.draw.ui.feature.drawing.event.DrawingEvent
-import com.example.draw.ui.feature.drawing.utils.drawingInput
+import com.example.draw.ui.feature.drawing.viewModel.DrawingScreenViewModel
 import com.example.draw.ui.support_feature.brushConfig.mainComponent.BrushConfigButton
 import com.example.draw.ui.support_feature.colorPicker.mainComponent.ColorPickerButton
 import com.example.draw.ui.support_feature.layerConfig.component.LayerListPanel
@@ -37,8 +39,12 @@ import draw.composeapp.generated.resources.solid_brush
 class DrawingScreen : Screen {
     @Composable
     override fun Content() {
+        val drawingScreenViewModel = koinScreenModel<DrawingScreenViewModel>()
+        val currentBrush = drawingScreenViewModel.currentBrush.collectAsStateWithLifecycle()
+        val currentDrawingPath = drawingScreenViewModel.currentDrawingPath.collectAsStateWithLifecycle()
+        val currentTouchPosition = drawingScreenViewModel.currentTouchPosition.collectAsStateWithLifecycle()
+        val completedDrawingPaths = drawingScreenViewModel.completedDrawingPaths.collectAsStateWithLifecycle()
 
-        val graphicsLayer = rememberGraphicsLayer()
         var showLayerListPanel by remember { mutableStateOf(false) }
 
         Scaffold(
