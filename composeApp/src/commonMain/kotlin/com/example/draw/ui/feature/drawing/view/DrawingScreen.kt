@@ -79,7 +79,20 @@ class DrawingScreen : Screen {
                 )
             }
         ) {
-            TestMultiLayerDrawingScreen()
+            Box(
+
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+                
+            ){
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1f)
+                        .background(Color.White)
+                )
+            }
         }
     }
 }
