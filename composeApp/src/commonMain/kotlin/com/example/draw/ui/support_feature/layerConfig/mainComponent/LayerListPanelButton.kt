@@ -15,35 +15,16 @@ import com.example.draw.ui.support_feature.layerConfig.model.LayerConfig
 
 @Composable
 fun LayerListPanelButton(
-
+    onClick: () -> Unit = {}
 ) {
-    var showLayerListPanel by remember { mutableStateOf(false) }
 
     CustomIconButton(
         icon = Icons.Default.Layers,
         enabled = true,
         onClick = {
-            showLayerListPanel = !showLayerListPanel
+            onClick()
         }
     )
-
-    if(showLayerListPanel){
-        val sampleLayers = listOf(
-            LayerConfig(id = 1, isVisible = true),
-            LayerConfig(id = 2, isVisible = false),
-            LayerConfig(id = 3, isVisible = true)
-        )
-
-        LayerListPanel(
-            layers = sampleLayers,
-            selectedLayerId = 2,
-            onAddLayer = {},
-            onSelectLayer = {},
-            onToggleVisibility = {},
-            onDeleteLayer = {}
-        )
-    }
-
 
 
 }

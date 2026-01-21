@@ -19,11 +19,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.draw.ui.common.preview.PreviewComponent
 import com.example.draw.ui.support_feature.colorPicker.component.ColorPickerBottomSheet
+import com.example.draw.ui.support_feature.colorPicker.mockData.colorPalette
 
 @Composable
 fun ColorPickerButton(
-
+    onColorSelected: (Color) -> Unit = {}
 ) {
+    var selectedColor by remember { mutableStateOf(colorPalette[2]) }
     var showColorPickerBottomSheet by remember { mutableStateOf(false) }
 
     Box(
@@ -37,7 +39,7 @@ fun ColorPickerButton(
                 color = Color.Black,
                 shape = CircleShape
             )
-            .background(Color.Blue)
+            .background(selectedColor)
             .clickable{
                 showColorPickerBottomSheet = true
             }
@@ -48,8 +50,9 @@ fun ColorPickerButton(
             onDismissRequest = {
                 showColorPickerBottomSheet = false
             },
-            onColorSelected = { selectedColor ->
-                // Xử lý màu được chọn ở đây nếu cần
+            onColorSelected = { color ->
+                onColorSelected(color)
+                selectedColor = color
             }
         )
     }
