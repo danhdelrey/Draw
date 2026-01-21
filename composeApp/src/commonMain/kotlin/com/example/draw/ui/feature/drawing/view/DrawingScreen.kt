@@ -41,15 +41,9 @@ class DrawingScreen : Screen {
             containerColor = MaterialTheme.colorScheme.surfaceDim,
             floatingActionButton = {
                 if(showLayerListPanel){
-                    val sampleLayers = listOf(
-                        LayerConfig(id = 1, isVisible = true),
-                        LayerConfig(id = 2, isVisible = false),
-                        LayerConfig(id = 3, isVisible = true)
-                    )
+
 
                     LayerListPanel(
-                        layers = sampleLayers,
-                        selectedLayerId = 2,
                         onAddLayer = {},
                         onSelectLayer = {},
                         onToggleVisibility = {},
