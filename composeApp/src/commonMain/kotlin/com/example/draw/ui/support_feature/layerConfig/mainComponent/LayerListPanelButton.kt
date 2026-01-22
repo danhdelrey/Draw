@@ -14,7 +14,6 @@ fun LayerListPanelButton(
 
     CustomIconButton(
         icon = Icons.Default.Layers,
-        enabled = true,
         onClick = {
             onClick()
         }

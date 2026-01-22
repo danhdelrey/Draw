@@ -77,7 +77,14 @@ class DrawingScreen : Screen {
             },
             topBar = {
                 ToolPanel {
-                    UndoRedoButton()
+                    UndoRedoButton(
+                        onRedo = if (state.canRedo) {
+                            { viewModel.onEvent(DrawingEvent.Redo) }
+                        } else null,
+                        onUndo = if (state.canUndo) {
+                            { viewModel.onEvent(DrawingEvent.Undo) }
+                        } else null
+                    )
                 }
             },
             bottomBar = {

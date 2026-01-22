@@ -14,20 +14,19 @@ import com.example.draw.ui.common.component.CustomIconButton
 import com.example.draw.ui.common.preview.PreviewComponent
 
 @Composable
-fun UndoRedoButton(){
+fun UndoRedoButton(
+    onUndo: (() -> Unit)? = null,
+    onRedo: (() -> Unit)? = null
+){
     Row {
         CustomIconButton(
             icon = Icons.Default.Undo,
-            onClick = {
-                // Handle undo action
-            }
+            onClick = onUndo
         )
         Spacer(Modifier.width(15.dp))
         CustomIconButton(
             icon = Icons.Default.Redo,
-            onClick = {
-                // Handle undo action
-            }
+            onClick = onRedo
         )
     }
 }

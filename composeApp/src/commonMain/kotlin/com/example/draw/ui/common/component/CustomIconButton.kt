@@ -24,8 +24,7 @@ import com.example.draw.ui.common.preview.PreviewComponent
 @Composable
 fun CustomIconButton(
     icon: ImageVector,
-    enabled: Boolean = true,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)? = null,
 ) {
 
     Box(
@@ -33,9 +32,11 @@ fun CustomIconButton(
             .height(48.dp)
             .width(48.dp)
             .clip(CircleShape)
-            .background(if (enabled) MaterialTheme.colorScheme.primary else Color.Gray)
-            .clickable{
-                onClick()
+            .background(if (onClick != null) MaterialTheme.colorScheme.primary else Color.Gray)
+            .clickable(
+                enabled = onClick != null
+            ){
+                onClick?.invoke()
             }
     ){
         Icon(

@@ -12,5 +12,7 @@ data class DrawingState(
     var currentTouchPosition: Offset? = null,
     var currentDrawingPath: DrawingPath? = null,
     var currentActiveLayer: Layer = VectorLayer(id = "default_layer"),
-    var currentLayers: List<Layer> = listOf(VectorLayer(id = "default_layer"))
+    var currentLayers: List<Layer> = listOf(VectorLayer(id = "default_layer")),
+    var canUndo: Boolean = false,
+    var canRedo: Boolean = false
 )
