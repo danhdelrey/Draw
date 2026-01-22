@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,9 +20,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.draw.data.model.canvas.CanvasConfig
 import com.example.draw.data.model.layer.Layer
 import com.example.draw.data.model.layer.VectorLayer
 import com.example.draw.ui.common.preview.PreviewComponent
@@ -34,20 +37,19 @@ fun LayerItem(
     onToggleVisibility: () -> Unit,
     onDelete: () -> Unit
 ) {
-    // Màu nền thay đổi dựa trên trạng thái select (Giống item thứ 3 trong hình)
     val backgroundColor = if (isSelected) Color(0xFF888888) else Color.Transparent
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(110.dp) // Chiều cao mỗi hàng
+            .height(110.dp)
             .background(backgroundColor)
             .clickable { onClick() }
             .padding(horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween // Căn đều 3 phần tử
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        // 1. Nút Mắt (Trái)
+        // 1. Nút Mắt
         IconButton(
             onClick = onToggleVisibility,
             modifier = Modifier.size(24.dp)
@@ -55,22 +57,38 @@ fun LayerItem(
             Icon(
                 imageVector = if (data.isVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                 contentDescription = "Toggle Visibility",
-                tint = Color(0xFF1E1E1E) // Màu đen nhạt
+                tint = Color(0xFF1E1E1E)
             )
         }
 
-        // 2. Khung trắng (Giữa) - Placeholder nội dung
+        // 2. Khung Preview (Thumbnail)
         Box(
             modifier = Modifier
-                .weight(1f) // Chiếm phần không gian còn lại ở giữa
+                .weight(1f)
                 .padding(horizontal = 4.dp)
-                .aspectRatio(0.8f) // Tỉ lệ khung hình chữ nhật đứng
-                .background(Color.White)
+                // QUAN TRỌNG: Set tỉ lệ khung hình dựa trên kích thước cố định
+                .aspectRatio(CanvasConfig.FIXED_WIDTH / CanvasConfig.FIXED_HEIGHT)
+                .background(Color.Gray) // Màu nền của vùng chứa (để phân biệt với giấy)
+                .clipToBounds(),
+            contentAlignment = Alignment.Center
         ) {
-            // Sau này bạn có thể để Image() ở đây
+            // Vẽ nền giấy trắng
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White)
+            )
+
+            // Vẽ nội dung layer lên trên
+            if (data is VectorLayer) {
+                LayerThumbnail(
+                    layer = data,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
         }
 
-        // 3. Nút Thùng rác (Phải)
+        // 3. Nút Xóa
         IconButton(
             onClick = onDelete,
             modifier = Modifier.size(24.dp)

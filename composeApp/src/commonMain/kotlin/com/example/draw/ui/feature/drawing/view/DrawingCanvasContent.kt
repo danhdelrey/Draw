@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -13,7 +14,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.draw.data.model.canvas.CanvasConfig
 import com.example.draw.data.model.layer.VectorLayer
 import com.example.draw.ui.feature.drawing.component.DrawingCanvas
 import com.example.draw.ui.feature.drawing.component.drawingInput
@@ -36,8 +39,8 @@ fun DrawingCanvasContent(
     ){
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(1f)
+                .aspectRatio(CanvasConfig.FIXED_WIDTH / CanvasConfig.FIXED_HEIGHT)
+                .fillMaxSize()
                 .background(Color.White)
                 .graphicsLayer(alpha = 0.99f)
                 .drawWithContent {
