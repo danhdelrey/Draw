@@ -49,7 +49,6 @@ fun ToolPanel(
             modifier = Modifier.weight(1f),
             horizontalArrangement = Arrangement.spacedBy(15.dp)
         ) {
-            Spacer(modifier = Modifier.weight(1f))
             rightContent()
         }
     }
