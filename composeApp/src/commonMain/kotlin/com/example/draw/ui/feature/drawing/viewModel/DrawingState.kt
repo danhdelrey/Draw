@@ -6,8 +6,8 @@ import com.example.draw.data.model.brush.Brush
 import com.example.draw.data.model.brush.SolidBrush
 
 data class DrawingState(
-    val currentBrush: Brush = SolidBrush(),
-    val currentTouchPosition: Offset? = null,
-    val currentDrawingPath: DrawingPath? = null,
-    val completedDrawingPaths: List<DrawingPath> = emptyList()
+    var currentBrush: Brush = SolidBrush(),
+    var currentTouchPosition: Offset? = null,
+    var currentDrawingPath: DrawingPath? = null,
+    var completedDrawingPaths: List<DrawingPath> = emptyList()
 )

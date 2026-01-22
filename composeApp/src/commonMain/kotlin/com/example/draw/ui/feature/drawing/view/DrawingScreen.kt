@@ -113,41 +113,17 @@ class DrawingScreen : Screen {
                                 onDragStart = { offset ->
                                     viewModel.onEvent(DrawingEvent.StartDrawing(
                                         currentTouchPosition = offset,
-                                        drawingPath = DrawingPath(
-                                            points = listOf(offset), //diem dau tien
-                                            brush = state.currentBrush
-                                        )
                                     ))
                                 },
                                 onDrag = { offset ->
                                     // DI CHUYỂN: Thêm điểm vào nét đang vẽ
-                                    currentTouchPosition = offset
-                                    currentPath?.let { path ->
-                                        // Tạo bản sao mới của path với điểm mới được thêm vào
-                                        currentPath = path.copy(
-                                            points = path.points + offset
-                                        )
-                                    }
-                                    viewModel.onEvent(DrawingEvent.StartDrawing(
+                                    viewModel.onEvent(DrawingEvent.UpdateDrawing(
                                         currentTouchPosition = offset,
-                                        drawingPath = DrawingPath(
-                                            points = state.currentDrawingPath?.let {
-                                                path ->
-                                                state.currentDrawingPath = path.copy(
-                                                    points = path.points + offset
-                                                )
-                                            }, //diem dau tien
-                                            brush = state.currentBrush
-                                        )
                                     ))
                                 },
                                 onDragEnd = {
                                     // KẾT THÚC: Lưu nét vẽ vào danh sách chính
-                                    currentPath?.let { path ->
-                                        paths = paths + path // Thêm vào danh sách paths
-                                    }
-                                    currentPath = null // Xóa nét tạm
-                                    currentTouchPosition = null // Ẩn vị trí tay
+                                    viewModel.onEvent(DrawingEvent.EndDrawing)
                                 }
                             )
                     )
