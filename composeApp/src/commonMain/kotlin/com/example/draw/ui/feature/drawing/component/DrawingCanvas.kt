@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
@@ -30,32 +31,47 @@ fun DrawingCanvas(
     isEraserMode: Boolean,
     currentTouchPosition: Offset?,
     brushSize: Float,
+    renderScale: Float, // <--- THÊM THAM SỐ NÀY
     modifier: Modifier = Modifier
 ) {
     Canvas(
         modifier = modifier
     ) {
-        // 1. Vẽ các nét cũ
-        paths.forEach { path ->
-            drawDrawingPath(path)
-        }
+        // Áp dụng scale toàn bộ nội dung vẽ từ gốc (0,0)
+        // Logic: Tọa độ path là 1080p -> Scale xuống khớp màn hình
+        scale(scale = renderScale, pivot = Offset.Zero) {
 
-        // 2. Vẽ nét đang kéo
-        currentPath?.let { path ->
-            drawDrawingPath(path)
+            // 1. Vẽ các nét cũ
+            paths.forEach { path ->
+                drawDrawingPath(path)
+            }
+
+            // 2. Vẽ nét đang kéo
+            currentPath?.let { path ->
+                drawDrawingPath(path)
+            }
         }
 
         // 3. Vẽ hình tròn cục tẩy (Indicator)
+        // Riêng cái này vẽ theo tọa độ ngón tay (đã là màn hình) nên KHÔNG nằm trong block scale ở trên
+        // Hoặc nếu currentTouchPosition là tọa độ gốc, thì đưa vào trong.
+        // Nhưng ở ViewModel bạn đang lưu currentTouchPosition là tọa độ input (màn hình) hay gốc?
+        // Theo code trước: ViewModel lưu currentTouchPosition là tọa độ GỐC (inputScale).
+        // NÊN ta cũng vẽ nó trong khối scale để nó to nhỏ đúng tỷ lệ.
+
         if (isEraserMode && currentTouchPosition != null) {
-            drawCircle(
-                color = Color.Gray.copy(alpha = 0.5f),
-                radius = brushSize / 2f,
-                center = currentTouchPosition,
-                style = Stroke(width = 2f)
-            )
+            scale(scale = renderScale, pivot = Offset.Zero) {
+                drawCircle(
+                    color = Color.Gray.copy(alpha = 0.5f),
+                    radius = brushSize / 2f,
+                    center = currentTouchPosition,
+                    style = Stroke(width = 2f / renderScale) // Giữ nét viền mảnh
+                )
+            }
         }
     }
 }
+
 
 // 1. Hàm vẽ: Chỉ quan tâm việc vẽ 1 nét như thế nào
 fun DrawScope.drawDrawingPath(drawingPath: DrawingPath) {

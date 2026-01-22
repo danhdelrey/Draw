@@ -42,10 +42,10 @@ fun LayerItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(110.dp)
+            .height(100.dp) // Chiều cao cố định cho item
             .background(backgroundColor)
             .clickable { onClick() }
-            .padding(horizontal = 4.dp),
+            .padding(4.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -61,29 +61,27 @@ fun LayerItem(
             )
         }
 
-        // 2. Khung Preview (Thumbnail)
+        // 2. Vùng chứa Thumbnail
+        // Box này đóng vai trò là container giới hạn
         Box(
             modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 4.dp)
-                // QUAN TRỌNG: Set tỉ lệ khung hình dựa trên kích thước cố định
-                .aspectRatio(CanvasConfig.FIXED_WIDTH / CanvasConfig.FIXED_HEIGHT)
-                .background(Color.Gray) // Màu nền của vùng chứa (để phân biệt với giấy)
-                .clipToBounds(),
+                .weight(1f) // Chiếm phần giữa
+                .padding(horizontal = 8.dp)
+                .fillMaxSize(), // Cao bằng Row, Rộng theo weight
             contentAlignment = Alignment.Center
         ) {
-            // Vẽ nền giấy trắng
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.White)
-            )
-
-            // Vẽ nội dung layer lên trên
             if (data is VectorLayer) {
+                // Gọi Thumbnail, nó sẽ tự căn giữa và giữ đúng tỷ lệ
                 LayerThumbnail(
                     layer = data,
                     modifier = Modifier.fillMaxSize()
+                )
+            } else {
+                // Fallback nếu không phải VectorLayer (ví dụ ImageLayer)
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.White)
                 )
             }
         }
@@ -101,7 +99,6 @@ fun LayerItem(
         }
     }
 }
-
 @Preview
 @Composable
 fun LayerItemPreview() {
