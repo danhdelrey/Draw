@@ -20,24 +20,22 @@ import com.example.draw.ui.support_feature.colorPicker.mockData.MockColorPalette
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ColorPickerBottomSheet(
-    currentColor: Color,
+    currentBrush: Brush,
     onDismissRequest: () -> Unit,
     onColorSelected: (Color) -> Unit,
 ) {
-    var selectedColor by remember { mutableStateOf(currentColor) }
 
     CustomBottomSheet(
         onDismissRequest = onDismissRequest
     ){
         // 1. Phần Header với nét vẽ (Wavy Line)
-        WavyLinePreviewWithBackground()
+        WavyLinePreviewWithBackground(currentBrush)
 
         // 2. Phần lưới chọn màu
         ColorGrid(
             colors = MockColorPalette.toList(),
-            selectedColor = selectedColor,
+            selectedColor = currentColor,
             onColorClick = {
-                selectedColor = it
                 onColorSelected(it)
             }
         )
