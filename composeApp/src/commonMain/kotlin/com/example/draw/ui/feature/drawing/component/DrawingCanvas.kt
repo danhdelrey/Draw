@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.toSize
 import com.example.draw.data.model.base.DrawingPath
+import com.example.draw.data.model.brush.EraserBrush
 
 @Composable
 fun DrawingCanvas(
@@ -68,7 +69,7 @@ fun DrawingCanvas(
 
 // 1. Hàm vẽ: Chỉ quan tâm việc vẽ 1 nét như thế nào
 fun DrawScope.drawDrawingPath(drawingPath: DrawingPath) {
-    val isEraser = false
+    val isEraser = drawingPath.brush::class == EraserBrush::class
     val blendMode = if (isEraser) BlendMode.Clear else BlendMode.SrcOver
     val color = if (isEraser) Color.Transparent else Color(drawingPath.brush.colorArgb)
 
