@@ -9,6 +9,7 @@ import com.example.draw.data.model.layer.VectorLayer
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlin.collections.plus
+import kotlin.random.Random
 
 class DrawingScreenViewModel : ScreenModel {
     private val _state = MutableStateFlow(DrawingState())
@@ -112,6 +113,65 @@ class DrawingScreenViewModel : ScreenModel {
                     currentBrush = event.brush
                 )
             }
+
+            is DrawingEvent.AddLayer -> {
+                val newLayer = VectorLayer(
+                    id = Random.nextLong().toString(),
+                )
+                _state.value = _state.value.copy(
+                    currentLayers = _state.value.currentLayers + newLayer,
+                    currentActiveLayer = newLayer
+                )
+            }
+            is DrawingEvent.DeleteLayer -> {
+                if (event.layer.id == "default_layer") return
+
+                val updatedLayers =
+                    _state.value.currentLayers.filter { it.id != event.layer.id }
+
+                val newActiveLayer =
+                    if (_state.value.currentActiveLayer.id == event.layer.id) {
+                        updatedLayers.firstOrNull()
+                            ?: _state.value.currentLayers.first()
+                    } else {
+                        _state.value.currentActiveLayer
+                    }
+
+                _state.value = _state.value.copy(
+                    currentLayers = updatedLayers,
+                    currentActiveLayer = newActiveLayer
+                )
+            }
+            is DrawingEvent.SelectLayer -> {
+                val layer =
+                    _state.value.currentLayers.firstOrNull { it.id == event.layer.id }
+                        ?: return
+
+                _state.value = _state.value.copy(
+                    currentActiveLayer = layer
+                )
+            }
+
+            is DrawingEvent.ToggleLayerVisibility -> {
+                val updatedLayers =
+                    _state.value.currentLayers.map { layer ->
+                        if (layer.id == event.layer.id && layer is VectorLayer) {
+                            layer.copy(isVisible = !layer.isVisible)
+                        } else {
+                            layer
+                        }
+                    }
+
+                val newActiveLayer =
+                    updatedLayers.firstOrNull { it.id == _state.value.currentActiveLayer.id }
+                        ?: _state.value.currentActiveLayer
+
+                _state.value = _state.value.copy(
+                    currentLayers = updatedLayers,
+                    currentActiveLayer = newActiveLayer
+                )
+            }
+
 
 
         }

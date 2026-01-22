@@ -22,12 +22,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.draw.data.model.layer.Layer
+import com.example.draw.data.model.layer.VectorLayer
 import com.example.draw.ui.common.preview.PreviewComponent
-import com.example.draw.ui.support_feature.layerConfig.model.LayerConfig
 
 @Composable
 fun LayerItem(
-    data: LayerConfig,
+    data: Layer,
     isSelected: Boolean,
     onClick: () -> Unit,
     onToggleVisibility: () -> Unit,
@@ -88,7 +89,7 @@ fun LayerItem(
 fun LayerItemPreview() {
     PreviewComponent {
         LayerItem(
-            data = LayerConfig(id = 1, isVisible = true),
+            data = VectorLayer(id = "1", isVisible = true),
             isSelected = true,
             onClick = {},
             onToggleVisibility = {},

@@ -5,10 +5,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,18 +16,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.rememberGraphicsLayer
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
-import com.example.draw.data.model.base.DrawingPath
-import com.example.draw.data.model.brush.SolidBrush
 import com.example.draw.data.model.layer.VectorLayer
-import com.example.draw.ui.common.component.ImageButton
 import com.example.draw.ui.common.component.ToolPanel
 import com.example.draw.ui.common.preview.PreviewComponent
 import com.example.draw.ui.feature.drawing.component.DrawingCanvas
@@ -38,13 +29,9 @@ import com.example.draw.ui.feature.drawing.viewModel.DrawingEvent
 import com.example.draw.ui.feature.drawing.viewModel.DrawingScreenViewModel
 import com.example.draw.ui.support_feature.brushConfig.mainComponent.BrushConfigButton
 import com.example.draw.ui.support_feature.colorPicker.mainComponent.ColorPickerButton
-import com.example.draw.ui.support_feature.colorPicker.mockData.MockColorPalette
-import com.example.draw.ui.support_feature.layerConfig.component.LayerListPanel
+import com.example.draw.ui.support_feature.layerConfig.mainComponent.LayerListPanel
 import com.example.draw.ui.support_feature.layerConfig.mainComponent.LayerListPanelButton
-import com.example.draw.ui.support_feature.layerConfig.model.LayerConfig
 import com.example.draw.ui.support_feature.undoRedo.mainComponent.UndoRedoButton
-import draw.composeapp.generated.resources.Res
-import draw.composeapp.generated.resources.solid_brush
 
 class DrawingScreen : Screen {
     @Composable
@@ -61,10 +48,20 @@ class DrawingScreen : Screen {
 
 
                     LayerListPanel(
-                        onAddLayer = {},
-                        onSelectLayer = {},
-                        onToggleVisibility = {},
-                        onDeleteLayer = {}
+                        activeLayer = state.currentActiveLayer,
+                        currentLayers = state.currentLayers,
+                        onAddLayer = {
+                            viewModel.onEvent(DrawingEvent.AddLayer)
+                        },
+                        onSelectLayer = {
+                            viewModel.onEvent(DrawingEvent.SelectLayer(it))
+                        },
+                        onToggleVisibility = {
+                            viewModel.onEvent(DrawingEvent.ToggleLayerVisibility(it))
+                        },
+                        onDeleteLayer = {
+                            viewModel.onEvent(DrawingEvent.DeleteLayer(it))
+                        }
                     )
                 }
             },
