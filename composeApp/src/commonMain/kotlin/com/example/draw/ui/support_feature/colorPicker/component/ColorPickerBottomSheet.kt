@@ -34,7 +34,7 @@ fun ColorPickerBottomSheet(
         // 2. Phần lưới chọn màu
         ColorGrid(
             colors = MockColorPalette.toList(),
-            selectedColor = currentColor,
+            selectedColor = Color(currentBrush.colorArgb),
             onColorClick = {
                 onColorSelected(it)
             }
@@ -48,7 +48,7 @@ fun ColorPickerBottomSheet(
 fun ColorPickerBottomSheetPreview() {
     PreviewComponent {
         ColorPickerBottomSheet(
-            currentColor = MockColorPalette.MIDNIGHTBLUE.color,
+            currentBrush = SolidBrush(),
             onDismissRequest = {},
             onColorSelected = {},
         )

@@ -49,7 +49,7 @@ fun ColorPickerButton(
 
     if(showColorPickerBottomSheet) {
         ColorPickerBottomSheet(
-            currentColor = Color(currentBrush.colorArgb),
+            currentBrush = currentBrush,
             onDismissRequest = {
                 showColorPickerBottomSheet = false
             },

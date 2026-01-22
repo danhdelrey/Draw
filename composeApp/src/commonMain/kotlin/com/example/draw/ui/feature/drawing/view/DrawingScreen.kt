@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import com.example.draw.data.model.base.DrawingPath
@@ -74,7 +75,11 @@ class DrawingScreen : Screen {
                 ToolPanel(
                     leftContent = {
                         ColorPickerButton(
-                            currentColor = MockColorPalette.DARKSLATEGRAY.color
+                            currentBrush = state.currentBrush,
+                            onColorSelected = { newColor ->
+                                val updatedBrush = state.currentBrush.updateColor(newColor.toArgb().toLong())
+                                viewModel.onEvent(DrawingEvent.ChangeBrush(updatedBrush))
+                            }
                         )
                         BrushConfigButton(
                             currentBrush = state.currentBrush,

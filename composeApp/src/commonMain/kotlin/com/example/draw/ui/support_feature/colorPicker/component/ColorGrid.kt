@@ -21,7 +21,7 @@ fun ColorGrid(
     onColorClick: (Color) -> Unit
 ) {
     LazyVerticalGrid(
-        columns = GridCells.Fixed(6), // 6 cột giống hình
+        columns = GridCells.Fixed(6), // 6 cột
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
