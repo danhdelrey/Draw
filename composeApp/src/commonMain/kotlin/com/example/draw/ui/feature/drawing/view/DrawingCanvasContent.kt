@@ -8,8 +8,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.layer.GraphicsLayer
+import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.draw.data.model.layer.VectorLayer
 import com.example.draw.ui.feature.drawing.component.DrawingCanvas
@@ -19,7 +22,11 @@ import com.example.draw.ui.feature.drawing.viewModel.DrawingScreenViewModel
 import com.example.draw.ui.feature.drawing.viewModel.DrawingState
 
 @Composable
-fun DrawingCanvasContent(state: DrawingState, viewModel: DrawingScreenViewModel) {
+fun DrawingCanvasContent(
+    state: DrawingState,
+    viewModel: DrawingScreenViewModel,
+    rootGraphicsLayer: GraphicsLayer
+) {
     Box(
 
         modifier = Modifier
@@ -32,6 +39,15 @@ fun DrawingCanvasContent(state: DrawingState, viewModel: DrawingScreenViewModel)
                 .fillMaxWidth()
                 .aspectRatio(1f)
                 .background(Color.White)
+                .drawWithContent {
+                    // 1. Ra lệnh cho graphicsLayer ghi lại nội dung của Box này
+                    rootGraphicsLayer.record {
+                        // "this@drawWithContent" chính là lệnh vẽ nội dung gốc (nền trắng + layer con)
+                        this@drawWithContent.drawContent()
+                    }
+                    // 2. Vẽ cái graphicsLayer đó ra màn hình để mắt người dùng nhìn thấy
+                    drawLayer(rootGraphicsLayer)
+                }
         ){
             // --- VẼ CÁC LỚP ---
             // Duyệt qua danh sách layers và vẽ từng cái một

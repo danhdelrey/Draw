@@ -2,16 +2,23 @@ package com.example.draw.ui.feature.drawing.viewModel
 
 import androidx.compose.ui.geometry.Offset
 import cafe.adriel.voyager.core.model.ScreenModel
+import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.draw.data.model.base.DrawingPath
 import com.example.draw.data.model.brush.Brush
 import com.example.draw.data.model.brush.SolidBrush
 import com.example.draw.data.model.layer.VectorLayer
+import com.example.draw.data.repository.ImageRepository
+import com.example.draw.platform.util.toPngByteArray
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import kotlin.collections.plus
 import kotlin.random.Random
+import kotlin.time.Clock
 
-class DrawingScreenViewModel : ScreenModel {
+class DrawingScreenViewModel(
+    private val imageRepository: ImageRepository
+) : ScreenModel {
     private val _state = MutableStateFlow(DrawingState())
     val state = _state.asStateFlow()
 
@@ -105,6 +112,20 @@ class DrawingScreenViewModel : ScreenModel {
                 _state.value.currentLayers
 
 
+            }
+
+            is DrawingEvent.SaveDrawing -> {
+                screenModelScope.launch {
+                    val name = "drawing_${Clock.System.now().toEpochMilliseconds()}"
+                    val bytes = event.imageBitmap.toPngByteArray()
+                    val result = imageRepository.saveImage(bytes, name)
+
+                    if (result){
+                        println("Lưu hình ảnh thành công")
+                    } else {
+                        println("Lưu hình ảnh thất bại")
+                    }
+                }
             }
 
             is DrawingEvent.ChangeBrush -> {
