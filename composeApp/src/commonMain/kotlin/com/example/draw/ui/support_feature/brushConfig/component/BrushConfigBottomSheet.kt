@@ -23,46 +23,42 @@ import com.example.draw.ui.common.preview.PreviewComponent
 @Composable
 fun BrushConfigBottomSheet(
     currentBrush: Brush,
-    onDissmissRequest: (Brush) -> Unit = {}
+    onDismissRequest: () -> Unit = {},
+    onBrushConfig: (Brush) -> Unit = {}
 ) {
 
-    var brushSize by remember { mutableStateOf(currentBrush.size) }
-    var brushOpacity by remember { mutableStateOf(currentBrush.opacity) }
-    var newBrush by remember { mutableStateOf<Brush>(currentBrush) }
 
 
     CustomBottomSheet(
-        onDismissRequest = {
-            onDissmissRequest(newBrush)
-        }
+        onDismissRequest = onDismissRequest
     ){
-        WavyLinePreviewWithBackground(newBrush)
+        WavyLinePreviewWithBackground(currentBrush)
         Column(
             modifier = Modifier.padding(vertical = 30.dp, horizontal = 30.dp)
         ) {
             SliderWithLabels(
                 label = "Size",
                 valueRange = 1f..100f,
-                initialValue = newBrush.size,
+                initialValue = currentBrush.size,
                 onValueChange = {
-                   newBrush = newBrush.updateSize(it)
+                    onBrushConfig(currentBrush.updateSize(it))
                 }
             )
             Spacer(modifier = Modifier.height(15.dp))
             SliderWithLabels(
                 label = "Opacity",
                 valueRange = 0f..100f,
-                initialValue = newBrush.opacity * 100f,
+                initialValue = currentBrush.opacity * 100f,
                 valueSuffix = "%",
                 onValueChange = {
-                    newBrush = newBrush.updateOpacity(it / 100f)
+                    onBrushConfig(currentBrush.updateOpacity(it / 100f))
                 }
             )
             Spacer(modifier = Modifier.height(25.dp))
             BrushSelection(
-                currentBrush = newBrush,
+                currentBrush = currentBrush,
                 onBrushSelected = {
-                    newBrush = it
+                    onBrushConfig(it)
                 }
             )
 

@@ -28,7 +28,6 @@ fun BrushSelection(
     currentBrush: Brush,
     onBrushSelected: (Brush) -> Unit = {}
 ) {
-    var selectedBrush by remember { mutableStateOf(currentBrush) }
     val brushList = listOf<Brush>(
         SolidBrush(),
         EraserBrush()
@@ -39,9 +38,8 @@ fun BrushSelection(
         items(brushList) { brush ->
             ImageButton(
                 brush.imageResource,
-                isSelected = selectedBrush == brush,
+                isSelected = currentBrush::class == brush::class,
                 onClick = {
-                    selectedBrush = brush
                     onBrushSelected(brush)
                 }
             )

@@ -83,7 +83,7 @@ class DrawingScreen : Screen {
                         )
                         BrushConfigButton(
                             currentBrush = state.currentBrush,
-                            onConfigFinished = { newBrush ->
+                            onConfig = { newBrush ->
                                 viewModel.onEvent(DrawingEvent.ChangeBrush(newBrush))
                             }
                         )
