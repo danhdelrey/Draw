@@ -17,9 +17,10 @@ import draw.composeapp.generated.resources.solid_brush
 @Composable
 fun BrushConfigButton(
     currentBrush: Brush,
-    onConfig: (Brush) -> Unit = {}
+    onBrushConfigFinished: (Brush) -> Unit = {}
 ){
     var showBrushConfigBottomSheet by remember { mutableStateOf(false) }
+
 
     ImageButton(
         imageResource = Res.drawable.solid_brush,
@@ -31,13 +32,12 @@ fun BrushConfigButton(
 
     if(showBrushConfigBottomSheet){
         BrushConfigBottomSheet(
-            currentBrush = currentBrush,
-            onDismissRequest = {
+            initialBrush = currentBrush,
+            onBrushConfigFinished = {
                 showBrushConfigBottomSheet = false
+                onBrushConfigFinished(it)
             },
-            onBrushConfig = { newBrush ->
-                onConfig(newBrush)
-            }
+
         )
     }
 }

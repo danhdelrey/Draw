@@ -22,43 +22,50 @@ import com.example.draw.ui.common.preview.PreviewComponent
 
 @Composable
 fun BrushConfigBottomSheet(
-    currentBrush: Brush,
-    onDismissRequest: () -> Unit = {},
-    onBrushConfig: (Brush) -> Unit = {}
+    initialBrush: Brush,
+    onBrushConfigFinished: (Brush) -> Unit = {},
 ) {
+
+    var brushSize by remember { mutableStateOf(initialBrush.size) }
+    var brushOpacity by remember { mutableStateOf(initialBrush.opacity) }
+    var newBrush by remember { mutableStateOf(initialBrush) }
 
 
 
     CustomBottomSheet(
-        onDismissRequest = onDismissRequest
+        onDismissRequest = {
+            onBrushConfigFinished(newBrush)
+        }
     ){
-        WavyLinePreviewWithBackground(currentBrush)
+        WavyLinePreviewWithBackground(newBrush)
         Column(
             modifier = Modifier.padding(vertical = 30.dp, horizontal = 30.dp)
         ) {
             SliderWithLabels(
                 label = "Size",
                 valueRange = 1f..100f,
-                initialValue = currentBrush.size,
+                initialValue = brushSize,
                 onValueChange = {
-                    onBrushConfig(currentBrush.updateSize(it))
+                    brushSize = it
+                    newBrush = newBrush.updateSize(it)
                 }
             )
             Spacer(modifier = Modifier.height(15.dp))
             SliderWithLabels(
                 label = "Opacity",
                 valueRange = 0f..100f,
-                initialValue = currentBrush.opacity * 100f,
+                initialValue = brushOpacity * 100f,
                 valueSuffix = "%",
                 onValueChange = {
-                    onBrushConfig(currentBrush.updateOpacity(it / 100f))
+                    brushOpacity = it / 100f
+                    newBrush = newBrush.updateOpacity(it / 100f)
                 }
             )
             Spacer(modifier = Modifier.height(25.dp))
             BrushSelection(
-                currentBrush = currentBrush,
+                initialBrush = newBrush,
                 onBrushSelected = {
-                    onBrushConfig(it)
+                    newBrush = it.updateSize(brushSize).updateOpacity(brushOpacity)
                 }
             )
 
@@ -70,6 +77,6 @@ fun BrushConfigBottomSheet(
 @Composable
 fun BrushConfigBottomSheetPreview() {
     PreviewComponent {
-        BrushConfigBottomSheet(currentBrush = SolidBrush())
+        BrushConfigBottomSheet(initialBrush = SolidBrush())
     }
 }
