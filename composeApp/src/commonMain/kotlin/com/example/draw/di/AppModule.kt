@@ -5,7 +5,7 @@ import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
-expect val platformModule: Module
+
 
 // Thêm tham số appDeclaration có giá trị mặc định là rỗng
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) {
@@ -20,6 +20,8 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}) {
         )
     }
 }
+
+expect val platformModule: Module
 
 val sharedModule = module {
     factory { DrawingScreenViewModel(get()) }
