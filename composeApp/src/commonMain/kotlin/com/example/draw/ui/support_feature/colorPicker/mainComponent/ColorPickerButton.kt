@@ -25,8 +25,8 @@ import com.example.draw.ui.support_feature.colorPicker.mockData.MockColorPalette
 
 @Composable
 fun ColorPickerButton(
-    currentBrush: Brush,
-    onColorSelected: (Color) -> Unit = {}
+    initialBrush: Brush,
+    onBrushConfigFinished: (Brush) -> Unit = {},
 ) {
     var showColorPickerBottomSheet by remember { mutableStateOf(false) }
 
@@ -41,7 +41,7 @@ fun ColorPickerButton(
                 color = Color.Black,
                 shape = CircleShape
             )
-            .background(Color(currentBrush.colorArgb))
+            .background(Color(initialBrush.colorArgb))
             .clickable{
                 showColorPickerBottomSheet = true
             }
@@ -49,12 +49,10 @@ fun ColorPickerButton(
 
     if(showColorPickerBottomSheet) {
         ColorPickerBottomSheet(
-            currentBrush = currentBrush,
-            onDismissRequest = {
+            initialBrush = initialBrush,
+            onBrushConfigFinished = {
                 showColorPickerBottomSheet = false
-            },
-            onColorSelected = { color ->
-                onColorSelected(color)
+                onBrushConfigFinished(it)
             },
         )
     }
@@ -65,7 +63,7 @@ fun ColorPickerButton(
 fun ColorPickerButtonPreview() {
     PreviewComponent {
         ColorPickerButton(
-            currentBrush = SolidBrush()
+            initialBrush = SolidBrush()
         )
     }
 }

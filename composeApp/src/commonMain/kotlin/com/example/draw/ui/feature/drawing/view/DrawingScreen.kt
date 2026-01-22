@@ -75,10 +75,9 @@ class DrawingScreen : Screen {
                 ToolPanel(
                     leftContent = {
                         ColorPickerButton(
-                            currentBrush = state.currentBrush,
-                            onColorSelected = { newColor ->
-                                val updatedBrush = state.currentBrush.updateColor(newColor.toArgb().toLong())
-                                viewModel.onEvent(DrawingEvent.ChangeBrush(updatedBrush))
+                            initialBrush = state.currentBrush,
+                            onBrushConfigFinished = { newBrush ->
+                                viewModel.onEvent(DrawingEvent.ChangeBrush(newBrush))
                             }
                         )
                         BrushConfigButton(

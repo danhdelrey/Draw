@@ -62,8 +62,7 @@ fun ToolPanelPreview(){
         ToolPanel(
             leftContent = {
                 ColorPickerButton(
-                    currentBrush = SolidBrush(),
-                    onColorSelected = {}
+                    initialBrush = SolidBrush(),
                 )
                 ImageButton(
                     imageResource = Res.drawable.solid_brush,

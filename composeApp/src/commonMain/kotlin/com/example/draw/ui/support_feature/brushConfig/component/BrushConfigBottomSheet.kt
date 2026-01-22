@@ -65,7 +65,7 @@ fun BrushConfigBottomSheet(
             BrushSelection(
                 initialBrush = newBrush,
                 onBrushSelected = {
-                    newBrush = it.updateSize(brushSize).updateOpacity(brushOpacity)
+                    newBrush = it.updateSize(brushSize).updateOpacity(brushOpacity).updateColor(initialBrush.colorArgb)
                 }
             )
 

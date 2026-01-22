@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.draw.data.model.brush.Brush
@@ -20,13 +21,16 @@ import com.example.draw.ui.support_feature.colorPicker.mockData.MockColorPalette
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ColorPickerBottomSheet(
-    currentBrush: Brush,
-    onDismissRequest: () -> Unit,
-    onColorSelected: (Color) -> Unit,
+    initialBrush: Brush,
+    onBrushConfigFinished: (Brush) -> Unit = {},
 ) {
 
+    var currentBrush by remember { mutableStateOf(initialBrush) }
+
     CustomBottomSheet(
-        onDismissRequest = onDismissRequest
+        onDismissRequest = {
+            onBrushConfigFinished(currentBrush)
+        }
     ){
         // 1. Phần Header với nét vẽ (Wavy Line)
         WavyLinePreviewWithBackground(currentBrush)
@@ -36,7 +40,7 @@ fun ColorPickerBottomSheet(
             colors = MockColorPalette.toList(),
             selectedColor = Color(currentBrush.colorArgb),
             onColorClick = {
-                onColorSelected(it)
+                currentBrush = currentBrush.updateColor(it.toArgb().toLong())
             }
         )
     }
@@ -48,9 +52,8 @@ fun ColorPickerBottomSheet(
 fun ColorPickerBottomSheetPreview() {
     PreviewComponent {
         ColorPickerBottomSheet(
-            currentBrush = SolidBrush(),
-            onDismissRequest = {},
-            onColorSelected = {},
+            initialBrush = SolidBrush(),
+
         )
     }
 }
