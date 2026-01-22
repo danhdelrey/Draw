@@ -13,10 +13,12 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.draw.data.model.brush.Brush
+import com.example.draw.data.model.brush.SolidBrush
 import com.example.draw.ui.common.preview.PreviewComponent
 
 @Composable
-fun WavyLinePreview(color: Color, strokeWidth: Dp, opacity: Float) {
+fun WavyLinePreview(brush: Brush = SolidBrush()) {
     Canvas(modifier = Modifier
         .fillMaxWidth(0.8f) // Chiều rộng nét vẽ chiếm 80% màn hình
         .height(50.dp)
@@ -41,13 +43,13 @@ fun WavyLinePreview(color: Color, strokeWidth: Dp, opacity: Float) {
 
         drawPath(
             path = path,
-            color = color,
+            color = Color(brush.colorArgb),
             style = Stroke(
-                width = strokeWidth.toPx(), // Độ dày nét vẽ
+                width = brush.size.dp.toPx(), // Độ dày nét vẽ
                 cap = StrokeCap.Round, // Đầu bút tròn
                 join = StrokeJoin.Round
             ),
-            alpha = opacity
+            alpha = brush.opacity
         )
     }
 }
@@ -56,6 +58,6 @@ fun WavyLinePreview(color: Color, strokeWidth: Dp, opacity: Float) {
 @Composable
 fun WavyLineComponentPreview(){
     PreviewComponent {
-        WavyLinePreview(color = Color(0xFF0000CC), strokeWidth = 30.dp, opacity = 1f)
+        WavyLinePreview()
     }
 }

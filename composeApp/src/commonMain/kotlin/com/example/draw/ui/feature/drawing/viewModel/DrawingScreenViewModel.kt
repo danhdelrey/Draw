@@ -87,6 +87,13 @@ class DrawingScreenViewModel : ScreenModel {
                 )
             }
 
+            is DrawingEvent.ChangeBrush -> {
+                // Thay đổi cài đặt bút vẽ hiện tại
+                _state.value = _state.value.copy(
+                    currentBrush = event.brush
+                )
+            }
+
 
         }
     }

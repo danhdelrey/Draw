@@ -30,7 +30,7 @@ fun ColorPickerBottomSheet(
         onDismissRequest = onDismissRequest
     ){
         // 1. Phần Header với nét vẽ (Wavy Line)
-        WavyLinePreviewWithBackground(selectedColor = selectedColor, strokeWidth = brush.size.dp, opacity = brush.opacity)
+        WavyLinePreviewWithBackground()
 
         // 2. Phần lưới chọn màu
         ColorGrid(

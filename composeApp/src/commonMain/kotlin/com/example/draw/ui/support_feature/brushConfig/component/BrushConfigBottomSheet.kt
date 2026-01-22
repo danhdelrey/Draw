@@ -22,7 +22,7 @@ import com.example.draw.ui.common.preview.PreviewComponent
 
 @Composable
 fun BrushConfigBottomSheet(
-    onDissmissRequest: () -> Unit = {}
+    onDissmissRequest: (Brush) -> Unit = {}
 ) {
     var selectedSize by remember { mutableStateOf(50f) }
     var selectedOpacity by remember { mutableStateOf(1f) }
@@ -30,9 +30,11 @@ fun BrushConfigBottomSheet(
 
 
     CustomBottomSheet(
-        onDismissRequest = onDissmissRequest
+        onDismissRequest = {
+            //onDissmissRequest()
+        }
     ){
-        WavyLinePreviewWithBackground(selectedColor = Color.Blue, strokeWidth = selectedSize.dp, opacity = selectedOpacity)
+        WavyLinePreviewWithBackground(selectedBrush)
         Column(
             modifier = Modifier.padding(vertical = 30.dp, horizontal = 30.dp)
         ) {

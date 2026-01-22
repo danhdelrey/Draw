@@ -6,6 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.draw.data.model.brush.Brush
+import com.example.draw.data.model.brush.SolidBrush
 import com.example.draw.ui.common.component.ImageButton
 import com.example.draw.ui.common.preview.PreviewComponent
 import com.example.draw.ui.support_feature.brushConfig.component.BrushConfigBottomSheet
@@ -13,8 +15,12 @@ import draw.composeapp.generated.resources.Res
 import draw.composeapp.generated.resources.solid_brush
 
 @Composable
-fun BrushConfigButton(){
+fun BrushConfigButton(
+    brush: Brush = SolidBrush(),
+    onBrushConfig: (Brush) -> Unit = {}
+){
     var showBrushConfigBottomSheet by remember { mutableStateOf(false) }
+    var configBrush by remember { mutableStateOf<Brush>(brush) }
 
     ImageButton(
         imageResource = Res.drawable.solid_brush,
