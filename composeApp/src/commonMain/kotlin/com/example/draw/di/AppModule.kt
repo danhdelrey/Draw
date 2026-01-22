@@ -7,7 +7,6 @@ import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 
 
-// Thêm tham số appDeclaration có giá trị mặc định là rỗng
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) {
     startKoin {
         // 1. Chạy cấu hình riêng của từng platform (VD: androidContext)
