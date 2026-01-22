@@ -9,4 +9,8 @@ sealed class Brush {
     abstract val colorArgb: Long    // 0xAARRGGBB
     abstract val imageResource: DrawableResource
 
+    abstract fun updateSize(size: Float): Brush
+    abstract fun updateOpacity(opacity: Float): Brush
+    abstract fun updateColor(colorArgb: Long): Brush
+
 }

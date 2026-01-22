@@ -35,6 +35,7 @@ import com.example.draw.ui.feature.drawing.viewModel.DrawingEvent
 import com.example.draw.ui.feature.drawing.viewModel.DrawingScreenViewModel
 import com.example.draw.ui.support_feature.brushConfig.mainComponent.BrushConfigButton
 import com.example.draw.ui.support_feature.colorPicker.mainComponent.ColorPickerButton
+import com.example.draw.ui.support_feature.colorPicker.mockData.MockColorPalette
 import com.example.draw.ui.support_feature.layerConfig.component.LayerListPanel
 import com.example.draw.ui.support_feature.layerConfig.mainComponent.LayerListPanelButton
 import com.example.draw.ui.support_feature.layerConfig.model.LayerConfig
@@ -72,8 +73,15 @@ class DrawingScreen : Screen {
             bottomBar = {
                 ToolPanel(
                     leftContent = {
-                        ColorPickerButton()
-                        BrushConfigButton()
+                        ColorPickerButton(
+                            currentColor = MockColorPalette.DARKSLATEGRAY.color
+                        )
+                        BrushConfigButton(
+                            currentBrush = state.currentBrush,
+                            onConfigFinished = { newBrush ->
+                                viewModel.onEvent(DrawingEvent.ChangeBrush(newBrush))
+                            }
+                        )
                     },
                     centerContent = {
                         // Add center content here for preview

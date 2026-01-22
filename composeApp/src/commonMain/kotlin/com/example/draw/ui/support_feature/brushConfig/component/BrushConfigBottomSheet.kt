@@ -22,44 +22,47 @@ import com.example.draw.ui.common.preview.PreviewComponent
 
 @Composable
 fun BrushConfigBottomSheet(
+    currentBrush: Brush,
     onDissmissRequest: (Brush) -> Unit = {}
 ) {
-    var selectedSize by remember { mutableStateOf(50f) }
-    var selectedOpacity by remember { mutableStateOf(1f) }
-    var selectedBrush by remember { mutableStateOf<Brush>(SolidBrush()) }
+
+    var brushSize by remember { mutableStateOf(currentBrush.size) }
+    var brushOpacity by remember { mutableStateOf(currentBrush.opacity) }
+    var newBrush by remember { mutableStateOf<Brush>(currentBrush) }
 
 
     CustomBottomSheet(
         onDismissRequest = {
-            //onDissmissRequest()
+            onDissmissRequest(newBrush)
         }
     ){
-        WavyLinePreviewWithBackground(selectedBrush)
+        WavyLinePreviewWithBackground(newBrush)
         Column(
             modifier = Modifier.padding(vertical = 30.dp, horizontal = 30.dp)
         ) {
             SliderWithLabels(
                 label = "Size",
                 valueRange = 1f..100f,
-                initialValue = 50f,
+                initialValue = newBrush.size,
                 onValueChange = {
-                    selectedSize = it
+                   newBrush = newBrush.updateSize(it)
                 }
             )
             Spacer(modifier = Modifier.height(15.dp))
             SliderWithLabels(
                 label = "Opacity",
                 valueRange = 0f..100f,
-                initialValue = 100f,
+                initialValue = newBrush.opacity * 100f,
                 valueSuffix = "%",
                 onValueChange = {
-                    selectedOpacity = it / 100f
+                    newBrush = newBrush.updateOpacity(it / 100f)
                 }
             )
             Spacer(modifier = Modifier.height(25.dp))
             BrushSelection(
+                currentBrush = newBrush,
                 onBrushSelected = {
-                    selectedBrush = it
+                    newBrush = it
                 }
             )
 
@@ -71,6 +74,6 @@ fun BrushConfigBottomSheet(
 @Composable
 fun BrushConfigBottomSheetPreview() {
     PreviewComponent {
-        BrushConfigBottomSheet()
+        BrushConfigBottomSheet(currentBrush = SolidBrush())
     }
 }

@@ -25,9 +25,10 @@ import draw.composeapp.generated.resources.solid_brush
 
 @Composable
 fun BrushSelection(
+    currentBrush: Brush,
     onBrushSelected: (Brush) -> Unit = {}
 ) {
-    var selectedBrush by remember { mutableStateOf<Brush>(SolidBrush()) }
+    var selectedBrush by remember { mutableStateOf(currentBrush) }
     val brushList = listOf<Brush>(
         SolidBrush(),
         EraserBrush()
@@ -52,6 +53,6 @@ fun BrushSelection(
 @Composable
 fun BrushSelectionPreview() {
     PreviewComponent {
-        BrushSelection()
+        BrushSelection(currentBrush = EraserBrush())
     }
 }

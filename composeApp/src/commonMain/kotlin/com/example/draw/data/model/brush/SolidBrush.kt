@@ -9,4 +9,14 @@ data class SolidBrush(
     override val opacity: Float = 1f,
     override val colorArgb: Long = 0xFF000000,
     override val imageResource: DrawableResource = Res.drawable.solid_brush
-) : Brush()
+) : Brush() {
+    override fun updateSize(size: Float): Brush =
+        copy(size = size)
+
+    override fun updateOpacity(opacity: Float): Brush =
+        copy(opacity = opacity)
+
+    override fun updateColor(colorArgb: Long): Brush =
+        copy(colorArgb = colorArgb)
+
+}

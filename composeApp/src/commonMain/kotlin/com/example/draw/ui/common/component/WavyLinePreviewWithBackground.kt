@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.draw.data.model.brush.Brush
 import com.example.draw.data.model.brush.SolidBrush
-import com.example.draw.ui.support_feature.colorPicker.mockData.colorPalette
 import com.example.draw.ui.common.preview.PreviewComponent
 
 @Composable

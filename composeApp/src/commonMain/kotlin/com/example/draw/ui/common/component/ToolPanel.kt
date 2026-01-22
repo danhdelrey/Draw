@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.draw.ui.common.preview.PreviewComponent
 import com.example.draw.ui.support_feature.colorPicker.mainComponent.ColorPickerButton
+import com.example.draw.ui.support_feature.colorPicker.mockData.MockColorPalette
 import com.example.draw.ui.support_feature.layerConfig.mainComponent.LayerListPanelButton
 import draw.composeapp.generated.resources.Res
 import draw.composeapp.generated.resources.solid_brush
@@ -59,7 +60,9 @@ fun ToolPanelPreview(){
     PreviewComponent {
         ToolPanel(
             leftContent = {
-                ColorPickerButton()
+                ColorPickerButton(
+                    currentColor = MockColorPalette.DARKSLATEGRAY.color
+                )
                 ImageButton(
                     imageResource = Res.drawable.solid_brush,
                     isSelected = true,

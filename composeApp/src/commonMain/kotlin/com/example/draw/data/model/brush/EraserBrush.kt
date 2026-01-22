@@ -12,4 +12,11 @@ data class EraserBrush(
 ) : Brush() {
 
     override val colorArgb: Long = 0x00000000
+    override fun updateSize(size: Float): Brush =
+        copy(size = size)
+
+    override fun updateOpacity(opacity: Float): Brush =
+        copy(opacity = opacity)
+
+    override fun updateColor(colorArgb: Long): Brush = this
 }

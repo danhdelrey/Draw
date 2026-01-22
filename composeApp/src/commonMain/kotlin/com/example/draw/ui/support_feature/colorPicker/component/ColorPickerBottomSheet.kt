@@ -13,18 +13,18 @@ import com.example.draw.data.model.brush.Brush
 import com.example.draw.data.model.brush.SolidBrush
 import com.example.draw.ui.common.component.CustomBottomSheet
 import com.example.draw.ui.common.component.WavyLinePreviewWithBackground
-import com.example.draw.ui.support_feature.colorPicker.mockData.colorPalette
 import com.example.draw.ui.common.preview.PreviewComponent
+import com.example.draw.ui.support_feature.colorPicker.mockData.MockColorPalette
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ColorPickerBottomSheet(
+    currentColor: Color,
     onDismissRequest: () -> Unit,
     onColorSelected: (Color) -> Unit,
-    brush: Brush,
 ) {
-    var selectedColor by remember { mutableStateOf(Color(brush.colorArgb)) }
+    var selectedColor by remember { mutableStateOf(currentColor) }
 
     CustomBottomSheet(
         onDismissRequest = onDismissRequest
@@ -34,7 +34,7 @@ fun ColorPickerBottomSheet(
 
         // 2. Phần lưới chọn màu
         ColorGrid(
-            colors = colorPalette,
+            colors = MockColorPalette.toList(),
             selectedColor = selectedColor,
             onColorClick = {
                 selectedColor = it
@@ -44,14 +44,15 @@ fun ColorPickerBottomSheet(
     }
 }
 
+
 @Preview
 @Composable
 fun ColorPickerBottomSheetPreview() {
     PreviewComponent {
         ColorPickerBottomSheet(
+            currentColor = MockColorPalette.MIDNIGHTBLUE.color,
             onDismissRequest = {},
             onColorSelected = {},
-            brush = SolidBrush()
         )
     }
 }

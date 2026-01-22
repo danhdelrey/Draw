@@ -11,8 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.draw.ui.support_feature.colorPicker.mockData.colorPalette
 import com.example.draw.ui.common.preview.PreviewComponent
+import com.example.draw.ui.support_feature.colorPicker.mockData.MockColorPalette
 
 @Composable
 fun ColorGrid(
@@ -43,8 +43,8 @@ fun ColorGrid(
 fun ColorGridPreview() {
     PreviewComponent {
         ColorGrid(
-            colors = colorPalette,
-            selectedColor = colorPalette[2],
+            colors = MockColorPalette.toList(),
+            selectedColor = MockColorPalette.MIDNIGHTBLUE.color,
             onColorClick = {}
         )
     }

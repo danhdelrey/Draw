@@ -11,4 +11,15 @@ data class BucketBrush(
 
     override val size: Float = 0f
     override val opacity: Float = 1f
+    override fun updateSize(size: Float): Brush {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateOpacity(opacity: Float): Brush {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateColor(colorArgb: Long): Brush {
+        TODO("Not yet implemented")
+    }
 }

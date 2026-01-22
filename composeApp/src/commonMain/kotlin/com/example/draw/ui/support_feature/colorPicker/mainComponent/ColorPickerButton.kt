@@ -20,13 +20,14 @@ import androidx.compose.ui.unit.dp
 import com.example.draw.data.model.brush.SolidBrush
 import com.example.draw.ui.common.preview.PreviewComponent
 import com.example.draw.ui.support_feature.colorPicker.component.ColorPickerBottomSheet
-import com.example.draw.ui.support_feature.colorPicker.mockData.colorPalette
+import com.example.draw.ui.support_feature.colorPicker.mockData.MockColorPalette
 
 @Composable
 fun ColorPickerButton(
+    currentColor: Color,
     onColorSelected: (Color) -> Unit = {}
 ) {
-    var selectedColor by remember { mutableStateOf(colorPalette[2]) }
+    var selectedColor by remember { mutableStateOf(currentColor) }
     var showColorPickerBottomSheet by remember { mutableStateOf(false) }
 
     Box(
@@ -48,6 +49,7 @@ fun ColorPickerButton(
 
     if(showColorPickerBottomSheet) {
         ColorPickerBottomSheet(
+            currentColor = currentColor,
             onDismissRequest = {
                 showColorPickerBottomSheet = false
             },
@@ -55,7 +57,6 @@ fun ColorPickerButton(
                 onColorSelected(color)
                 selectedColor = color
             },
-            brush = SolidBrush()
         )
     }
 }
@@ -64,6 +65,8 @@ fun ColorPickerButton(
 @Composable
 fun ColorPickerButtonPreview() {
     PreviewComponent {
-        ColorPickerButton()
+        ColorPickerButton(
+            currentColor = MockColorPalette.MIDNIGHTBLUE.color
+        )
     }
 }
