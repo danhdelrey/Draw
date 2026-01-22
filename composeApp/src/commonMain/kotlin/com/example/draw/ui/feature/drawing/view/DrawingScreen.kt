@@ -17,6 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,6 +28,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import com.example.draw.data.model.base.DrawingPath
 import com.example.draw.data.model.brush.SolidBrush
+import com.example.draw.data.model.layer.VectorLayer
 import com.example.draw.ui.common.component.ImageButton
 import com.example.draw.ui.common.component.ToolPanel
 import com.example.draw.ui.common.preview.PreviewComponent
@@ -113,33 +115,54 @@ class DrawingScreen : Screen {
                         .aspectRatio(1f)
                         .background(Color.White)
                 ){
-                    DrawingCanvas(
-                        paths = state.completedDrawingPaths,
-                        currentPath = state.currentDrawingPath,
-                        isEraserMode = false,
-                        currentTouchPosition = state.currentTouchPosition,
-                        brushSize = state.currentBrush.size,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .drawingInput(
-                                onDragStart = { offset ->
-                                    viewModel.onEvent(DrawingEvent.StartDrawing(
-                                        currentTouchPosition = offset,
-                                    ))
-                                },
-                                onDrag = { offset ->
-                                    // DI CHUYỂN: Thêm điểm vào nét đang vẽ
-                                    viewModel.onEvent(DrawingEvent.UpdateDrawing(
-                                        currentTouchPosition = offset,
-                                    ))
-                                },
-                                onDragEnd = {
-                                    // KẾT THÚC: Lưu nét vẽ vào danh sách chính
-                                    viewModel.onEvent(DrawingEvent.EndDrawing)
-                                }
+                    // --- VẼ CÁC LỚP ---
+                    // Duyệt qua danh sách layers và vẽ từng cái một
+                    state.currentLayers.forEach { layer ->
+                        if(layer.isVisible && layer is VectorLayer) {
+                            // Kiểm tra xem đây có phải lớp đang active không
+                            // Nếu đúng, ta truyền thêm currentPath vào để nó vẽ nét đang kéo
+                            val pathBeingDrawn = if (layer.id == state.currentActiveLayer.id) state.currentDrawingPath else null
+
+                            // Hiển thị cục tẩy indicator chỉ khi ở lớp active
+                            val touchPos = if (layer.id == state.currentActiveLayer.id) state.currentTouchPosition else null
+
+                            DrawingCanvas(
+                                paths = layer.paths,
+                                currentPath = pathBeingDrawn,
+                                isEraserMode = false,
+                                currentTouchPosition = touchPos,
+                                brushSize = state.currentBrush.size,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    // Áp dụng độ mờ của cả layer (nếu cần)
+                                    .graphicsLayer { alpha = layer.opacity }
+                                    .drawingInput(
+                                        onDragStart = { offset ->
+                                            viewModel.onEvent(
+                                                DrawingEvent.StartDrawing(
+                                                    currentTouchPosition = offset,
+                                                )
+                                            )
+                                        },
+                                        onDrag = { offset ->
+                                            // DI CHUYỂN: Thêm điểm vào nét đang vẽ
+                                            viewModel.onEvent(
+                                                DrawingEvent.UpdateDrawing(
+                                                    currentTouchPosition = offset,
+                                                )
+                                            )
+                                        },
+                                        onDragEnd = {
+                                            // KẾT THÚC: Lưu nét vẽ vào danh sách chính
+                                            viewModel.onEvent(DrawingEvent.EndDrawing)
+                                        }
+                                    )
                             )
-                    )
+                        }
+                    }
                 }
+
+
             }
         }
     }

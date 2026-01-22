@@ -5,8 +5,10 @@ import cafe.adriel.voyager.core.model.ScreenModel
 import com.example.draw.data.model.base.DrawingPath
 import com.example.draw.data.model.brush.Brush
 import com.example.draw.data.model.brush.SolidBrush
+import com.example.draw.data.model.layer.VectorLayer
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlin.collections.plus
 
 class DrawingScreenViewModel : ScreenModel {
     private val _state = MutableStateFlow(DrawingState())
@@ -71,11 +73,24 @@ class DrawingScreenViewModel : ScreenModel {
                 // Lấy path đang vẽ
                 // Nếu không có (edge case) → bỏ qua
                 val currentPath = _state.value.currentDrawingPath ?: return
+                val layers = _state.value.currentLayers.map { layer ->
+                    if (
+                        layer.id == _state.value.currentActiveLayer.id &&
+                        layer is VectorLayer
+                    ) {
+                        layer.copy(
+                            paths = layer.paths + currentPath
+                        )
+                    } else {
+                        layer
+                    }
+                }
+
 
                 _state.value = _state.value.copy(
                     // Thêm path vừa vẽ xong vào danh sách các nét đã hoàn thành
                     // `+ currentPath` tạo List mới → trigger recomposition
-                    completedDrawingPaths = _state.value.completedDrawingPaths + currentPath,
+                    currentLayers = layers,
 
                     // Xóa path tạm thời đang vẽ
                     // Canvas sẽ không còn vẽ path này nữa
@@ -85,6 +100,10 @@ class DrawingScreenViewModel : ScreenModel {
                     // Thường dùng để ẩn cursor / touch indicator
                     currentTouchPosition = null
                 )
+
+                _state.value.currentLayers
+
+
             }
 
             is DrawingEvent.ChangeBrush -> {
