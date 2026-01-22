@@ -39,6 +39,7 @@ fun DrawingCanvasContent(
                 .fillMaxWidth()
                 .aspectRatio(1f)
                 .background(Color.White)
+                .graphicsLayer(alpha = 0.99f)
                 .drawWithContent {
                     // 1. Ra lệnh cho graphicsLayer ghi lại nội dung của Box này
                     rootGraphicsLayer.record {

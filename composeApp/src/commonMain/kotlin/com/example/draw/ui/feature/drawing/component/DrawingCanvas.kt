@@ -32,18 +32,8 @@ fun DrawingCanvas(
     brushSize: Float,
     modifier: Modifier = Modifier
 ) {
-    val graphicsLayer = rememberGraphicsLayer()
-    // Canvas thực sự
     Canvas(
         modifier = modifier
-            // Logic để cục tẩy hoạt động đúng (Layer rendering)
-            .graphicsLayer(alpha = 0.99f)
-            .drawWithContent {
-                graphicsLayer.record {
-                    this@drawWithContent.drawContent()
-                }
-                drawLayer(graphicsLayer)
-            }
     ) {
         // 1. Vẽ các nét cũ
         paths.forEach { path ->
