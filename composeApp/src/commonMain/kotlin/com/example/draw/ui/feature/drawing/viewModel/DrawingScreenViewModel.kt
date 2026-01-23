@@ -24,7 +24,6 @@ class DrawingScreenViewModel(
     val state = _state.asStateFlow()
 
     // --- STACK UNDO / REDO ---
-    // Sử dụng ArrayDeque để quản lý ngăn xếp hiệu quả
     private val undoStack = ArrayDeque<DrawingCommand>()
     private val redoStack = ArrayDeque<DrawingCommand>()
 
