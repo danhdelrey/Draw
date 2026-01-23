@@ -48,34 +48,19 @@ fun WavyLinePreview(brush: Brush = SolidBrush.default()) {
  */
 private fun generateWavyPathPoints(width: Float, height: Float): List<Offset> {
     val points = mutableListOf<Offset>()
-    val segments = 50 // Number of points for smooth curve
+    val segments = 100 // More points for smoother curve
 
     for (i in 0..segments) {
         val t = i.toFloat() / segments
         val x = width * t
 
-        // Create a wavy pattern using sine-like curve
-        val y = when {
-            t < 0.25f -> {
-                // First quarter: curve up
-                height * (0.7f - 0.6f * (t / 0.25f))
-            }
-            t < 0.5f -> {
-                // Second quarter: curve to middle
-                val localT = (t - 0.25f) / 0.25f
-                height * (0.1f + 0.5f * localT)
-            }
-            t < 0.75f -> {
-                // Third quarter: curve down
-                val localT = (t - 0.5f) / 0.25f
-                height * (0.6f + 0.3f * localT)
-            }
-            else -> {
-                // Fourth quarter: curve up sharply
-                val localT = (t - 0.75f) / 0.25f
-                height * (0.9f - 0.7f * localT)
-            }
-        }
+        // Create smooth wavy pattern using sine wave
+        // Two complete waves across the width
+        val wave = kotlin.math.sin(t * 2 * kotlin.math.PI.toFloat() * 2)
+
+        // Map sine wave (-1 to 1) to vertical space with padding
+        // Center at 0.5, amplitude of 0.3 (30% of height on each side)
+        val y = height * (0.5f + wave * 0.3f)
 
         points.add(Offset(x, y))
     }
