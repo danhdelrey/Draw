@@ -25,14 +25,7 @@ kotlin {
             isStatic = true
         }
     }
-    
 
-    
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-        browser()
-        binaries.executable()
-    }
     
     sourceSets {
         androidMain.dependencies {
