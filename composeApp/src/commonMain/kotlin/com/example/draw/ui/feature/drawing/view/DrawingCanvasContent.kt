@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.draw.data.model.brush.EraserBrush
 import com.example.draw.data.model.canvas.CanvasConfig
 import com.example.draw.data.model.layer.VectorLayer
 import com.example.draw.ui.feature.drawing.component.DrawingCanvas
@@ -80,7 +81,7 @@ fun DrawingCanvasContent(
                         DrawingCanvas(
                             paths = layer.paths,
                             currentPath = pathBeingDrawn,
-                            isEraserMode = false, // UI Logic
+                            isEraserMode = state.currentBrush is EraserBrush, // UI Logic
                             currentTouchPosition = touchPos,
                             brushSize = state.currentBrush.size,
                             renderScale = renderScale, // <--- QUAN TRỌNG: Truyền tỷ lệ vào để Canvas tự scale nét vẽ
