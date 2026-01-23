@@ -50,7 +50,7 @@ fun WavyLinePreview(brush: Brush = SolidBrush()) {
             path = path,
             color = pathColor,
             style = Stroke(
-                width = brush.size.dp.toPx(), // Độ dày nét vẽ
+                width = brush.size, // Độ dày nét vẽ
                 cap = StrokeCap.Round, // Đầu bút tròn
                 join = StrokeJoin.Round
             ),
