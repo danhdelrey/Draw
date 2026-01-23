@@ -1,21 +1,25 @@
 package com.example.draw.ui.feature.drawing.viewModel
 
-import androidx.compose.ui.geometry.Offset
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.draw.data.model.base.DrawingPath
-import com.example.draw.data.model.brush.Brush
-import com.example.draw.data.model.brush.SolidBrush
 import com.example.draw.data.model.layer.VectorLayer
+import com.example.draw.data.model.util.currentTimeMillis
+import com.example.draw.data.model.util.generateId
 import com.example.draw.data.repository.ImageRepository
 import com.example.draw.platform.util.toPngByteArray
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlin.collections.plus
-import kotlin.random.Random
-import kotlin.time.Clock
 
+/**
+ * ViewModel for the drawing screen.
+ *
+ * Design improvements:
+ * - Uses DrawingCanvas for centralized state
+ * - Leverages factory methods from models
+ * - Enhanced command pattern support
+ */
 class DrawingScreenViewModel(
     private val imageRepository: ImageRepository
 ) : ScreenModel {
@@ -23,149 +27,177 @@ class DrawingScreenViewModel(
     private val _state = MutableStateFlow(DrawingState())
     val state = _state.asStateFlow()
 
-    // --- STACK UNDO / REDO ---
+    // Undo/Redo stacks
     private val undoStack = ArrayDeque<DrawingCommand>()
     private val redoStack = ArrayDeque<DrawingCommand>()
 
     fun onEvent(event: DrawingEvent) {
         when (event) {
-            // --- NHÓM SỰ KIỆN VẼ (TOUCH) ---
-            is DrawingEvent.StartDrawing -> {
-                _state.value = _state.value.copy(
-                    currentDrawingPath = DrawingPath(
-                        points = listOf(event.currentTouchPosition),
-                        brush = _state.value.currentBrush
-                    ),
-                    currentTouchPosition = event.currentTouchPosition
-                )
-            }
+            // --- DRAWING EVENTS ---
+            is DrawingEvent.StartDrawing -> handleStartDrawing(event)
+            is DrawingEvent.UpdateDrawing -> handleUpdateDrawing(event)
+            is DrawingEvent.EndDrawing -> handleEndDrawing()
 
-            is DrawingEvent.UpdateDrawing -> {
-                val currentPath = _state.value.currentDrawingPath ?: return
-                _state.value = _state.value.copy(
-                    currentDrawingPath = currentPath.copy(
-                        points = currentPath.points + event.currentTouchPosition
-                    ),
-                    currentTouchPosition = event.currentTouchPosition
-                )
-            }
+            // --- UNDO/REDO ---
+            is DrawingEvent.Undo -> handleUndo()
+            is DrawingEvent.Redo -> handleRedo()
 
-            is DrawingEvent.EndDrawing -> {
-                val currentPath = _state.value.currentDrawingPath ?: return
-                val activeLayerId = _state.value.currentActiveLayer.id
+            // --- LAYER MANAGEMENT ---
+            is DrawingEvent.AddLayer -> handleAddLayer()
+            is DrawingEvent.DeleteLayer -> handleDeleteLayer(event)
+            is DrawingEvent.ToggleLayerVisibility -> handleToggleLayerVisibility(event)
+            is DrawingEvent.SelectLayer -> handleSelectLayer(event)
 
-                // 1. Tạo Command thêm nét vẽ
-                val command = AddPathCommand(
-                    layerId = activeLayerId,
-                    path = currentPath
-                )
+            // --- BRUSH CONFIGURATION ---
+            is DrawingEvent.ChangeBrush -> handleChangeBrush(event)
 
-                // 2. Thực thi Command (Lưu vào stack undo)
-                performCommand(command)
+            // --- SAVE ---
+            is DrawingEvent.SaveDrawing -> handleSaveDrawing(event)
+        }
+    }
 
-                // 3. Dọn dẹp trạng thái vẽ tạm thời
-                _state.value = _state.value.copy(
-                    currentDrawingPath = null,
-                    currentTouchPosition = null
-                )
-            }
+    // --- Event Handlers ---
 
-            // --- NHÓM UNDO / REDO ---
-            is DrawingEvent.Undo -> {
-                if (undoStack.isNotEmpty()) {
-                    val command = undoStack.removeLast() // Lấy lệnh mới nhất
-                    val newState = command.undo(_state.value) // Hoàn tác
-                    _state.value = newState
+    private fun handleStartDrawing(event: DrawingEvent.StartDrawing) {
+        _state.value = _state.value.copy(
+            currentDrawingPath = DrawingPath.create(
+                initialPoint = event.currentTouchPosition,
+                brush = _state.value.currentBrush
+            ),
+            currentTouchPosition = event.currentTouchPosition
+        )
+    }
 
-                    redoStack.addLast(command) // Đẩy sang redo stack
-                    updateUndoRedoAvailability() // Cập nhật trạng thái nút bấm
-                }
-            }
+    private fun handleUpdateDrawing(event: DrawingEvent.UpdateDrawing) {
+        val currentPath = _state.value.currentDrawingPath ?: return
+        _state.value = _state.value.copy(
+            currentDrawingPath = currentPath.addPoint(event.currentTouchPosition),
+            currentTouchPosition = event.currentTouchPosition
+        )
+    }
 
-            is DrawingEvent.Redo -> {
-                if (redoStack.isNotEmpty()) {
-                    val command = redoStack.removeLast() // Lấy lệnh đã undo
-                    val newState = command.execute(_state.value) // Thực hiện lại
-                    _state.value = newState
+    private fun handleEndDrawing() {
+        val currentPath = _state.value.currentDrawingPath ?: return
+        val activeLayerId = _state.value.canvas.activeLayerId
 
-                    undoStack.addLast(command) // Đẩy lại vào undo stack
-                    updateUndoRedoAvailability()
-                }
-            }
+        // Create and execute command
+        val command = AddPathCommand(
+            layerId = activeLayerId,
+            path = currentPath
+        )
+        performCommand(command)
 
-            // --- NHÓM LAYER ---
-            is DrawingEvent.AddLayer -> {
-                val newLayer = VectorLayer(id = Random.nextLong().toString())
-                val command = AddLayerCommand(newLayer)
-                performCommand(command)
-            }
+        // Clear ephemeral state
+        _state.value = _state.value.copy(
+            currentDrawingPath = null,
+            currentTouchPosition = null
+        )
+    }
 
-            is DrawingEvent.DeleteLayer -> {
-                // Không cho xóa layer mặc định nếu logic yêu cầu
-                if (event.layer.id == "default_layer") return
+    private fun handleUndo() {
+        if (undoStack.isNotEmpty()) {
+            val command = undoStack.removeLast()
+            val newState = command.undo(_state.value)
+            _state.value = newState
 
-                // Tìm vị trí layer để sau này Undo chèn lại đúng chỗ
-                val index = _state.value.currentLayers.indexOfFirst { it.id == event.layer.id }
-                if (index != -1 && event.layer is VectorLayer) {
-                    val command = DeleteLayerCommand(event.layer, index)
-                    performCommand(command)
-                }
-            }
+            redoStack.addLast(command)
+            updateUndoRedoAvailability()
+        }
+    }
 
-            is DrawingEvent.ToggleLayerVisibility -> {
-                val command = ToggleLayerVisibilityCommand(event.layer.id)
-                performCommand(command)
-            }
+    private fun handleRedo() {
+        if (redoStack.isNotEmpty()) {
+            val command = redoStack.removeLast()
+            val newState = command.execute(_state.value)
+            _state.value = newState
 
-            is DrawingEvent.SelectLayer -> {
-                // Select layer chỉ thay đổi view, không thay đổi data ảnh
-                // nên thường KHÔNG đưa vào Undo/Redo stack.
-                val layer = _state.value.currentLayers.firstOrNull { it.id == event.layer.id }
-                    ?: return
-                _state.value = _state.value.copy(currentActiveLayer = layer)
-            }
+            undoStack.addLast(command)
+            updateUndoRedoAvailability()
+        }
+    }
 
-            // --- NHÓM KHÁC ---
-            is DrawingEvent.ChangeBrush -> {
-                _state.value = _state.value.copy(currentBrush = event.brush)
-            }
+    private fun handleAddLayer() {
+        val layerCount = _state.value.layers.size
+        val newLayer = VectorLayer.create(
+            id = generateId(),
+            name = "Layer ${layerCount + 1}"
+        )
+        val command = AddLayerCommand(newLayer)
+        performCommand(command)
+    }
 
-            is DrawingEvent.SaveDrawing -> {
-                screenModelScope.launch {
-                    val name = "drawing_${Clock.System.now().toEpochMilliseconds()}"
-                    val bytes = event.imageBitmap.toPngByteArray()
-                    val result = imageRepository.saveImage(bytes, name)
-                    if (result) println("Lưu thành công") else println("Lưu thất bại")
-                }
+    private fun handleDeleteLayer(event: DrawingEvent.DeleteLayer) {
+        // Don't allow deleting the default layer
+        if (event.layer.id == "default_layer") return
+
+        val index = _state.value.layers.indexOfFirst { it.id == event.layer.id }
+        if (index != -1 && event.layer is VectorLayer) {
+            val command = DeleteLayerCommand(event.layer, index)
+            performCommand(command)
+        }
+    }
+
+    private fun handleToggleLayerVisibility(event: DrawingEvent.ToggleLayerVisibility) {
+        val command = ToggleLayerVisibilityCommand(event.layer.id)
+        performCommand(command)
+    }
+
+    private fun handleSelectLayer(event: DrawingEvent.SelectLayer) {
+        // Select layer doesn't change data, only view state
+        // No undo/redo needed
+        val updatedCanvas = _state.value.canvas.setActiveLayer(event.layer.id)
+        _state.value = _state.value.copy(canvas = updatedCanvas)
+    }
+
+    private fun handleChangeBrush(event: DrawingEvent.ChangeBrush) {
+        _state.value = _state.value.copy(currentBrush = event.brush)
+    }
+
+    private fun handleSaveDrawing(event: DrawingEvent.SaveDrawing) {
+        screenModelScope.launch {
+            val timestamp = currentTimeMillis()
+            val name = "drawing_$timestamp"
+            val bytes = event.imageBitmap.toPngByteArray()
+            val result = imageRepository.saveImage(bytes, name)
+
+            // TODO: Use effect channel for UI feedback instead of println
+            if (result) {
+                println("✓ Saved successfully: $name")
+            } else {
+                println("✗ Save failed: $name")
             }
         }
     }
 
+    // --- Command Execution ---
+
     /**
-     * Hàm trung tâm để thực thi một DrawingCommand.
-     * Logic:
-     * 1. Thực hiện lệnh (lấy state mới).
-     * 2. Cập nhật State Flow.
-     * 3. Thêm lệnh vào Undo Stack.
-     * 4. Xóa Redo Stack (vì lịch sử đã rẽ nhánh mới).
+     * Core command execution logic:
+     * 1. Execute the command
+     * 2. Update state
+     * 3. Add to undo stack
+     * 4. Clear redo stack (history branching)
      */
     private fun performCommand(command: DrawingCommand) {
         val newState = command.execute(_state.value)
         _state.value = newState
 
         undoStack.addLast(command)
-        redoStack.clear() // Quan trọng: Clear redo khi có hành động mới
+        redoStack.clear() // Important: clear redo when new action is performed
 
         updateUndoRedoAvailability()
     }
 
     /**
-     * Cập nhật trạng thái enable/disable cho nút Undo/Redo trên UI
+     * Update undo/redo button availability
      */
     private fun updateUndoRedoAvailability() {
-         _state.value = _state.value.copy(
-             canUndo = undoStack.isNotEmpty(),
-             canRedo = redoStack.isNotEmpty()
-         )
+        _state.value = _state.value.copy(
+            canUndo = undoStack.isNotEmpty(),
+            canRedo = redoStack.isNotEmpty()
+        )
     }
 }
+
+
+

@@ -24,12 +24,9 @@ fun BrushConfigBottomSheet(
     initialBrush: Brush,
     onBrushConfigFinished: (Brush) -> Unit = {},
 ) {
-
     var brushSize by remember { mutableStateOf(initialBrush.size) }
     var brushOpacity by remember { mutableStateOf(initialBrush.opacity) }
     var newBrush by remember { mutableStateOf(initialBrush) }
-
-
 
     CustomBottomSheet(
         onDismissRequest = {
@@ -63,8 +60,12 @@ fun BrushConfigBottomSheet(
             Spacer(modifier = Modifier.height(25.dp))
             BrushSelection(
                 initialBrush = newBrush,
-                onBrushSelected = {
-                    newBrush = it.updateSize(brushSize).updateOpacity(brushOpacity).updateColor(initialBrush.colorArgb)
+                onBrushSelected = { selectedBrush ->
+                    // Preserve size, opacity, and color when switching brush type
+                    newBrush = selectedBrush
+                        .updateSize(brushSize)
+                        .updateOpacity(brushOpacity)
+                        .updateColor(initialBrush.colorArgb)
                 }
             )
 

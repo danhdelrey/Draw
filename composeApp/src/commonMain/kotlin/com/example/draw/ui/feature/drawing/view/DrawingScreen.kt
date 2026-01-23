@@ -42,25 +42,25 @@ class DrawingScreen : Screen {
         Scaffold(
             containerColor = MaterialTheme.colorScheme.surfaceDim,
             floatingActionButton = {
-                if(showLayerListPanel){
-
-
-                    LayerListPanel(
-                        activeLayer = state.currentActiveLayer,
-                        currentLayers = state.currentLayers,
-                        onAddLayer = {
-                            viewModel.onEvent(DrawingEvent.AddLayer)
-                        },
-                        onSelectLayer = {
-                            viewModel.onEvent(DrawingEvent.SelectLayer(it))
-                        },
-                        onToggleVisibility = {
-                            viewModel.onEvent(DrawingEvent.ToggleLayerVisibility(it))
-                        },
-                        onDeleteLayer = {
-                            viewModel.onEvent(DrawingEvent.DeleteLayer(it))
-                        }
-                    )
+                if(showLayerListPanel) {
+                    state.canvas.activeLayer?.let { activeLayer ->
+                        LayerListPanel(
+                            activeLayer = activeLayer,
+                            currentLayers = state.layers,
+                            onAddLayer = {
+                                viewModel.onEvent(DrawingEvent.AddLayer)
+                            },
+                            onSelectLayer = {
+                                viewModel.onEvent(DrawingEvent.SelectLayer(it))
+                            },
+                            onToggleVisibility = {
+                                viewModel.onEvent(DrawingEvent.ToggleLayerVisibility(it))
+                            },
+                            onDeleteLayer = {
+                                viewModel.onEvent(DrawingEvent.DeleteLayer(it))
+                            }
+                        )
+                    }
                 }
             },
             topBar = {

@@ -61,36 +61,34 @@ fun DrawingCanvasContent(
                     drawLayer(rootGraphicsLayer)
                 }
         ) {
-            state.currentLayers.forEach { layer ->
+            state.layers.forEach { layer ->
                 if (layer.isVisible && layer is VectorLayer) {
-                    val pathBeingDrawn = if (layer.id == state.currentActiveLayer.id) state.currentDrawingPath else null
-                    val touchPos = if (layer.id == state.currentActiveLayer.id) state.currentTouchPosition else null
+                    val isActiveLayer = layer.id == state.canvas.activeLayerId
+                    val pathBeingDrawn = if (isActiveLayer) state.currentDrawingPath else null
+                    val touchPos = if (isActiveLayer) state.currentTouchPosition else null
 
-                    // --- LAYER HIỂN THỊ ---
+                    // --- LAYER DISPLAY ---
                     Box(
                         modifier = Modifier
-                            .fillMaxSize() // Khớp hoàn toàn với Box cha -> Tọa độ (0,0) trùng nhau tuyệt đối
+                            .fillMaxSize()
                             .graphicsLayer {
                                 alpha = layer.opacity
-                                // KHÔNG set scaleX, scaleY ở đây nữa để tránh lệch Layout
-
-                                // Vẫn giữ cái này để Fix lỗi Eraser xuyên thấu
                                 compositingStrategy = CompositingStrategy.Offscreen
                             }
                     ) {
                         DrawingCanvas(
                             paths = layer.paths,
                             currentPath = pathBeingDrawn,
-                            isEraserMode = state.currentBrush is EraserBrush, // UI Logic
+                            isEraserMode = state.currentBrush is EraserBrush,
                             currentTouchPosition = touchPos,
                             brushSize = state.currentBrush.size,
-                            renderScale = renderScale, // <--- QUAN TRỌNG: Truyền tỷ lệ vào để Canvas tự scale nét vẽ
+                            renderScale = renderScale,
                             modifier = Modifier.fillMaxSize()
                         )
                     }
 
                     // --- LAYER INPUT ---
-                    if (layer.id == state.currentActiveLayer.id) {
+                    if (isActiveLayer) {
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()

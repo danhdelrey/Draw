@@ -10,29 +10,45 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.draw.data.model.brush.AirBrush
 import com.example.draw.data.model.brush.Brush
 import com.example.draw.data.model.brush.EraserBrush
 import com.example.draw.data.model.brush.SolidBrush
 import com.example.draw.ui.common.component.ImageButton
 import com.example.draw.ui.common.preview.PreviewComponent
 
+/**
+ * Brush selection component using factory methods.
+ *
+ * Design improvements:
+ * - Uses factory methods for brush creation
+ * - Easy to add new brush types
+ * - Type-based selection
+ */
 @Composable
 fun BrushSelection(
     initialBrush: Brush,
     onBrushSelected: (Brush) -> Unit = {}
 ) {
     var currentBrush by remember { mutableStateOf(initialBrush) }
-    val brushList = listOf<Brush>(
-        SolidBrush(),
-        EraserBrush()
-    )
+
+    // Available brushes - easy to extend
+    val brushList = remember {
+        listOf(
+            SolidBrush.default(),
+            AirBrush.default(),
+            EraserBrush.default()
+            // Easy to add: WatercolorBrush.default(), etc.
+        )
+    }
+
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(15.dp)
     ) {
         items(brushList) { brush ->
             ImageButton(
                 brush.imageResource,
-                isSelected = currentBrush::class == brush::class,
+                isSelected = currentBrush.type == brush.type,
                 onClick = {
                     currentBrush = brush
                     onBrushSelected(brush)
@@ -46,6 +62,7 @@ fun BrushSelection(
 @Composable
 fun BrushSelectionPreview() {
     PreviewComponent {
-        BrushSelection(initialBrush = EraserBrush())
+        BrushSelection(initialBrush = EraserBrush.default())
     }
 }
+
