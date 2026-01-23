@@ -19,6 +19,11 @@ import com.example.draw.ui.common.preview.PreviewComponent
 
 @Composable
 fun WavyLinePreview(brush: Brush = SolidBrush()) {
+    val pathColor = if(brush is SolidBrush) {
+        Color(brush.colorArgb)
+    } else {
+        Color.White
+    }
     Canvas(modifier = Modifier
         .fillMaxWidth(0.8f) // Chiều rộng nét vẽ chiếm 80% màn hình
         .height(50.dp)
@@ -43,7 +48,7 @@ fun WavyLinePreview(brush: Brush = SolidBrush()) {
 
         drawPath(
             path = path,
-            color = Color(brush.colorArgb),
+            color = pathColor,
             style = Stroke(
                 width = brush.size.dp.toPx(), // Độ dày nét vẽ
                 cap = StrokeCap.Round, // Đầu bút tròn

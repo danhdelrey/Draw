@@ -1,4 +1,4 @@
-package com.example.draw.ui.support_feature.colorPicker.component
+package com.example.draw.ui.support_feature.brushConfig.color.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

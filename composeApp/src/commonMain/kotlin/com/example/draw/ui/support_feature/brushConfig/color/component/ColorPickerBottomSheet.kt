@@ -1,4 +1,4 @@
-package com.example.draw.ui.support_feature.colorPicker.component
+package com.example.draw.ui.support_feature.brushConfig.color.component
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
@@ -9,13 +9,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.example.draw.data.model.brush.Brush
 import com.example.draw.data.model.brush.SolidBrush
 import com.example.draw.ui.common.component.CustomBottomSheet
 import com.example.draw.ui.common.component.WavyLinePreviewWithBackground
 import com.example.draw.ui.common.preview.PreviewComponent
-import com.example.draw.ui.support_feature.colorPicker.mockData.MockColorPalette
+import com.example.draw.ui.support_feature.brushConfig.color.mockData.MockColorPalette
 
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -1,4 +1,4 @@
-package com.example.draw.ui.support_feature.brushConfig.mainComponent
+package com.example.draw.ui.support_feature.brushConfig.brush.mainComponent
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -10,8 +10,9 @@ import com.example.draw.data.model.brush.Brush
 import com.example.draw.data.model.brush.SolidBrush
 import com.example.draw.ui.common.component.ImageButton
 import com.example.draw.ui.common.preview.PreviewComponent
-import com.example.draw.ui.support_feature.brushConfig.component.BrushConfigBottomSheet
+import com.example.draw.ui.support_feature.brushConfig.brush.component.BrushConfigBottomSheet
 import draw.composeapp.generated.resources.Res
+import draw.composeapp.generated.resources.eraser
 import draw.composeapp.generated.resources.solid_brush
 
 @Composable
@@ -23,7 +24,7 @@ fun BrushConfigButton(
 
 
     ImageButton(
-        imageResource = Res.drawable.solid_brush,
+        imageResource = if (currentBrush is SolidBrush) Res.drawable.solid_brush else Res.drawable.eraser,
         isSelected = true,
         onClick = {
             showBrushConfigBottomSheet = true

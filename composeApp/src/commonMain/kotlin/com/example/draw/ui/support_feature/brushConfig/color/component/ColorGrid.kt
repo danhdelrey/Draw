@@ -1,4 +1,4 @@
-package com.example.draw.ui.support_feature.colorPicker.component
+package com.example.draw.ui.support_feature.brushConfig.color.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.draw.ui.common.preview.PreviewComponent
-import com.example.draw.ui.support_feature.colorPicker.mockData.MockColorPalette
+import com.example.draw.ui.support_feature.brushConfig.color.mockData.MockColorPalette
 
 @Composable
 fun ColorGrid(

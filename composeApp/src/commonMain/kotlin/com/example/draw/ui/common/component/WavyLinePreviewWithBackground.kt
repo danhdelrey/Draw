@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,11 +19,16 @@ import com.example.draw.ui.common.preview.PreviewComponent
 
 @Composable
 fun WavyLinePreviewWithBackground(brush: Brush = SolidBrush()) {
+    val backgroundColor = if(brush is SolidBrush) {
+        MaterialTheme.colorScheme.surface
+    } else {
+        Color.Black
+    }
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(120.dp)
-            .background(Color(0xFFF0EBF5)) // Màu nền tím nhạt
+            .background(backgroundColor)
             .padding(vertical = 24.dp),
         contentAlignment = Alignment.Center
     ) {

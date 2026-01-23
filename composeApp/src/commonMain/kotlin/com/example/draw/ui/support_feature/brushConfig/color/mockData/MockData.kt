@@ -1,4 +1,4 @@
-package com.example.draw.ui.support_feature.colorPicker.mockData
+package com.example.draw.ui.support_feature.brushConfig.color.mockData
 
 import androidx.compose.ui.graphics.Color
 

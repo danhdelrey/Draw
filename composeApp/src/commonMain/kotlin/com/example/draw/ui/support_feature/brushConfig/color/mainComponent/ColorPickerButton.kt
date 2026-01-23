@@ -1,4 +1,4 @@
-package com.example.draw.ui.support_feature.colorPicker.mainComponent
+package com.example.draw.ui.support_feature.brushConfig.color.mainComponent
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,10 +18,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.draw.data.model.brush.Brush
+import com.example.draw.data.model.brush.EraserBrush
 import com.example.draw.data.model.brush.SolidBrush
 import com.example.draw.ui.common.preview.PreviewComponent
-import com.example.draw.ui.support_feature.colorPicker.component.ColorPickerBottomSheet
-import com.example.draw.ui.support_feature.colorPicker.mockData.MockColorPalette
+import com.example.draw.ui.support_feature.brushConfig.color.component.ColorPickerBottomSheet
 
 @Composable
 fun ColorPickerButton(
@@ -30,6 +30,9 @@ fun ColorPickerButton(
 ) {
     var showColorPickerBottomSheet by remember { mutableStateOf(false) }
 
+    if(initialBrush is EraserBrush){
+        return
+    }
     Box(
         modifier = Modifier
 
