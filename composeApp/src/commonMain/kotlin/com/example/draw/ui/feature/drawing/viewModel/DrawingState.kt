@@ -8,11 +8,11 @@ import com.example.draw.data.model.layer.Layer
 import com.example.draw.data.model.layer.VectorLayer
 
 data class DrawingState(
-    var currentBrush: Brush = SolidBrush(),
-    var currentTouchPosition: Offset? = null,
-    var currentDrawingPath: DrawingPath? = null,
-    var currentActiveLayer: Layer = VectorLayer(id = "default_layer"),
-    var currentLayers: List<Layer> = listOf(VectorLayer(id = "default_layer")),
-    var canUndo: Boolean = false,
-    var canRedo: Boolean = false
+    val currentBrush: Brush = SolidBrush(),
+    val currentTouchPosition: Offset? = null,
+    val currentDrawingPath: DrawingPath? = null,
+    val currentActiveLayer: Layer = VectorLayer(id = "default_layer"),
+    val currentLayers: List<Layer> = listOf(VectorLayer(id = "default_layer")),
+    val canUndo: Boolean = false,
+    val canRedo: Boolean = false
 )
