@@ -4,7 +4,6 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.BlendMode
@@ -16,13 +15,16 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.scale
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.layer.drawLayer
-import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.toSize
 import com.example.draw.data.model.base.DrawingPath
+import com.example.draw.data.model.brush.AirBrush
 import com.example.draw.data.model.brush.EraserBrush
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
+import kotlin.random.Random
 
 @Composable
 fun DrawingCanvas(
@@ -75,12 +77,36 @@ fun DrawingCanvas(
 
 // 1. Hàm vẽ: Chỉ quan tâm việc vẽ 1 nét như thế nào
 fun DrawScope.drawDrawingPath(drawingPath: DrawingPath) {
-    val isEraser = drawingPath.brush::class == EraserBrush::class
-    val blendMode = if (isEraser) BlendMode.Clear else BlendMode.SrcOver
-    val color = if (isEraser) Color.Transparent else Color(drawingPath.brush.colorArgb)
+    val brush = drawingPath.brush
 
-    if (drawingPath.points.size > 1) {
-        val points = drawingPath.points
+    // Check brush type
+    val isEraser = brush is EraserBrush
+    val isAirBrush = brush is AirBrush
+
+    val blendMode = if (isEraser) BlendMode.Clear else BlendMode.SrcOver
+    val color = if (isEraser) Color.Transparent else Color(brush.colorArgb)
+
+    if (isAirBrush) {
+        // AirBrush: Draw with spray-paint effect
+        drawAirBrushPath(drawingPath, color)
+    } else {
+        // Regular brush or eraser: Draw smooth path
+        drawSmoothPath(drawingPath, color, blendMode)
+    }
+}
+
+/**
+ * Draw a smooth path for regular brushes and eraser
+ */
+private fun DrawScope.drawSmoothPath(
+    drawingPath: DrawingPath,
+    color: Color,
+    blendMode: BlendMode
+) {
+    val brush = drawingPath.brush
+    val points = drawingPath.points
+
+    if (points.size > 1) {
         val path = Path().apply {
             if (points.isNotEmpty()) {
                 moveTo(points[0].x, points[0].y)
@@ -104,23 +130,128 @@ fun DrawScope.drawDrawingPath(drawingPath: DrawingPath) {
         drawPath(
             path = path,
             color = color,
-            alpha = drawingPath.brush.opacity,
+            alpha = brush.opacity,
             style = Stroke(
-                width = drawingPath.brush.size,
+                width = brush.size,
                 cap = StrokeCap.Round,
                 join = StrokeJoin.Round
             ),
             blendMode = blendMode
         )
-    } else if (drawingPath.points.size == 1) {
+    } else if (points.size == 1) {
         drawPoints(
-            points = drawingPath.points,
+            points = points,
             pointMode = PointMode.Points,
             color = color,
-            alpha = drawingPath.brush.opacity,
-            strokeWidth = drawingPath.brush.size,
+            alpha = brush.opacity,
+            strokeWidth = brush.size,
             cap = StrokeCap.Round,
             blendMode = blendMode
+        )
+    }
+}
+
+/**
+ * Draw AirBrush with spray-paint particle effect
+ */
+private fun DrawScope.drawAirBrushPath(drawingPath: DrawingPath, color: Color) {
+    val airBrush = drawingPath.brush as AirBrush
+    val points = drawingPath.points
+    val density = airBrush.density
+    val brushSize = airBrush.size
+    val opacity = airBrush.opacity
+
+    // Calculate number of particles based on density
+    val particlesPerPoint = (density * 20).toInt().coerceIn(5, 50)
+
+    // Use path ID as seed for consistent particle positions on redraw
+    val random = Random(drawingPath.id.hashCode())
+
+    if (points.size == 1) {
+        // Single point: draw spray at this point
+        drawSprayParticles(
+            center = points[0],
+            radius = brushSize / 2f,
+            particleCount = particlesPerPoint,
+            color = color,
+            opacity = opacity,
+            random = random
+        )
+    } else if (points.size > 1) {
+        // Multiple points: draw spray along the path
+        for (i in 0 until points.size - 1) {
+            val start = points[i]
+            val end = points[i + 1]
+
+            // Calculate distance between points
+            val dx = end.x - start.x
+            val dy = end.y - start.y
+            val distance = sqrt(dx * dx + dy * dy)
+
+            // Interpolate points along the segment
+            val steps = (distance / (brushSize * 0.2f)).toInt().coerceAtLeast(1)
+
+            for (step in 0..steps) {
+                val t = step.toFloat() / steps
+                val interpolatedX = start.x + dx * t
+                val interpolatedY = start.y + dy * t
+                val center = Offset(interpolatedX, interpolatedY)
+
+                // Draw particles at this interpolated point
+                drawSprayParticles(
+                    center = center,
+                    radius = brushSize / 2f,
+                    particleCount = (particlesPerPoint * 0.5f).toInt().coerceAtLeast(2),
+                    color = color,
+                    opacity = opacity,
+                    random = random
+                )
+            }
+        }
+
+        // Draw extra particles at the last point
+        drawSprayParticles(
+            center = points.last(),
+            radius = brushSize / 2f,
+            particleCount = particlesPerPoint,
+            color = color,
+            opacity = opacity,
+            random = random
+        )
+    }
+}
+
+/**
+ * Draw spray particles at a specific point
+ */
+private fun DrawScope.drawSprayParticles(
+    center: Offset,
+    radius: Float,
+    particleCount: Int,
+    color: Color,
+    opacity: Float,
+    random: Random
+) {
+    repeat(particleCount) {
+        // Generate random position within circle using polar coordinates
+        val angle = random.nextFloat() * 2 * PI.toFloat()
+        val distance = sqrt(random.nextFloat()) * radius
+
+        val x = center.x + cos(angle) * distance
+        val y = center.y + sin(angle) * distance
+
+        // Random particle size (smaller particles)
+        val particleSize = random.nextFloat() * 2f + 1f
+
+        // Random opacity variation for more natural look
+        val particleOpacity = (opacity * (0.3f + random.nextFloat() * 0.7f)).coerceIn(0f, 1f)
+
+        // Draw individual particle
+        drawCircle(
+            color = color,
+            radius = particleSize,
+            center = Offset(x, y),
+            alpha = particleOpacity
         )
     }
 }

@@ -6,13 +6,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.draw.data.model.brush.AirBrush
 import com.example.draw.data.model.brush.Brush
+import com.example.draw.data.model.brush.BrushProperties
 import com.example.draw.data.model.brush.SolidBrush
 import com.example.draw.ui.common.component.CustomBottomSheet
 import com.example.draw.ui.common.component.SliderWithLabels
@@ -24,8 +27,13 @@ fun BrushConfigBottomSheet(
     initialBrush: Brush,
     onBrushConfigFinished: (Brush) -> Unit = {},
 ) {
-    var brushSize by remember { mutableStateOf(initialBrush.size) }
-    var brushOpacity by remember { mutableStateOf(initialBrush.opacity) }
+    var brushSize by remember { mutableFloatStateOf(initialBrush.size) }
+    var brushOpacity by remember { mutableFloatStateOf(initialBrush.opacity) }
+    var brushDensity by remember {
+        mutableFloatStateOf(
+            if (initialBrush is AirBrush) initialBrush.density else 0.5f
+        )
+    }
     var newBrush by remember { mutableStateOf(initialBrush) }
 
     CustomBottomSheet(
@@ -47,6 +55,7 @@ fun BrushConfigBottomSheet(
                 }
             )
             Spacer(modifier = Modifier.height(15.dp))
+
             SliderWithLabels(
                 label = "Opacity",
                 valueRange = 0f..100f,
@@ -57,15 +66,43 @@ fun BrushConfigBottomSheet(
                     newBrush = newBrush.updateOpacity(it / 100f)
                 }
             )
+
+            // Show density slider only for AirBrush
+            if (newBrush is AirBrush) {
+                Spacer(modifier = Modifier.height(15.dp))
+                SliderWithLabels(
+                    label = "Density",
+                    valueRange = 0f..100f,
+                    initialValue = brushDensity * 100f,
+                    valueSuffix = "%",
+                    onValueChange = {
+                        brushDensity = it / 100f
+                        newBrush = newBrush.updateProperties(
+                            BrushProperties(mapOf(BrushProperties.DENSITY to brushDensity))
+                        )
+                    }
+                )
+            }
+
             Spacer(modifier = Modifier.height(25.dp))
             BrushSelection(
                 initialBrush = newBrush,
                 onBrushSelected = { selectedBrush ->
                     // Preserve size, opacity, and color when switching brush type
-                    newBrush = selectedBrush
+                    var updatedBrush = selectedBrush
                         .updateSize(brushSize)
                         .updateOpacity(brushOpacity)
                         .updateColor(initialBrush.colorArgb)
+
+                    // If switching to AirBrush, set density
+                    if (updatedBrush is AirBrush) {
+                        brushDensity = updatedBrush.density
+                        updatedBrush = updatedBrush.updateProperties(
+                            BrushProperties(mapOf(BrushProperties.DENSITY to brushDensity))
+                        )
+                    }
+
+                    newBrush = updatedBrush
                 }
             )
 

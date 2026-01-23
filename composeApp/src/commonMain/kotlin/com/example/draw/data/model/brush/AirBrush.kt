@@ -8,19 +8,33 @@ import org.jetbrains.compose.resources.DrawableResource
 /**
  * Air brush for spray-paint effect with particle-based rendering.
  *
+ * Creates a realistic spray-paint effect by:
+ * - Distributing particles randomly in a circular area
+ * - Varying particle opacity for natural look
+ * - Density controls particle count
+ * - Lower base opacity for subtle layering
+ *
  * Properties:
- * - Density: Controls the number of particles per spray
+ * - Density: Controls the number of particles per spray (0.0 to 1.0)
+ *   - 0.0-0.3: Light spray, few particles
+ *   - 0.4-0.6: Medium spray (default)
+ *   - 0.7-1.0: Heavy spray, many particles
  * - Creates a softer, diffused stroke effect
- * - Opacity accumulates with overlapping strokes
+ * - Opacity accumulates with overlapping strokes for build-up effect
+ *
+ * Recommended settings:
+ * - Size: 20-50px for best effect
+ * - Opacity: 0.2-0.4 for gradual build-up
+ * - Density: 0.4-0.7 for natural look
  */
 data class AirBrush(
     override val id: String = generateId(),
-    override val size: Float = 30f,
-    override val opacity: Float = 0.3f,
+    override val size: Float = 35f,           // Larger default size for spray
+    override val opacity: Float = 0.25f,       // Lower opacity for subtle effect
     override val colorArgb: Long = 0xFF000000,
-    override val imageResource: DrawableResource = Res.drawable.solid_brush,
+    override val imageResource: DrawableResource = Res.drawable.solid_brush, // TODO: Replace with air_brush icon
     override val properties: BrushProperties = BrushProperties(
-        mapOf(BrushProperties.DENSITY to 0.5f)
+        mapOf(BrushProperties.DENSITY to 0.5f)  // Medium density as default
     )
 ) : Brush {
 
@@ -28,9 +42,10 @@ data class AirBrush(
 
     /**
      * Convenience property for accessing density
+     * Range: 0.0 (light spray) to 1.0 (heavy spray)
      */
     val density: Float
-        get() = properties.getFloat(BrushProperties.DENSITY, 0.5f)
+        get() = properties.getFloat(BrushProperties.DENSITY, 0.5f).coerceIn(0f, 1f)
 
     override fun updateSize(size: Float): Brush =
         copy(size = size)
