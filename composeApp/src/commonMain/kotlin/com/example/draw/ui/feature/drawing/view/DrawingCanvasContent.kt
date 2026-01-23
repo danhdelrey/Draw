@@ -44,14 +44,14 @@ fun DrawingCanvasContent(
         val viewWidthPx = with(density) { maxWidth.toPx() }
 
         // Tỷ lệ Input: Màn hình -> 1080p (để lưu vào DB)
-        val inputScale = CanvasConfig.FIXED_WIDTH / viewWidthPx
+        val inputScale = CanvasConfig.DEFAULT_WIDTH / viewWidthPx
 
         // Tỷ lệ Render: 1080p -> Màn hình (để hiển thị)
-        val renderScale = viewWidthPx / CanvasConfig.FIXED_WIDTH
+        val renderScale = viewWidthPx / CanvasConfig.DEFAULT_WIDTH
 
         Box(
             modifier = Modifier
-                .aspectRatio(CanvasConfig.FIXED_WIDTH / CanvasConfig.FIXED_HEIGHT)
+                .aspectRatio(CanvasConfig.DEFAULT_WIDTH / CanvasConfig.DEFAULT_HEIGHT)
                 .fillMaxSize() // Luôn lấp đầy width của cha (Screen width)
                 .background(Color.White)
                 .drawWithContent {

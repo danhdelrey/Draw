@@ -31,8 +31,8 @@ fun LayerThumbnail(
     layer: VectorLayer,
     modifier: Modifier = Modifier
 ) {
-    val originalWidth = CanvasConfig.FIXED_WIDTH.toFloat()
-    val originalHeight = CanvasConfig.FIXED_HEIGHT.toFloat()
+    val originalWidth = CanvasConfig.DEFAULT_WIDTH
+    val originalHeight = CanvasConfig.DEFAULT_HEIGHT
     val canvasAspectRatio = originalWidth / originalHeight
 
     Box(
