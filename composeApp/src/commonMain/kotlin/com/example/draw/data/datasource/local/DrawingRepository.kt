@@ -14,7 +14,16 @@ class DrawingRepositoryImpl(
     private val fileStorageService: FileStorageService
 ) : DrawingRepository {
     override suspend fun getAllDrawings(): List<DrawingData> {
-        TODO("Not yet implemented")
+        val files = fileStorageService.listFiles("drawings")
+        return files.mapNotNull { fileName ->
+            val data = fileStorageService.readFile(fileName, "drawings")
+            data?.let { fileData ->
+                DrawingData(
+                    id = fileName.substringBeforeLast('.'),
+                    name = fileName,
+                )
+            }
+        }
     }
 
     override suspend fun getDrawingById(id: String): DrawingData? {
