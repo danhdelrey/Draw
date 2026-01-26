@@ -18,10 +18,7 @@ class DrawingRepositoryImpl(
         return files.mapNotNull { fileName ->
             val data = fileStorageService.readFile(fileName, "drawings")
             data?.let { fileData ->
-                DrawingData(
-                    id = fileName.substringBeforeLast('.'),
-                    name = fileName,
-                )
+                null
             }
         }
     }
