@@ -2,6 +2,7 @@ package com.example.draw.data.model.brush
 
 import com.example.draw.data.model.util.generateId
 import draw.composeapp.generated.resources.Res
+import draw.composeapp.generated.resources.air_brush
 import draw.composeapp.generated.resources.solid_brush
 import org.jetbrains.compose.resources.DrawableResource
 
@@ -32,7 +33,7 @@ data class AirBrush(
     override val size: Float = 35f,           // Larger default size for spray
     override val opacity: Float = 0.25f,       // Lower opacity for subtle effect
     override val colorArgb: Long = 0xFF000000,
-    override val imageResource: DrawableResource = Res.drawable.solid_brush, // TODO: Replace with air_brush icon
+    override val imageResource: DrawableResource = Res.drawable.air_brush,
     override val properties: BrushProperties = BrushProperties(
         mapOf(BrushProperties.DENSITY to 0.5f)  // Medium density as default
     )

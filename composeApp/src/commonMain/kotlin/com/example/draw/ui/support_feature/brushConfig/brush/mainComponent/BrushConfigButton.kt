@@ -24,7 +24,7 @@ fun BrushConfigButton(
 
 
     ImageButton(
-        imageResource = if (currentBrush is SolidBrush) Res.drawable.solid_brush else Res.drawable.eraser,
+        imageResource = currentBrush.imageResource,
         isSelected = true,
         onClick = {
             showBrushConfigBottomSheet = true
