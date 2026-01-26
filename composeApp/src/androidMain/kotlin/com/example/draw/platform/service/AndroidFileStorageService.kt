@@ -51,4 +51,18 @@ class AndroidFileStorageService(private val context: Context) : FileStorageServi
             file.exists()
         }
     }
+
+    override suspend fun listFiles(folderPath: String): List<String> {
+        return withContext(Dispatchers.IO) {
+            val directory = File(context.filesDir, folderPath)
+
+            // Nếu thư mục không tồn tại hoặc không phải là thư mục, trả về list rỗng
+            if (!directory.exists() || !directory.isDirectory) {
+                return@withContext emptyList()
+            }
+
+            // list() trả về Array<String> tên các file/folder con
+            directory.list()?.toList() ?: emptyList()
+        }
+    }
 }

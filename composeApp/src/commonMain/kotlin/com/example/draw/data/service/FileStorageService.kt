@@ -5,4 +5,5 @@ interface FileStorageService {
     suspend fun readFile(fileName: String,  folderPath: String): ByteArray?
     suspend fun deleteFile(fileName: String,  folderPath: String): Boolean
     suspend fun exists(fileName: String,  folderPath: String): Boolean
+    suspend fun listFiles(folderPath: String): List<String>
 }
