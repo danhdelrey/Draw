@@ -1,6 +1,7 @@
 package com.example.draw.data.datasource.local
 
 import com.example.draw.data.datasource.model.DrawingData
+import com.example.draw.data.service.FileStorageService
 
 interface DrawingRepository {
     suspend fun getAllDrawings(): List<DrawingData>
@@ -9,7 +10,9 @@ interface DrawingRepository {
     suspend fun deleteDrawing(id: String): Boolean
 }
 
-class DrawingRepositoryImpl : DrawingRepository {
+class DrawingRepositoryImpl(
+    private val fileStorageService: FileStorageService
+) : DrawingRepository {
     override suspend fun getAllDrawings(): List<DrawingData> {
         TODO("Not yet implemented")
     }

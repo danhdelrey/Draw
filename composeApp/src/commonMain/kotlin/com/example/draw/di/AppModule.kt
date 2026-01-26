@@ -1,5 +1,7 @@
 package com.example.draw.di
 
+import com.example.draw.data.datasource.local.DrawingRepository
+import com.example.draw.data.datasource.local.DrawingRepositoryImpl
 import com.example.draw.ui.feature.drawing.viewModel.DrawingScreenViewModel
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
@@ -23,5 +25,6 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}) {
 expect val platformModule: Module
 
 val sharedModule = module {
+    single<DrawingRepository> { DrawingRepositoryImpl(get()) }
     factory { DrawingScreenViewModel(get()) }
 }
