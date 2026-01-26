@@ -1,4 +1,4 @@
-package com.example.draw.data.datasource
+package com.example.draw.data.service
 
 interface FileStorageService {
     // Lưu file (Ghi đè nếu đã tồn tại - đóng vai trò là Sửa)

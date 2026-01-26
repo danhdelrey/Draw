@@ -1,7 +1,7 @@
-package com.example.draw.platform
+package com.example.draw.platform.service
 
 import android.content.Context
-import com.example.draw.data.datasource.FileStorageService
+import com.example.draw.data.service.FileStorageService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File

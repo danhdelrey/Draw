@@ -1,10 +1,9 @@
-package com.example.draw.platform
+package com.example.draw.platform.service
 
-import com.example.draw.data.datasource.FileStorageService
+import com.example.draw.data.service.FileStorageService
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
-import kotlinx.cinterop.refTo
 import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -21,7 +20,7 @@ import platform.Foundation.writeToURL
 
 class IosFileStorageService : FileStorageService {
 
-    private val fileManager = NSFileManager.defaultManager
+    private val fileManager = NSFileManager.Companion.defaultManager
 
     @OptIn(ExperimentalForeignApi::class)
     private fun getDocumentDirectory(): NSURL? {
@@ -45,7 +44,7 @@ class IosFileStorageService : FileStorageService {
 
             // Chuyển ByteArray sang NSData
             val data = content.usePinned { pinned ->
-                NSData.dataWithBytes(pinned.addressOf(0), content.size.toULong())
+                NSData.Companion.dataWithBytes(pinned.addressOf(0), content.size.toULong())
             }
             data.writeToURL(fileUrl, true)
         }
@@ -55,7 +54,7 @@ class IosFileStorageService : FileStorageService {
     override suspend fun readFile(fileName: String): ByteArray? {
         return withContext(Dispatchers.IO) {
             val fileUrl = getFileUrl(fileName) ?: return@withContext null
-            val data = NSData.dataWithContentsOfURL(fileUrl) ?: return@withContext null
+            val data = NSData.Companion.dataWithContentsOfURL(fileUrl) ?: return@withContext null
 
             val byteArray = ByteArray(data.length.toInt())
             byteArray.usePinned { pinned ->
