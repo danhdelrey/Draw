@@ -1,15 +1,12 @@
 package com.example.draw.ui.feature.gallery.view
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -31,10 +28,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.draw.ui.feature.drawing.component.DrawingCanvas
 import com.example.draw.data.model.layer.VectorLayer
 import com.example.draw.data.model.serialization.DrawingProject
 import com.example.draw.ui.common.preview.PreviewComponent
@@ -44,6 +39,7 @@ import com.example.draw.ui.feature.gallery.viewModel.GalleryEffect
 import com.example.draw.ui.feature.gallery.viewModel.GalleryEvent
 import com.example.draw.ui.feature.gallery.viewModel.GalleryScreenViewModel
 import com.example.draw.ui.support_feature.drawingProject.create.mainComponent.CreateDrawingProjectButton
+import com.example.draw.ui.common.component.CanvasThumbnail
 
 class GalleryScreen : Screen {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -129,50 +125,15 @@ fun DrawingProjectThumbnail(
     project: DrawingProject,
     modifier: Modifier = Modifier
 ) {
-    BoxWithConstraints(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        val density = LocalDensity.current
-        val drawingState = remember(project) { DrawingState.fromDrawingProject(project) }
+    val drawingState = remember(project) { DrawingState.fromDrawingProject(project) }
 
-        val canvasWidth = project.width
-        val canvasHeight = project.height
-
-        val availableWidth = with(density) { maxWidth.toPx() }
-        val availableHeight = with(density) { maxHeight.toPx() }
-
-        val scale = minOf(
-            availableWidth / canvasWidth,
-            availableHeight / canvasHeight
-        )
-
-        val displayedWidth = canvasWidth * scale
-        val displayedHeight = canvasHeight * scale
-
-        Box(
-            modifier = Modifier
-                .size(
-                    width = with(density) { displayedWidth.toDp() },
-                    height = with(density) { displayedHeight.toDp() }
-                )
-                .background(Color(project.backgroundColor))
-        ) {
-            drawingState.layers.forEach { layer ->
-                if (layer.isVisible && layer is VectorLayer) {
-                    DrawingCanvas(
-                        paths = layer.paths,
-                        currentPath = null,
-                        isEraserMode = false,
-                        currentTouchPosition = null,
-                        brushSize = 0f,
-                        renderScale = scale,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-            }
-        }
-    }
+    CanvasThumbnail(
+        layers = drawingState.layers.filterIsInstance<VectorLayer>(),
+        canvasWidth = project.width,
+        canvasHeight = project.height,
+        backgroundColor = Color(project.backgroundColor),
+        modifier = modifier.fillMaxSize()
+    )
 }
 
 @Preview
