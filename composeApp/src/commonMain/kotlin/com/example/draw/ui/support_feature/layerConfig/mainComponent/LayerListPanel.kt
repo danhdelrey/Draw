@@ -37,6 +37,8 @@ import com.example.draw.ui.support_feature.layerConfig.component.LayerItem
 fun LayerListPanel(
     currentLayers: List<Layer>,
     activeLayer: Layer,
+    canvasWidth: Float,
+    canvasHeight: Float,
     onAddLayer: () -> Unit,
     onSelectLayer: (Layer) -> Unit,
     onToggleVisibility: (Layer) -> Unit,
@@ -69,17 +71,18 @@ fun LayerListPanel(
             }
         }
 
+        // 2. Danh sách Layer (LazyColumn)
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            reverseLayout = true,
-            verticalArrangement = Arrangement.Bottom
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            reverseLayout = true // Đảo ngược danh sách (Layer mới nhất ở trên)
         ) {
-            items(
-                items = currentLayers,
-                key = { it.id }
-            ) { layer ->
+            items(currentLayers) { layer ->
                 LayerItem(
                     data = layer,
+                    canvasWidth = canvasWidth,
+                    canvasHeight = canvasHeight,
                     isSelected = layer.id == activeLayer.id,
                     onClick = { onSelectLayer(layer) },
                     onToggleVisibility = { onToggleVisibility(layer) },
@@ -94,17 +97,15 @@ fun LayerListPanel(
 @Preview
 @Composable
 fun LayerListPanelPreview() {
-    PreviewComponent {
-        val sampleLayers = listOf(
-            VectorLayer("1"),
-            VectorLayer("2", isVisible = false),
-            VectorLayer("3"),
-            VectorLayer("4")
-        )
+    val layer1 = VectorLayer(id = "1", name = "Layer 1")
+    val layer2 = VectorLayer(id = "2", name = "Layer 2", isVisible = false)
 
+    PreviewComponent {
         LayerListPanel(
-            currentLayers = sampleLayers,
-            activeLayer = sampleLayers[3],
+            currentLayers = listOf(layer1, layer2),
+            activeLayer = layer1,
+            canvasWidth = 100f,
+            canvasHeight = 100f,
             onAddLayer = {},
             onSelectLayer = {},
             onToggleVisibility = {},

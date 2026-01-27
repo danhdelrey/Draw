@@ -14,7 +14,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.graphicsLayer
-import com.example.draw.data.model.canvas.CanvasConfig
 import com.example.draw.data.model.layer.VectorLayer
 import com.example.draw.ui.feature.drawing.component.drawDrawingPath
 
@@ -25,11 +24,11 @@ import com.example.draw.ui.feature.drawing.component.drawDrawingPath
 @Composable
 fun LayerThumbnail(
     layer: VectorLayer,
+    canvasWidth: Float,
+    canvasHeight: Float,
     modifier: Modifier = Modifier
 ) {
-    val originalWidth = CanvasConfig.DEFAULT_WIDTH
-    val originalHeight = CanvasConfig.DEFAULT_HEIGHT
-    val canvasAspectRatio = originalWidth / originalHeight
+    val canvasAspectRatio = canvasWidth / canvasHeight
 
     Box(
         modifier = modifier
@@ -58,7 +57,7 @@ fun LayerThumbnail(
                     // Important: Isolate this layer for BlendMode.Clear to work properly
                     .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
             ) {
-                val scaleFactor = size.width / originalWidth
+                val scaleFactor = size.width / canvasWidth
 
                 scale(scale = scaleFactor, pivot = Offset.Zero) {
                     // Draw all paths using unified drawing logic

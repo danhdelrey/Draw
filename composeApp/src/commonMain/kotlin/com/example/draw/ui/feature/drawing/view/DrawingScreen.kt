@@ -1,5 +1,6 @@
 package com.example.draw.ui.feature.drawing.view
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.MaterialTheme
@@ -11,12 +12,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
-import com.example.draw.data.model.serialization.DrawingProject
 import com.example.draw.ui.common.component.CustomIconButton
 import com.example.draw.ui.common.component.ToolPanel
 import com.example.draw.ui.common.preview.PreviewComponent
@@ -58,6 +59,8 @@ class DrawingScreen(
                         LayerListPanel(
                             activeLayer = activeLayer,
                             currentLayers = state.layers,
+                            canvasWidth = state.canvas.width,
+                            canvasHeight = state.canvas.height,
                             onAddLayer = {
                                 viewModel.onEvent(DrawingEvent.AddLayer)
                             },
@@ -124,11 +127,12 @@ class DrawingScreen(
                     }
                 )
             }
-        ) {
+        ) { paddingValues ->
             DrawingCanvasContent(
                 state = state,
                 viewModel = viewModel,
-                rootGraphicsLayer = drawingGraphicsLayer
+                rootGraphicsLayer = drawingGraphicsLayer,
+                modifier = Modifier.padding(paddingValues)
             )
         }
     }

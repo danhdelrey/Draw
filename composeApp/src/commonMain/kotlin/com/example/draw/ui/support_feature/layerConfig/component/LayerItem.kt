@@ -24,7 +24,6 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.draw.data.model.canvas.CanvasConfig
 import com.example.draw.data.model.layer.Layer
 import com.example.draw.data.model.layer.VectorLayer
 import com.example.draw.ui.common.preview.PreviewComponent
@@ -32,6 +31,8 @@ import com.example.draw.ui.common.preview.PreviewComponent
 @Composable
 fun LayerItem(
     data: Layer,
+    canvasWidth: Float,
+    canvasHeight: Float,
     isSelected: Boolean,
     onClick: () -> Unit,
     onToggleVisibility: () -> Unit,
@@ -74,6 +75,8 @@ fun LayerItem(
                 // Gọi Thumbnail, nó sẽ tự căn giữa và giữ đúng tỷ lệ
                 LayerThumbnail(
                     layer = data,
+                    canvasWidth = canvasWidth,
+                    canvasHeight = canvasHeight,
                     modifier = Modifier.fillMaxSize()
                 )
             } else {
@@ -105,6 +108,8 @@ fun LayerItemPreview() {
     PreviewComponent {
         LayerItem(
             data = VectorLayer(id = "1", isVisible = true),
+            canvasWidth = 100f,
+            canvasHeight = 100f,
             isSelected = true,
             onClick = {},
             onToggleVisibility = {},

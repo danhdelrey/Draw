@@ -3,10 +3,7 @@ package com.example.draw.ui.feature.drawing.view
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,7 +19,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.draw.data.model.brush.EraserBrush
-import com.example.draw.data.model.canvas.CanvasConfig
 import com.example.draw.data.model.layer.VectorLayer
 import com.example.draw.ui.feature.drawing.component.DrawingCanvas
 import com.example.draw.ui.feature.drawing.component.drawingInput
@@ -34,25 +30,40 @@ import com.example.draw.ui.feature.drawing.viewModel.DrawingState
 fun DrawingCanvasContent(
     state: DrawingState,
     viewModel: DrawingScreenViewModel,
-    rootGraphicsLayer: GraphicsLayer
+    rootGraphicsLayer: GraphicsLayer,
+    modifier: Modifier = Modifier
 ) {
     BoxWithConstraints(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         val density = LocalDensity.current
-        val viewWidthPx = with(density) { maxWidth.toPx() }
 
-        // Tỷ lệ Input: Màn hình -> 1080p (để lưu vào DB)
-        val inputScale = CanvasConfig.DEFAULT_WIDTH / viewWidthPx
+        // Calculate scale to fit canvas inside screen (contain behavior)
+        val canvasWidth = state.canvas.width
+        val canvasHeight = state.canvas.height
 
-        // Tỷ lệ Render: 1080p -> Màn hình (để hiển thị)
-        val renderScale = viewWidthPx / CanvasConfig.DEFAULT_WIDTH
+        val availableWidth = with(density) { maxWidth.toPx() }
+        val availableHeight = with(density) { maxHeight.toPx() }
+
+        val scale = minOf(
+            availableWidth / canvasWidth,
+            availableHeight / canvasHeight
+        )
+
+        // Scaling factors
+        val inputScale = 1f / scale
+        val renderScale = scale
+
+        val displayedWidth = canvasWidth * scale
+        val displayedHeight = canvasHeight * scale
 
         Box(
             modifier = Modifier
-                .aspectRatio(CanvasConfig.DEFAULT_WIDTH / CanvasConfig.DEFAULT_HEIGHT)
-                .fillMaxSize() // Luôn lấp đầy width của cha (Screen width)
+                .size(
+                    width = with(density) { displayedWidth.toDp() },
+                    height = with(density) { displayedHeight.toDp() }
+                )
                 .background(Color.White)
                 .drawWithContent {
                     rootGraphicsLayer.record {
