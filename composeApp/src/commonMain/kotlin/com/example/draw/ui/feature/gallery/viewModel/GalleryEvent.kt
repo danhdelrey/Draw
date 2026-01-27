@@ -9,5 +9,5 @@ sealed interface GalleryEvent {
         val projectName: String,
     ) : GalleryEvent
     data class DeleteDrawingProject(val name: String) : GalleryEvent
-    data class EditDrawingProject(val name: String) : GalleryEvent
+    data class RenameDrawingProject(val project: com.example.draw.data.model.serialization.DrawingProject, val newName: String) : GalleryEvent
 }
