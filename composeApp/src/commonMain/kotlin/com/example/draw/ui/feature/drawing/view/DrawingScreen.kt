@@ -5,6 +5,7 @@ import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -15,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
+import com.example.draw.data.model.serialization.DrawingProject
 import com.example.draw.ui.common.component.CustomIconButton
 import com.example.draw.ui.common.component.ToolPanel
 import com.example.draw.ui.common.preview.PreviewComponent
@@ -28,7 +30,9 @@ import com.example.draw.ui.support_feature.undoRedo.mainComponent.UndoRedoButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class DrawingScreen : Screen {
+class DrawingScreen(
+    val drawingProject: DrawingProject? = null
+) : Screen {
     @Composable
     override fun Content() {
         val viewModel = koinScreenModel<DrawingScreenViewModel>()
@@ -38,6 +42,12 @@ class DrawingScreen : Screen {
         val drawingGraphicsLayer = rememberGraphicsLayer()
 
         var showLayerListPanel by remember { mutableStateOf(false) }
+
+        LaunchedEffect(Unit){
+            drawingProject?.let {
+                viewModel.onEvent(DrawingEvent.LoadDrawingProject(it))
+            }
+        }
 
         Scaffold(
             containerColor = MaterialTheme.colorScheme.surfaceDim,

@@ -9,6 +9,7 @@ import com.example.draw.data.model.canvas.CanvasMetadata
 import com.example.draw.data.model.canvas.DrawingCanvas
 import com.example.draw.data.model.layer.VectorLayer
 import com.example.draw.data.model.serialization.DrawingProject
+import com.example.draw.data.model.serialization.toDomain
 import com.example.draw.data.model.serialization.toDto
 
 /**
@@ -54,7 +55,7 @@ data class DrawingState(
             activeLayerId = canvas.activeLayerId,
             createdAt = canvas.metadata.createdAt,
             lastModified = canvas.metadata.modifiedAt,
-            currentBrush = null // Current brush can be added if needed
+            currentBrush = currentBrush.toDto()
         )
     }
 
@@ -63,7 +64,7 @@ data class DrawingState(
             id = project.id,
             width = project.width,
             height = project.height,
-            layers = project.layers.map { /* convert LayerData back to Layer */ TODO() },
+            layers = project.layers.map { it.toDomain() },
             activeLayerId = project.activeLayerId,
             metadata = CanvasMetadata(
                 backgroundColor = project.backgroundColor,
@@ -71,7 +72,7 @@ data class DrawingState(
                 modifiedAt = project.lastModified
             )
         )
-        return this.copy(canvas = canvas)
+        return this.copy(canvas = canvas, currentBrush = project.currentBrush?.toDomain() ?: SolidBrush.default())
     }
 
     companion object {

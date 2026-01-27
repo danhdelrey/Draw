@@ -5,10 +5,12 @@ import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.draw.data.datasource.local.DrawingRepository
 import com.example.draw.data.model.base.DrawingPath
 import com.example.draw.data.model.layer.VectorLayer
+import com.example.draw.data.model.serialization.DrawingProject
 import com.example.draw.data.model.util.currentTimeMillis
 import com.example.draw.data.model.util.generateId
 import com.example.draw.data.repository.ImageRepository
 import com.example.draw.platform.util.toPngByteArray
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -36,6 +38,7 @@ class DrawingScreenViewModel(
     fun onEvent(event: DrawingEvent) {
         screenModelScope.launch {
             when (event) {
+                is DrawingEvent.LoadDrawingProject -> handleLoadDrawingProject(event.drawingProject)
                 // --- DRAWING EVENTS ---
                 is DrawingEvent.StartDrawing -> handleStartDrawing(event)
                 is DrawingEvent.UpdateDrawing -> handleUpdateDrawing(event)
@@ -59,6 +62,16 @@ class DrawingScreenViewModel(
                 is DrawingEvent.SaveDrawingProject -> handleSaveDrawingProject(event.state)
             }
         }
+    }
+    private suspend fun handleLoadDrawingProject(drawingProject: DrawingProject) {
+        println("⏳ Loading drawing project...")
+        val newState = _state.value.fromDrawingProject(drawingProject)
+        _state.value = newState
+        // Clear undo/redo stacks on load
+        undoStack.clear()
+        redoStack.clear()
+        updateUndoRedoAvailability()
+        println("✓ Drawing project loaded successfully.")
     }
 
     private fun generateRandomProjectName(): String {

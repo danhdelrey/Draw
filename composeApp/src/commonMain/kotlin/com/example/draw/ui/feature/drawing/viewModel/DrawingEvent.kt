@@ -8,6 +8,8 @@ import com.example.draw.data.model.layer.Layer
 import com.example.draw.data.model.serialization.DrawingProject
 
 sealed interface DrawingEvent{
+    //load
+    data class LoadDrawingProject(val drawingProject: DrawingProject) : DrawingEvent
     //Draw
     data class StartDrawing(val currentTouchPosition: Offset) : DrawingEvent
     data class UpdateDrawing(val currentTouchPosition: Offset) : DrawingEvent

@@ -73,7 +73,7 @@ class GalleryScreen : Screen {
                             Card(
                                 modifier = Modifier.padding(8.dp),
                                 onClick = {
-                                    // Handle click if needed, e.g., navigator?.push(DrawingScreen(project))
+                                    navigator?.push(DrawingScreen(drawingProject = project))
                                 }
                             ) {
                                 Box(

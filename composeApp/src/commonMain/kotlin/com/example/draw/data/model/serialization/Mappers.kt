@@ -105,7 +105,7 @@ fun DrawingProject.toDomain(): DrawingCanvas {
     )
 }
 
-fun LayerData.toDomain(): Layer? {
+fun LayerData.toDomain(): Layer {
     val blendMode = try { BlendMode.valueOf(this.blendMode) } catch (e: Exception) { BlendMode.NORMAL }
     val metadata = LayerMetadata(
         type = if (type == "VECTOR") LayerType.VECTOR else LayerType.BITMAP,
@@ -134,8 +134,10 @@ fun LayerData.toDomain(): Layer? {
                 metadata = metadata,
                 bitmapId = bitmapContent
             )
-        } else null
-        else -> null
+        } else {
+            throw IllegalArgumentException("BitmapLayer must have bitmapContent")
+        }
+        else -> throw IllegalArgumentException("Unknown layer type: $type")
     }
 }
 
