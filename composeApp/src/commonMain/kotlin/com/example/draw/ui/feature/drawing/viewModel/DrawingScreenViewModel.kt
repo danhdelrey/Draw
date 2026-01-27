@@ -61,10 +61,17 @@ class DrawingScreenViewModel(
         }
     }
 
+    private fun generateRandomProjectName(): String {
+        val timestamp = currentTimeMillis()
+        return "drawing_project_$timestamp.json"
+    }
+
     private suspend fun handleSaveDrawingProject(state: DrawingState) {
         println("⏳ Saving drawing project...")
         val result = drawingRepository.saveDrawingProject(
-            state.toDrawingProject()
+            state.toDrawingProject(
+                projectName = generateRandomProjectName()
+            )
         )
         if(result){
             println("✓ Drawing project saved successfully.")
