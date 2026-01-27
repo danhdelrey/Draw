@@ -1,10 +1,15 @@
 package com.example.draw.ui.feature.gallery.view
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -16,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -46,11 +52,11 @@ class GalleryScreen : Screen {
                     navigator?.push(DrawingScreen())
                 }
             }
-        ) {
+        ) { paddingValues ->
             when (state.isLoading) {
                 true -> {
                     Box(
-                        modifier = Modifier.padding(it).fillMaxSize(),
+                        modifier = Modifier.padding(paddingValues).fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator()
@@ -58,10 +64,29 @@ class GalleryScreen : Screen {
                 }
 
                 false -> {
-                    Text(
-                        "Number of projects: ${state.drawingProjects.size}",
-                        modifier = Modifier.padding(it)
-                    )
+                    LazyVerticalGrid(
+                        columns = GridCells.Adaptive(minSize = 128.dp),
+                        contentPadding = PaddingValues(16.dp),
+                        modifier = Modifier.padding(paddingValues).fillMaxSize()
+                    ) {
+                        items(state.drawingProjects) { project ->
+                            Card(
+                                modifier = Modifier.padding(8.dp),
+                                onClick = {
+                                    // Handle click if needed, e.g., navigator?.push(DrawingScreen(project))
+                                }
+                            ) {
+                                Box(
+                                    modifier = Modifier.padding(16.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    // Display project details, e.g., name or thumbnail
+                                    // Assuming drawingProjects has a 'name' property
+                                    Text(text = project.name)
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
