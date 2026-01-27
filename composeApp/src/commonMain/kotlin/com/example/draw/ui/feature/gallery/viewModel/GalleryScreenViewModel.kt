@@ -20,9 +20,6 @@ class GalleryScreenViewModel(
     private val _effect = Channel<GalleryEffect>(Channel.BUFFERED)
     val effect = _effect.receiveAsFlow()
 
-    init {
-        onEvent(GalleryEvent.LoadDrawingProjects)
-    }
 
     fun onEvent(event: GalleryEvent) {
         screenModelScope.launch{

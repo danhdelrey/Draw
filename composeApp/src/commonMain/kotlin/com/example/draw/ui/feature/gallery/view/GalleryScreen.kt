@@ -50,6 +50,7 @@ class GalleryScreen : Screen {
         val navigator = LocalNavigator.current
 
         LaunchedEffect(Unit) {
+            viewModel.onEvent(GalleryEvent.LoadDrawingProjects)
             viewModel.effect.collect { effect ->
                 when (effect) {
                     is GalleryEffect.CreateDrawingProjectSuccess -> {
