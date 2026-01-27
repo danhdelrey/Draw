@@ -5,12 +5,10 @@ import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.draw.data.datasource.local.DrawingRepository
 import com.example.draw.data.model.base.DrawingPath
 import com.example.draw.data.model.layer.VectorLayer
-import com.example.draw.data.model.serialization.DrawingProject
 import com.example.draw.data.model.util.currentTimeMillis
 import com.example.draw.data.model.util.generateId
 import com.example.draw.data.repository.ImageRepository
 import com.example.draw.platform.util.toPngByteArray
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -28,7 +26,7 @@ class DrawingScreenViewModel(
     private val drawingRepository: DrawingRepository,
 ) : ScreenModel {
 
-    private val _state = MutableStateFlow(DrawingState())
+    private val _state = MutableStateFlow(DrawingState(projectName = generateRandomProjectName()))
     val state = _state.asStateFlow()
 
     // Undo/Redo stacks
@@ -63,7 +61,7 @@ class DrawingScreenViewModel(
             }
         }
     }
-    private suspend fun handleLoadInitialState(state: DrawingState) {
+    private fun handleLoadInitialState(state: DrawingState) {
         println("⏳ Loading drawing project...")
         _state.value = state
         // Clear undo/redo stacks on load
@@ -82,13 +80,26 @@ class DrawingScreenViewModel(
         println("⏳ Saving drawing project...")
         val result = drawingRepository.saveDrawingProject(
             state.toDrawingProject(
-                projectName = generateRandomProjectName()
+                projectName = state.projectName
             )
         )
         if(result){
             println("✓ Drawing project saved successfully.")
         } else {
             println("✗ Failed to save drawing project.")
+        }
+    }
+
+    private fun triggerAutoSave() {
+        screenModelScope.launch {
+            val result = drawingRepository.saveDrawingProject(
+                _state.value.toDrawingProject(
+                    projectName = _state.value.projectName
+                )
+            )
+            if (result) {
+                println("✓ Auto-saved project: ${_state.value.projectName}")
+            }
         }
     }
 
@@ -138,6 +149,7 @@ class DrawingScreenViewModel(
 
             redoStack.addLast(command)
             updateUndoRedoAvailability()
+            triggerAutoSave()
         }
     }
 
@@ -149,6 +161,7 @@ class DrawingScreenViewModel(
 
             undoStack.addLast(command)
             updateUndoRedoAvailability()
+            triggerAutoSave()
         }
     }
 
@@ -222,6 +235,7 @@ class DrawingScreenViewModel(
         redoStack.clear() // Important: clear redo when new action is performed
 
         updateUndoRedoAvailability()
+        triggerAutoSave()
     }
 
     /**
@@ -234,6 +248,11 @@ class DrawingScreenViewModel(
         )
     }
 }
+
+
+
+
+
 
 
 

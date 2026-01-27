@@ -21,6 +21,9 @@ import com.example.draw.data.model.serialization.toDto
  * - More explicit state structure
  */
 data class DrawingState(
+    // Project metadata
+    val projectName: String = "Untitled Project",
+
     // Canvas state (centralized)
     val canvas: DrawingCanvas = createDefaultCanvas(),
 
@@ -43,7 +46,7 @@ data class DrawingState(
         get() = canvas.layers
 
     fun toDrawingProject(
-        projectName: String = "project.json"
+        projectName: String = this.projectName
     ): DrawingProject{
         return DrawingProject(
             id = canvas.id,
@@ -90,7 +93,11 @@ data class DrawingState(
                     modifiedAt = project.lastModified
                 )
             )
-            return DrawingState(canvas = canvas, currentBrush = project.currentBrush?.toDomain() ?: SolidBrush.default())
+            return DrawingState(
+                projectName = project.name,
+                canvas = canvas,
+                currentBrush = project.currentBrush?.toDomain() ?: SolidBrush.default()
+            )
         }
     }
 }
