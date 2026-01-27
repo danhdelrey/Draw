@@ -59,6 +59,7 @@ class DrawingRepositoryImpl(
             folderPath = "drawings",
             content = Json.encodeToString(
                 DrawingProject.defaultProject().copy(
+                    id = projectName,
                     name = projectName,
                     width = canvasConfig.width,
                     height = canvasConfig.height

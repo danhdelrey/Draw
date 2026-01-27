@@ -28,8 +28,21 @@ data class DrawingProject(
                 width = 1920f,
                 height = 1080f,
                 backgroundColor = 0xFFFFFFFF,
-                layers = emptyList(),
-                activeLayerId = "",
+                layers = listOf(
+                    LayerData(
+                        id = "layer_1",
+                        name = "Layer 1",
+                        type = "VECTOR",
+                        isVisible = true,
+                        isLocked = false,
+                        opacity = 1.0f,
+                        blendMode = "NORMAL",
+                        paths = emptyList(),
+                        bitmapContent = null,
+                        metadata = emptyMap()
+                    )
+                ),
+                activeLayerId = "layer_1",
                 createdAt = currentTimeMillis(),
                 lastModified = currentTimeMillis(),
                 currentBrush = null
