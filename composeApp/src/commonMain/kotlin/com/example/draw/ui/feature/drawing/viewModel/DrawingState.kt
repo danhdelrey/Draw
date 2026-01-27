@@ -5,8 +5,11 @@ import com.example.draw.data.model.base.DrawingPath
 import com.example.draw.data.model.brush.Brush
 import com.example.draw.data.model.brush.SolidBrush
 import com.example.draw.data.model.canvas.CanvasConfig
+import com.example.draw.data.model.canvas.CanvasMetadata
 import com.example.draw.data.model.canvas.DrawingCanvas
 import com.example.draw.data.model.layer.VectorLayer
+import com.example.draw.data.model.serialization.DrawingProject
+import com.example.draw.data.model.serialization.toDto
 
 /**
  * Drawing state using the new refactored models.
@@ -37,6 +40,37 @@ data class DrawingState(
 
     val layers: List<com.example.draw.data.model.layer.Layer>
         get() = canvas.layers
+
+    fun toDrawingProject(): DrawingProject{
+        return DrawingProject(
+            id = canvas.id,
+            name = "Untitled Project",
+            width = canvas.width,
+            height = canvas.height,
+            backgroundColor = canvas.metadata.backgroundColor,
+            layers = canvas.layers.map { it.toDto() },
+            activeLayerId = canvas.activeLayerId,
+            createdAt = canvas.metadata.createdAt,
+            lastModified = canvas.metadata.modifiedAt,
+            currentBrush = null // Current brush can be added if needed
+        )
+    }
+
+    fun fromDrawingProject(project: DrawingProject): DrawingState {
+        val canvas = DrawingCanvas(
+            id = project.id,
+            width = project.width,
+            height = project.height,
+            layers = project.layers.map { /* convert LayerData back to Layer */ TODO() },
+            activeLayerId = project.activeLayerId,
+            metadata = CanvasMetadata(
+                backgroundColor = project.backgroundColor,
+                createdAt = project.createdAt,
+                modifiedAt = project.lastModified
+            )
+        )
+        return this.copy(canvas = canvas)
+    }
 
     companion object {
         /**
