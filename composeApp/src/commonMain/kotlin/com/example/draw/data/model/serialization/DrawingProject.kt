@@ -1,9 +1,12 @@
 package com.example.draw.data.model.serialization
 
+import kotlinx.serialization.Serializable
+
 /**
  * Data Transfer Object (DTO) for saving/loading a drawing project.
  * This effectively snapshots the entire DrawingCanvas and relevant state.
  */
+@Serializable
 data class DrawingProject(
     val id: String,
     val name: String,
@@ -21,6 +24,7 @@ data class DrawingProject(
  * DTO for a Layer.
  * Represents both Vector and Bitmap layers.
  */
+@Serializable
 data class LayerData(
     val id: String,
     val name: String,
@@ -44,6 +48,7 @@ data class LayerData(
 /**
  * DTO for a DrawingPath.
  */
+@Serializable
 data class PathData(
     val id: String,
     val points: List<PointData>,
@@ -54,6 +59,7 @@ data class PathData(
 /**
  * DTO for a point (replacing Offset which is not serializable).
  */
+@Serializable
 data class PointData(
     val x: Float,
     val y: Float
@@ -62,6 +68,7 @@ data class PointData(
 /**
  * DTO for Brush configuration.
  */
+@Serializable
 data class BrushData(
     val id: String,
     val type: String, // "SOLID", "AIR", etc.
