@@ -2,6 +2,7 @@ package com.example.draw.ui.feature.drawing.viewModel
 
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
+import com.example.draw.data.datasource.local.DrawingRepository
 import com.example.draw.data.model.base.DrawingPath
 import com.example.draw.data.model.layer.VectorLayer
 import com.example.draw.data.model.util.currentTimeMillis
@@ -21,7 +22,8 @@ import kotlinx.coroutines.launch
  * - Enhanced command pattern support
  */
 class DrawingScreenViewModel(
-    private val imageRepository: ImageRepository
+    private val imageRepository: ImageRepository,
+    private val drawingRepository: DrawingRepository,
 ) : ScreenModel {
 
     private val _state = MutableStateFlow(DrawingState())
@@ -32,27 +34,42 @@ class DrawingScreenViewModel(
     private val redoStack = ArrayDeque<DrawingCommand>()
 
     fun onEvent(event: DrawingEvent) {
-        when (event) {
-            // --- DRAWING EVENTS ---
-            is DrawingEvent.StartDrawing -> handleStartDrawing(event)
-            is DrawingEvent.UpdateDrawing -> handleUpdateDrawing(event)
-            is DrawingEvent.EndDrawing -> handleEndDrawing()
+        screenModelScope.launch {
+            when (event) {
+                // --- DRAWING EVENTS ---
+                is DrawingEvent.StartDrawing -> handleStartDrawing(event)
+                is DrawingEvent.UpdateDrawing -> handleUpdateDrawing(event)
+                is DrawingEvent.EndDrawing -> handleEndDrawing()
 
-            // --- UNDO/REDO ---
-            is DrawingEvent.Undo -> handleUndo()
-            is DrawingEvent.Redo -> handleRedo()
+                // --- UNDO/REDO ---
+                is DrawingEvent.Undo -> handleUndo()
+                is DrawingEvent.Redo -> handleRedo()
 
-            // --- LAYER MANAGEMENT ---
-            is DrawingEvent.AddLayer -> handleAddLayer()
-            is DrawingEvent.DeleteLayer -> handleDeleteLayer(event)
-            is DrawingEvent.ToggleLayerVisibility -> handleToggleLayerVisibility(event)
-            is DrawingEvent.SelectLayer -> handleSelectLayer(event)
+                // --- LAYER MANAGEMENT ---
+                is DrawingEvent.AddLayer -> handleAddLayer()
+                is DrawingEvent.DeleteLayer -> handleDeleteLayer(event)
+                is DrawingEvent.ToggleLayerVisibility -> handleToggleLayerVisibility(event)
+                is DrawingEvent.SelectLayer -> handleSelectLayer(event)
 
-            // --- BRUSH CONFIGURATION ---
-            is DrawingEvent.ChangeBrush -> handleChangeBrush(event)
+                // --- BRUSH CONFIGURATION ---
+                is DrawingEvent.ChangeBrush -> handleChangeBrush(event)
 
-            // --- SAVE ---
-            is DrawingEvent.SaveDrawing -> handleSaveDrawing(event)
+                // --- SAVE ---
+                is DrawingEvent.SaveDrawing -> handleSaveDrawing(event)
+                is DrawingEvent.SaveDrawingProject -> handleSaveDrawingProject(event.state)
+            }
+        }
+    }
+
+    private suspend fun handleSaveDrawingProject(state: DrawingState) {
+        println("⏳ Saving drawing project...")
+        val result = drawingRepository.saveDrawingProject(
+            state.toDrawingProject()
+        )
+        if(result){
+            println("✓ Drawing project saved successfully.")
+        } else {
+            println("✗ Failed to save drawing project.")
         }
     }
 

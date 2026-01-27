@@ -8,28 +8,35 @@ import java.io.File
 
 class AndroidFileStorageService(private val context: Context) : FileStorageService {
 
-    /**
-     * Helper function để lấy đối tượng File.
-     * folderPath sẽ là thư mục con bên trong internal storage của app.
-     */
     private fun getFile(folderPath: String, fileName: String): File {
-        // Tạo đường dẫn đến thư mục con: /data/data/com.app/files/folderPath
-        val directory = File(context.filesDir, folderPath)
-
-        // Tạo thư mục nếu chưa tồn tại (chỉ cần thiết khi ghi, nhưng an toàn khi gọi chung)
-        if (!directory.exists()) {
-            directory.mkdirs()
+        val baseDir = File(context.filesDir, folderPath)
+        if (!baseDir.exists()) {
+            baseDir.mkdirs()
         }
 
-        return File(directory, fileName)
+        return File(baseDir, fileName)
     }
 
-    override suspend fun saveFile(fileName: String, folderPath: String, content: ByteArray) {
-        withContext(Dispatchers.IO) {
-            val file = getFile(folderPath, fileName)
-            file.writeBytes(content)
-        }
+
+    override suspend fun saveFile(
+        fileName: String,
+        folderPath: String,
+        content: ByteArray
+    ): String = withContext(Dispatchers.IO) {
+
+        println("folderPath = '$folderPath'")
+        println("fileName   = '$fileName'")
+
+        val file = getFile(folderPath, fileName)
+
+        println("Saving file to: ${file.absolutePath}")
+
+        file.writeBytes(content)
+
+        file.absolutePath
     }
+
+
 
     override suspend fun readFile(fileName: String, folderPath: String): ByteArray? {
         return withContext(Dispatchers.IO) {
@@ -52,17 +59,25 @@ class AndroidFileStorageService(private val context: Context) : FileStorageServi
         }
     }
 
-    override suspend fun listFiles(folderPath: String): List<String> {
-        return withContext(Dispatchers.IO) {
+    override suspend fun listFiles(folderPath: String): List<String> =
+        withContext(Dispatchers.IO) {
+
             val directory = File(context.filesDir, folderPath)
 
-            // Nếu thư mục không tồn tại hoặc không phải là thư mục, trả về list rỗng
+            println("📂 Listing files in: ${directory.absolutePath}")
+            println("   exists=${directory.exists()}, isDir=${directory.isDirectory}")
+
             if (!directory.exists() || !directory.isDirectory) {
+                println("⚠️ Directory does not exist or is not a directory")
                 return@withContext emptyList()
             }
 
-            // list() trả về Array<String> tên các file/folder con
-            directory.list()?.toList() ?: emptyList()
+            val files = directory.list()?.toList().orEmpty()
+
+            println("📄 Found ${files.size} item(s):")
+            files.forEach { println("   - $it") }
+
+            files
         }
-    }
+
 }

@@ -30,5 +30,5 @@ val sharedModule = module {
     single<DrawingRepository> { DrawingRepositoryImpl(get()) }
 
     factory { GalleryScreenViewModel(get()) }
-    factory { DrawingScreenViewModel(get()) }
+    factory { DrawingScreenViewModel(get(), get()) }
 }

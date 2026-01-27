@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import com.example.draw.data.model.base.DrawingPath
 import com.example.draw.data.model.brush.Brush
 import com.example.draw.data.model.layer.Layer
+import com.example.draw.data.model.serialization.DrawingProject
 
 sealed interface DrawingEvent{
     //Draw
@@ -25,4 +26,7 @@ sealed interface DrawingEvent{
     //Undo/Redo
     object Undo : DrawingEvent
     object Redo : DrawingEvent
+
+    //save project
+    data class SaveDrawingProject(val state: DrawingState) : DrawingEvent
 }

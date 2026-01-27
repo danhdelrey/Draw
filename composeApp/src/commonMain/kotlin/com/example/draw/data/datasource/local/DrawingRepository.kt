@@ -2,12 +2,13 @@ package com.example.draw.data.datasource.local
 
 import com.example.draw.data.model.serialization.DrawingProject
 import com.example.draw.data.service.FileStorageService
+import kotlinx.serialization.json.Json
 
 interface DrawingRepository {
     suspend fun getAllDrawingProjects(): List<DrawingProject>
-    suspend fun getDrawingProjectById(id: String): DrawingProject?
+    suspend fun getDrawingProjectByName(name: String): DrawingProject?
     suspend fun saveDrawingProject(drawing: DrawingProject): Boolean
-    suspend fun deleteDrawingProject(id: String): Boolean
+    suspend fun deleteDrawingProject(name: String): Boolean
 }
 
 class DrawingRepositoryImpl(
@@ -18,20 +19,35 @@ class DrawingRepositoryImpl(
         return files.mapNotNull { fileName ->
             val data = fileStorageService.readFile(fileName, "drawings")
             data?.let { fileData ->
-                null
+                Json.decodeFromString<DrawingProject>(fileData.decodeToString())
             }
         }
     }
 
-    override suspend fun getDrawingProjectById(id: String): DrawingProject? {
-        TODO("Not yet implemented")
+    override suspend fun getDrawingProjectByName(name: String): DrawingProject? {
+        val project = fileStorageService.readFile(name, "drawings")
+        return project?.let { data ->
+            Json.decodeFromString<DrawingProject>(data.decodeToString())
+        }
     }
 
     override suspend fun saveDrawingProject(drawing: DrawingProject): Boolean {
-        TODO("Not yet implemented")
+        try {
+           val path = fileStorageService.saveFile(
+                fileName = drawing.name,
+                folderPath = "drawings",
+                content = Json.encodeToString(drawing).encodeToByteArray()
+            )
+            println("Saved drawing at path: $path")
+            return path != null
+        }catch (e : Exception){
+            println("Error saving drawing: ${e.message}")
+            return false
+        }
+
     }
 
-    override suspend fun deleteDrawingProject(id: String): Boolean {
-        TODO("Not yet implemented")
+    override suspend fun deleteDrawingProject(name: String): Boolean {
+        return fileStorageService.deleteFile(name, "drawings")
     }
 }

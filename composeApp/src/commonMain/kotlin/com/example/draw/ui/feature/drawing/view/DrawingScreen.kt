@@ -98,6 +98,7 @@ class DrawingScreen : Screen {
                         CustomIconButton(
                             icon = Icons.Default.Save,
                         ) {
+                            viewModel.onEvent(DrawingEvent.SaveDrawingProject(state))
                             scope.launch(Dispatchers.Default) {
                                 //Chụp ảnh (Main Thread)
                                 val bitmap = drawingGraphicsLayer.toImageBitmap()

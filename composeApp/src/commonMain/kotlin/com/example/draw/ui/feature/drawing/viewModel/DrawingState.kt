@@ -41,10 +41,12 @@ data class DrawingState(
     val layers: List<com.example.draw.data.model.layer.Layer>
         get() = canvas.layers
 
-    fun toDrawingProject(): DrawingProject{
+    fun toDrawingProject(
+        projectName: String = "project.json"
+    ): DrawingProject{
         return DrawingProject(
             id = canvas.id,
-            name = "Untitled Project",
+            name = projectName,
             width = canvas.width,
             height = canvas.height,
             backgroundColor = canvas.metadata.backgroundColor,

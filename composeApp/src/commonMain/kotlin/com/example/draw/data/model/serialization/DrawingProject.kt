@@ -8,8 +8,8 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class DrawingProject(
-    val id: String,
-    val name: String,
+    val id: String, //path to file + file name
+    val name: String, // file name
     val width: Float,
     val height: Float,
     val backgroundColor: Long = 0xFFFFFFFF,

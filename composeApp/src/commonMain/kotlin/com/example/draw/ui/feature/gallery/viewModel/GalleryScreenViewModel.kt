@@ -1,9 +1,11 @@
 package com.example.draw.ui.feature.gallery.viewModel
 
 import cafe.adriel.voyager.core.model.ScreenModel
+import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.draw.data.datasource.local.DrawingRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class GalleryScreenViewModel(
     private val drawingRepository: DrawingRepository
@@ -12,28 +14,33 @@ class GalleryScreenViewModel(
     val state = _state.asStateFlow()
 
     init {
-        onEvent(GalleryEvent.LoadDrawings)
+        onEvent(GalleryEvent.LoadDrawingProjects)
     }
 
     fun onEvent(event: GalleryEvent) {
-        when (event) {
-            is GalleryEvent.LoadDrawings -> loadDrawings()
-            is GalleryEvent.CreateDrawing -> createDrawing()
-            is GalleryEvent.DeleteDrawing -> deleteDrawing(event.drawing)
-            is GalleryEvent.EditDrawing -> editDrawing(event.drawing)
+        screenModelScope.launch{
+            when (event) {
+                is GalleryEvent.LoadDrawingProjects -> loadDrawingsProjects()
+                is GalleryEvent.CreateDrawingProject -> createDrawingProject()
+                is GalleryEvent.DeleteDrawingProject -> deleteDrawingProject(event.name)
+                is GalleryEvent.EditDrawingProject -> editDrawingProject(event.name)
+            }
         }
     }
 
-    private fun deleteDrawing(drawing: String) {}
+    private suspend fun editDrawingProject(name: String) {}
 
-    private fun createDrawing() {
-        TODO("Not yet implemented")
+    private suspend fun deleteDrawingProject(name: String) {
+
     }
 
-    private fun loadDrawings() {
-        TODO("Not yet implemented")
+    private suspend fun createDrawingProject() {
     }
-    private fun editDrawing(drawing: String) {
-        TODO("Not yet implemented")
+
+    private suspend fun loadDrawingsProjects() {
+        val projects = drawingRepository.getAllDrawingProjects()
+        _state.value = _state.value.copy(isLoading = false, drawingProjects = projects)
     }
+
+
 }
