@@ -1,5 +1,6 @@
 package com.example.draw.data.datasource.local
 
+import com.example.draw.data.model.canvas.CanvasConfig
 import com.example.draw.data.model.serialization.DrawingProject
 import com.example.draw.data.service.FileStorageService
 import kotlinx.serialization.json.Json
@@ -9,6 +10,7 @@ interface DrawingRepository {
     suspend fun getDrawingProjectByName(name: String): DrawingProject?
     suspend fun saveDrawingProject(drawing: DrawingProject): Boolean
     suspend fun deleteDrawingProject(name: String): Boolean
+    suspend fun createDrawingProject(projectName: String, canvasConfig: CanvasConfig): DrawingProject
 }
 
 class DrawingRepositoryImpl(
@@ -49,5 +51,22 @@ class DrawingRepositoryImpl(
 
     override suspend fun deleteDrawingProject(name: String): Boolean {
         return fileStorageService.deleteFile(name, "drawings")
+    }
+
+    override suspend fun createDrawingProject(projectName: String, canvasConfig: CanvasConfig): DrawingProject {
+        val projectPath = fileStorageService.saveFile(
+            fileName = projectName,
+            folderPath = "drawings",
+            content = Json.encodeToString(
+                DrawingProject.defaultProject().copy(
+                    name = projectName,
+                    width = canvasConfig.width,
+                    height = canvasConfig.height
+                )
+            ).encodeToByteArray()
+
+        )
+        println("Created new drawing project at path: $projectPath")
+        return getDrawingProjectByName(projectName)!!
     }
 }

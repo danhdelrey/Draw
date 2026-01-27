@@ -22,6 +22,7 @@ import com.example.draw.ui.common.component.ToolPanel
 import com.example.draw.ui.common.preview.PreviewComponent
 import com.example.draw.ui.feature.drawing.viewModel.DrawingEvent
 import com.example.draw.ui.feature.drawing.viewModel.DrawingScreenViewModel
+import com.example.draw.ui.feature.drawing.viewModel.DrawingState
 import com.example.draw.ui.support_feature.brushConfig.brush.mainComponent.BrushConfigButton
 import com.example.draw.ui.support_feature.brushConfig.color.mainComponent.ColorPickerButton
 import com.example.draw.ui.support_feature.layerConfig.mainComponent.LayerListPanel
@@ -31,7 +32,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class DrawingScreen(
-    val drawingProject: DrawingProject? = null
+    val initState: DrawingState? = null
 ) : Screen {
     @Composable
     override fun Content() {
@@ -44,8 +45,8 @@ class DrawingScreen(
         var showLayerListPanel by remember { mutableStateOf(false) }
 
         LaunchedEffect(Unit){
-            drawingProject?.let {
-                viewModel.onEvent(DrawingEvent.LoadDrawingProject(it))
+            initState?.let {
+                viewModel.onEvent(DrawingEvent.LoadInitialState(it))
             }
         }
 

@@ -1,5 +1,6 @@
 package com.example.draw.data.model.serialization
 
+import com.example.draw.data.model.util.currentTimeMillis
 import kotlinx.serialization.Serializable
 
 /**
@@ -18,7 +19,24 @@ data class DrawingProject(
     val createdAt: Long,
     val lastModified: Long,
     val currentBrush: BrushData? = null
-)
+){
+    companion object{
+        fun defaultProject(): DrawingProject{
+            return DrawingProject(
+                id = "untitled_project",
+                name = "untitled_project",
+                width = 1920f,
+                height = 1080f,
+                backgroundColor = 0xFFFFFFFF,
+                layers = emptyList(),
+                activeLayerId = "",
+                createdAt = currentTimeMillis(),
+                lastModified = currentTimeMillis(),
+                currentBrush = null
+            )
+        }
+    }
+}
 
 /**
  * DTO for a Layer.

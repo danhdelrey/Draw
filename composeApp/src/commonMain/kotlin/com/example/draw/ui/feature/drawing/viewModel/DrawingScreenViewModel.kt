@@ -38,7 +38,7 @@ class DrawingScreenViewModel(
     fun onEvent(event: DrawingEvent) {
         screenModelScope.launch {
             when (event) {
-                is DrawingEvent.LoadDrawingProject -> handleLoadDrawingProject(event.drawingProject)
+                is DrawingEvent.LoadInitialState -> handleLoadInitialState(event.state)
                 // --- DRAWING EVENTS ---
                 is DrawingEvent.StartDrawing -> handleStartDrawing(event)
                 is DrawingEvent.UpdateDrawing -> handleUpdateDrawing(event)
@@ -63,10 +63,9 @@ class DrawingScreenViewModel(
             }
         }
     }
-    private suspend fun handleLoadDrawingProject(drawingProject: DrawingProject) {
+    private suspend fun handleLoadInitialState(state: DrawingState) {
         println("⏳ Loading drawing project...")
-        val newState = _state.value.fromDrawingProject(drawingProject)
-        _state.value = newState
+        _state.value = state
         // Clear undo/redo stacks on load
         undoStack.clear()
         redoStack.clear()

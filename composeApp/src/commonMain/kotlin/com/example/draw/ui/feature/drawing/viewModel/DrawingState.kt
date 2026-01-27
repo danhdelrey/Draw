@@ -59,21 +59,7 @@ data class DrawingState(
         )
     }
 
-    fun fromDrawingProject(project: DrawingProject): DrawingState {
-        val canvas = DrawingCanvas(
-            id = project.id,
-            width = project.width,
-            height = project.height,
-            layers = project.layers.map { it.toDomain() },
-            activeLayerId = project.activeLayerId,
-            metadata = CanvasMetadata(
-                backgroundColor = project.backgroundColor,
-                createdAt = project.createdAt,
-                modifiedAt = project.lastModified
-            )
-        )
-        return this.copy(canvas = canvas, currentBrush = project.currentBrush?.toDomain() ?: SolidBrush.default())
-    }
+
 
     companion object {
         /**
@@ -89,6 +75,22 @@ data class DrawingState(
                 height = CanvasConfig.DEFAULT_HEIGHT,
                 initialLayer = defaultLayer
             )
+        }
+
+        fun fromDrawingProject(project: DrawingProject): DrawingState {
+            val canvas = DrawingCanvas(
+                id = project.id,
+                width = project.width,
+                height = project.height,
+                layers = project.layers.map { it.toDomain() },
+                activeLayerId = project.activeLayerId,
+                metadata = CanvasMetadata(
+                    backgroundColor = project.backgroundColor,
+                    createdAt = project.createdAt,
+                    modifiedAt = project.lastModified
+                )
+            )
+            return DrawingState(canvas = canvas, currentBrush = project.currentBrush?.toDomain() ?: SolidBrush.default())
         }
     }
 }
