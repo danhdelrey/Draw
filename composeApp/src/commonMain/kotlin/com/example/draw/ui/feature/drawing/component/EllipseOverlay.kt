@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.input.pointer.pointerInput
 import com.example.draw.data.model.shape.EllipseState
 import kotlin.math.cos
@@ -47,10 +48,13 @@ private const val HANDLE_HIT_RADIUS = 60f
  * Handles all gesture interactions for manipulating the ellipse.
  *
  * Note: Drawing path preview is handled by DrawingCanvas for proper eraser support.
+ * This overlay is placed outside the canvas box to receive input from anywhere on screen.
  *
  * @param ellipseState Current ellipse state
  * @param renderScale Scale factor for rendering
  * @param inputScale Scale factor for input coordinates
+ * @param canvasOffsetX X offset of canvas from container top-left
+ * @param canvasOffsetY Y offset of canvas from container top-left
  * @param onUpdateEllipse Callback when ellipse state changes
  * @param onExitEllipseMode Callback when user taps the exit handle
  * @param onStartDrawing Callback when user starts drawing on canvas
@@ -62,6 +66,8 @@ fun EllipseOverlay(
     ellipseState: EllipseState,
     renderScale: Float,
     inputScale: Float,
+    canvasOffsetX: Float,
+    canvasOffsetY: Float,
     onUpdateEllipse: (EllipseState) -> Unit,
     onExitEllipseMode: () -> Unit,
     onStartDrawing: (Offset) -> Unit,
@@ -83,18 +89,26 @@ fun EllipseOverlay(
     // Update the current ellipse state when prop changes
     currentEllipseState = ellipseState
 
+    // Helper function to convert screen coordinates to canvas coordinates
+    fun screenToCanvas(screenOffset: Offset): Offset {
+        return (screenOffset - Offset(canvasOffsetX, canvasOffsetY)) * inputScale
+    }
+
     Box(modifier = modifier.fillMaxSize()) {
         // Canvas for rendering ellipse and handles only
         // Drawing path is rendered by DrawingCanvas for proper eraser support
         Canvas(
             modifier = Modifier.fillMaxSize()
         ) {
-            scale(scale = renderScale, pivot = Offset.Zero) {
-                // Draw the ellipse
-                drawEllipse(ellipseState)
+            // Translate to canvas position, then scale
+            translate(left = canvasOffsetX, top = canvasOffsetY) {
+                scale(scale = renderScale, pivot = Offset.Zero) {
+                    // Draw the ellipse
+                    drawEllipse(ellipseState)
 
-                // Draw control handles
-                drawControlHandles(ellipseState)
+                    // Draw control handles
+                    drawControlHandles(ellipseState)
+                }
             }
         }
 
@@ -104,7 +118,7 @@ fun EllipseOverlay(
                 .fillMaxSize()
                 .pointerInput(Unit) {
                     detectTapGestures { tapOffset ->
-                        val scaledOffset = tapOffset * inputScale
+                        val scaledOffset = screenToCanvas(tapOffset)
                         val handles = currentEllipseState.getHandlePositions()
 
                         // Check if tapped on bottom (exit) handle
@@ -116,7 +130,7 @@ fun EllipseOverlay(
                 .pointerInput(Unit) {
                     detectDragGestures(
                         onDragStart = { offset ->
-                            val scaledOffset = offset * inputScale
+                            val scaledOffset = screenToCanvas(offset)
                             val handles = currentEllipseState.getHandlePositions()
                             initialEllipseState = currentEllipseState
                             dragStartPosition = scaledOffset
@@ -145,7 +159,7 @@ fun EllipseOverlay(
                             }
                         },
                         onDrag = { change, _ ->
-                            val scaledOffset = change.position * inputScale
+                            val scaledOffset = screenToCanvas(change.position)
 
                             when (activeHandle) {
                                 HandleType.CENTER_MOVE -> {

@@ -59,6 +59,10 @@ fun DrawingCanvasContent(
         val displayedWidth = canvasWidth * scale
         val displayedHeight = canvasHeight * scale
 
+        // Calculate canvas offset from top-left of the container
+        val canvasOffsetX = (availableWidth - displayedWidth) / 2f
+        val canvasOffsetY = (availableHeight - displayedHeight) / 2f
+
         Box(
             modifier = Modifier
                 .size(
@@ -99,48 +103,49 @@ fun DrawingCanvasContent(
                         )
                     }
 
-                    // --- LAYER INPUT ---
-                    if (isActiveLayer) {
-                        // Check if in ellipse mode
-                        val ellipseMode = state.ellipseMode
-                        if (ellipseMode != null) {
-                            // Ellipse Drawing Mode - show overlay with controls
-                            EllipseOverlay(
-                                ellipseState = ellipseMode,
-                                renderScale = renderScale,
-                                inputScale = inputScale,
-                                onUpdateEllipse = { newEllipse ->
-                                    viewModel.onEvent(DrawingEvent.UpdateEllipseState(newEllipse))
-                                },
-                                onExitEllipseMode = {
-                                    viewModel.onEvent(DrawingEvent.ExitEllipseMode)
-                                },
-                                onStartDrawing = { offset ->
-                                    viewModel.onEvent(DrawingEvent.StartDrawing(offset))
-                                },
-                                onUpdateDrawing = { offset ->
-                                    viewModel.onEvent(DrawingEvent.UpdateDrawing(offset))
-                                },
-                                onEndDrawing = {
-                                    viewModel.onEvent(DrawingEvent.EndDrawing)
-                                },
-                                modifier = Modifier.fillMaxSize()
-                            )
-                        } else {
-                            // Normal drawing mode
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .drawingInput(
-                                        onDragStart = { offset -> viewModel.onEvent(DrawingEvent.StartDrawing(offset * inputScale)) },
-                                        onDrag = { offset -> viewModel.onEvent(DrawingEvent.UpdateDrawing(offset * inputScale)) },
-                                        onDragEnd = { viewModel.onEvent(DrawingEvent.EndDrawing) }
-                                    )
-                            )
-                        }
+                    // --- LAYER INPUT (only for normal mode, not ellipse mode) ---
+                    if (isActiveLayer && state.ellipseMode == null) {
+                        // Normal drawing mode
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .drawingInput(
+                                    onDragStart = { offset -> viewModel.onEvent(DrawingEvent.StartDrawing(offset * inputScale)) },
+                                    onDrag = { offset -> viewModel.onEvent(DrawingEvent.UpdateDrawing(offset * inputScale)) },
+                                    onDragEnd = { viewModel.onEvent(DrawingEvent.EndDrawing) }
+                                )
+                        )
                     }
                 }
             }
+        }
+
+        // --- ELLIPSE OVERLAY (outside canvas for full-screen input) ---
+        val ellipseMode = state.ellipseMode
+        if (ellipseMode != null) {
+            EllipseOverlay(
+                ellipseState = ellipseMode,
+                renderScale = renderScale,
+                inputScale = inputScale,
+                canvasOffsetX = canvasOffsetX,
+                canvasOffsetY = canvasOffsetY,
+                onUpdateEllipse = { newEllipse ->
+                    viewModel.onEvent(DrawingEvent.UpdateEllipseState(newEllipse))
+                },
+                onExitEllipseMode = {
+                    viewModel.onEvent(DrawingEvent.ExitEllipseMode)
+                },
+                onStartDrawing = { offset ->
+                    viewModel.onEvent(DrawingEvent.StartDrawing(offset))
+                },
+                onUpdateDrawing = { offset ->
+                    viewModel.onEvent(DrawingEvent.UpdateDrawing(offset))
+                },
+                onEndDrawing = {
+                    viewModel.onEvent(DrawingEvent.EndDrawing)
+                },
+                modifier = Modifier.fillMaxSize()
+            )
         }
     }
 }

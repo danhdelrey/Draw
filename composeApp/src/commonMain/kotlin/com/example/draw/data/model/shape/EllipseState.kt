@@ -192,7 +192,7 @@ data class EllipseState(
     }
 
     /**
-     * Update the ellipse with a new center position
+     * Update the center position
      */
     fun updateCenter(newCenter: Offset): EllipseState = copy(center = newCenter)
 
