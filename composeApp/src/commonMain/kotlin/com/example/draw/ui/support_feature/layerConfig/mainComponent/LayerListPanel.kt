@@ -53,6 +53,13 @@ fun LayerListPanel(
 
     var previousLayerCount by remember { mutableStateOf(currentLayers.size) }
 
+    LaunchedEffect(Unit) {
+        val targetIndex = draggableLayers.indexOfFirst { it.id == activeLayer.id }
+        if (targetIndex != -1) {
+            listState.scrollToItem(targetIndex)
+        }
+    }
+
     LaunchedEffect(currentLayers.size) {
         if (currentLayers.size > previousLayerCount) {
             val targetIndex = draggableLayers.indexOfFirst { it.id == activeLayer.id }
