@@ -57,6 +57,8 @@ kotlin {
             implementation(compose.materialIconsExtended)
 
             implementation(libs.kotlinx.serialization.json)
+
+            implementation(libs.colorpicker.compose)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

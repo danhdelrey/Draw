@@ -16,6 +16,7 @@ kotlin = "2.3.0"
 kotlinxSerializationJson = "1.10.0"
 reorderable = "2.4.3"
 voyagerNavigator = "1.1.0-beta03"
+colorpicker = "1.1.2"
 
 [libraries]
 androidx-material-icons-core = { module = "androidx.compose.material:material-icons-core" }
@@ -37,6 +38,7 @@ reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reo
 voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voyagerNavigator" }
 voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyagerNavigator" }
 voyager-screenmodel = { module = "cafe.adriel.voyager:voyager-screenmodel", version.ref = "voyagerNavigator" }
+colorpicker-compose = { module = "com.github.skydoves:colorpicker-compose", version.ref = "colorpicker" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
