@@ -89,9 +89,14 @@ class GalleryScreen : Screen {
                 )
             },
             floatingActionButton = {
-                CreateDrawingProjectButton { canvasConfig , projectName ->
-                    viewModel.onEvent(GalleryEvent.CreateDrawingProject(canvasConfig, projectName))
-                }
+                CreateDrawingProjectButton(
+                    onCreateRequest = { canvasConfig , projectName ->
+                        viewModel.onEvent(GalleryEvent.CreateDrawingProject(canvasConfig, projectName))
+                    },
+                    onImportRequest = { project ->
+                        viewModel.onEvent(GalleryEvent.ImportDrawingProject(project))
+                    }
+                )
             }
         ) { paddingValues ->
             when (state.isLoading) {

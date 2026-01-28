@@ -1,5 +1,7 @@
 package com.example.draw.data.model.canvas
 
+import kotlinx.serialization.Serializable
+
 /**
  * Canvas configuration settings.
  *
@@ -9,6 +11,7 @@ package com.example.draw.data.model.canvas
  * - Easy to extend with new settings
  * - Support for different canvas sizes and presets
  */
+@Serializable
 data class CanvasConfig(
     val width: Float = DEFAULT_WIDTH,
     val height: Float = DEFAULT_HEIGHT,
@@ -62,4 +65,3 @@ data class CanvasConfig(
             CanvasConfig(width = size, height = size)
     }
 }
-
