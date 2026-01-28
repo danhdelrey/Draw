@@ -52,6 +52,8 @@ kotlin {
             implementation(libs.voyager.screenmodel)
             implementation(libs.voyager.koin)
 
+            implementation(libs.reorderable)
+
             implementation(compose.materialIconsExtended)
 
             implementation(libs.kotlinx.serialization.json)
@@ -92,4 +94,3 @@ android {
 dependencies {
     debugImplementation(compose.uiTooling)
 }
-

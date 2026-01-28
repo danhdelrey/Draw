@@ -160,51 +160,23 @@ data class RenameLayerCommand(
 }
 
 /**
- * Command 7: Move/Reorder layer
+ * Command 5: Reorder layer
  */
-data class MoveLayerCommand(
+data class ReorderLayerCommand(
     val fromIndex: Int,
     val toIndex: Int
 ) : DrawingCommand {
 
     override fun execute(state: DrawingState): DrawingState {
+        // DrawingCanvas moveLayer handles 0-based indexing appropriately
+        // We defer to domain logic in DrawingCanvas
         val updatedCanvas = state.canvas.moveLayer(fromIndex, toIndex)
         return state.copy(canvas = updatedCanvas)
     }
 
     override fun undo(state: DrawingState): DrawingState {
+        // Reverse operation: move from toIndex back to fromIndex
         val updatedCanvas = state.canvas.moveLayer(toIndex, fromIndex)
-        return state.copy(canvas = updatedCanvas)
-    }
-}
-
-/**
- * Command 8: Clear all paths in a layer
- */
-data class ClearLayerCommand(
-    val layerId: String,
-    val previousPaths: List<DrawingPath>
-) : DrawingCommand {
-
-    override fun execute(state: DrawingState): DrawingState {
-        val updatedCanvas = state.canvas.updateLayer(layerId) { layer ->
-            if (layer is VectorLayer) {
-                layer.clearPaths()
-            } else {
-                layer
-            }
-        }
-        return state.copy(canvas = updatedCanvas)
-    }
-
-    override fun undo(state: DrawingState): DrawingState {
-        val updatedCanvas = state.canvas.updateLayer(layerId) { layer ->
-            if (layer is VectorLayer) {
-                layer.updatePaths(previousPaths)
-            } else {
-                layer
-            }
-        }
         return state.copy(canvas = updatedCanvas)
     }
 }

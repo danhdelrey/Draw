@@ -51,6 +51,7 @@ class DrawingScreenViewModel(
                 is DrawingEvent.AddLayer -> handleAddLayer()
                 is DrawingEvent.DeleteLayer -> handleDeleteLayer(event)
                 is DrawingEvent.ToggleLayerVisibility -> handleToggleLayerVisibility(event)
+                is DrawingEvent.ReorderLayer -> handleReorderLayer(event)
                 is DrawingEvent.SelectLayer -> handleSelectLayer(event)
 
                 // --- BRUSH CONFIGURATION ---
@@ -201,6 +202,11 @@ class DrawingScreenViewModel(
         performCommand(command)
     }
 
+    private fun handleReorderLayer(event: DrawingEvent.ReorderLayer) {
+        val command = ReorderLayerCommand(event.fromIndex, event.toIndex)
+        performCommand(command)
+    }
+
     private fun handleSelectLayer(event: DrawingEvent.SelectLayer) {
         // Select layer doesn't change data, only view state
         // No undo/redo needed
@@ -304,6 +310,8 @@ class DrawingScreenViewModel(
         )
     }
 }
+
+
 
 
 
