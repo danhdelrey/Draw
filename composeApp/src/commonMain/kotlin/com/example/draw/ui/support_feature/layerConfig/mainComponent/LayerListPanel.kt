@@ -43,10 +43,11 @@ fun LayerListPanel(
     modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
+    val backgroundLayer = currentLayers.firstOrNull()
+    val draggableLayers = if (currentLayers.isNotEmpty()) currentLayers.drop(1) else emptyList()
+
     val reorderableState = rememberReorderableLazyListState(listState) { from, to ->
-        if (to.index != 0) {
-            onReorderLayer(from.index, to.index)
-        }
+        onReorderLayer(from.index + 1, to.index + 1)
     }
 
     Column(
@@ -83,12 +84,12 @@ fun LayerListPanel(
             state = listState,
             reverseLayout = true // Đảo ngược danh sách (Layer mới nhất ở trên)
         ) {
-            itemsIndexed(currentLayers, key = { _, item -> item.id }) { index, layer ->
+            itemsIndexed(draggableLayers, key = { _, item -> item.id }) { _, layer ->
                 ReorderableItem(reorderableState, key = layer.id) { isDragging ->
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .then(if (index != 0) Modifier.draggableHandle() else Modifier)
+                            .draggableHandle()
                     ) {
                         LayerItem(
                             data = layer,
@@ -97,9 +98,7 @@ fun LayerListPanel(
                             isSelected = layer.id == activeLayer.id,
                             onClick = { onSelectLayer(layer) },
                             onToggleVisibility = { onToggleVisibility(layer) },
-                            onDelete = if (index != 0) {
-                                { onDeleteLayer(layer) }
-                            } else null
+                            onDelete = { onDeleteLayer(layer) }
                         )
                         if (isDragging) {
                             Box(
@@ -111,6 +110,18 @@ fun LayerListPanel(
                     }
                 }
             }
+        }
+
+        if (backgroundLayer != null) {
+            LayerItem(
+                data = backgroundLayer,
+                canvasWidth = canvasWidth,
+                canvasHeight = canvasHeight,
+                isSelected = backgroundLayer.id == activeLayer.id,
+                onClick = { onSelectLayer(backgroundLayer) },
+                onToggleVisibility = { onToggleVisibility(backgroundLayer) },
+                onDelete = null
+            )
         }
     }
 }
