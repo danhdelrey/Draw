@@ -22,7 +22,6 @@ import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.input.pointer.pointerInput
 import com.example.draw.data.model.base.DrawingPath
-import com.example.draw.data.model.brush.Brush
 import com.example.draw.data.model.shape.EllipseState
 import kotlin.math.cos
 import kotlin.math.sin
@@ -51,7 +50,7 @@ private const val HANDLE_HIT_RADIUS = 35f
  * Handles all gesture interactions for manipulating the ellipse.
  *
  * @param ellipseState Current ellipse state
- * @param currentBrush Current brush for drawing
+ * @param currentDrawingPath Current path being drawn (for preview)
  * @param renderScale Scale factor for rendering
  * @param inputScale Scale factor for input coordinates
  * @param onUpdateEllipse Callback when ellipse state changes
@@ -63,7 +62,6 @@ private const val HANDLE_HIT_RADIUS = 35f
 @Composable
 fun EllipseOverlay(
     ellipseState: EllipseState,
-    currentBrush: Brush,
     currentDrawingPath: DrawingPath?,
     renderScale: Float,
     inputScale: Float,
@@ -79,9 +77,11 @@ fun EllipseOverlay(
     var initialEllipseState by remember { mutableStateOf(ellipseState) }
     var dragStartPosition by remember { mutableStateOf(Offset.Zero) }
 
-    // Track drawing points for ellipse projection
-    var isDrawing by remember { mutableStateOf(false) }
-    var lastDrawAngle by remember { mutableStateOf<Float?>(null) }
+    // Keep a mutable reference to the latest ellipse state for use in gestures
+    var currentEllipseState by remember { mutableStateOf(ellipseState) }
+
+    // Update the current ellipse state when prop changes
+    currentEllipseState = ellipseState
 
     Box(modifier = modifier.fillMaxSize()) {
         // Canvas for rendering ellipse and handles
@@ -97,19 +97,19 @@ fun EllipseOverlay(
 
                 // Draw current path being drawn (projected onto ellipse)
                 currentDrawingPath?.let { path ->
-                    drawEllipsePath(path, Color(currentBrush.colorArgb), currentBrush.size, currentBrush.opacity)
+                    drawDrawingPath(path)
                 }
             }
         }
 
-        // Input layer for gestures
+        // Input layer for gestures - use Unit as key to avoid restarting mid-gesture
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .pointerInput(ellipseState) {
+                .pointerInput(Unit) {
                     detectTapGestures { tapOffset ->
                         val scaledOffset = tapOffset * inputScale
-                        val handles = ellipseState.getHandlePositions()
+                        val handles = currentEllipseState.getHandlePositions()
 
                         // Check if tapped on bottom (exit) handle
                         if (isNearHandle(scaledOffset, handles.bottom)) {
@@ -117,12 +117,12 @@ fun EllipseOverlay(
                         }
                     }
                 }
-                .pointerInput(ellipseState) {
+                .pointerInput(Unit) {
                     detectDragGestures(
                         onDragStart = { offset ->
                             val scaledOffset = offset * inputScale
-                            val handles = ellipseState.getHandlePositions()
-                            initialEllipseState = ellipseState
+                            val handles = currentEllipseState.getHandlePositions()
+                            initialEllipseState = currentEllipseState
                             dragStartPosition = scaledOffset
 
                             // Determine which handle is being dragged
@@ -136,14 +136,12 @@ fun EllipseOverlay(
                             }
 
                             if (activeHandle == HandleType.LEFT_ROTATE) {
-                                dragStartAngle = ellipseState.angleToPoint(scaledOffset)
+                                dragStartAngle = currentEllipseState.angleToPoint(scaledOffset)
                             }
 
                             if (activeHandle == HandleType.CANVAS_DRAW) {
-                                isDrawing = true
-                                lastDrawAngle = null
                                 // Project point onto ellipse and start drawing
-                                val projectedPoint = ellipseState.projectPointToPerimeter(scaledOffset)
+                                val projectedPoint = currentEllipseState.projectPointToPerimeter(scaledOffset)
                                 onStartDrawing(projectedPoint)
                             }
                         },
@@ -154,13 +152,13 @@ fun EllipseOverlay(
                                 HandleType.CENTER_MOVE -> {
                                     val delta = scaledOffset - dragStartPosition
                                     val newCenter = initialEllipseState.center + delta
-                                    onUpdateEllipse(ellipseState.updateCenter(newCenter))
+                                    onUpdateEllipse(initialEllipseState.updateCenter(newCenter))
                                 }
                                 HandleType.LEFT_ROTATE -> {
-                                    val currentAngle = ellipseState.angleToPoint(scaledOffset)
+                                    val currentAngle = initialEllipseState.angleToPoint(scaledOffset)
                                     val angleDelta = currentAngle - dragStartAngle
                                     val newRotation = initialEllipseState.rotation + angleDelta
-                                    onUpdateEllipse(ellipseState.updateRotation(newRotation))
+                                    onUpdateEllipse(initialEllipseState.updateRotation(newRotation))
                                 }
                                 HandleType.RIGHT_ASPECT -> {
                                     // Adjust aspect ratio based on horizontal drag distance
@@ -170,13 +168,12 @@ fun EllipseOverlay(
                                     // Rotate dx/dy back to local ellipse coordinates
                                     val rotation = initialEllipseState.rotation
                                     val localX = dx * cos(-rotation) - dy * sin(-rotation)
-                                    val localY = dx * sin(-rotation) + dy * cos(-rotation)
 
                                     // Use absolute distance from center for new radii
                                     val newRadiusX = kotlin.math.abs(localX).coerceAtLeast(20f)
                                     val newRadiusY = initialEllipseState.radiusY
 
-                                    onUpdateEllipse(ellipseState.updateRadii(newRadiusX, newRadiusY))
+                                    onUpdateEllipse(initialEllipseState.updateRadii(newRadiusX, newRadiusY))
                                 }
                                 HandleType.TOP_SCALE -> {
                                     // Calculate distance from center
@@ -187,12 +184,12 @@ fun EllipseOverlay(
                                         val scaleFactor = currentDistance / initialDistance
                                         val newRadiusX = (initialEllipseState.radiusX * scaleFactor).coerceIn(20f, 1000f)
                                         val newRadiusY = (initialEllipseState.radiusY * scaleFactor).coerceIn(20f, 1000f)
-                                        onUpdateEllipse(ellipseState.updateRadii(newRadiusX, newRadiusY))
+                                        onUpdateEllipse(initialEllipseState.updateRadii(newRadiusX, newRadiusY))
                                     }
                                 }
                                 HandleType.CANVAS_DRAW -> {
                                     // Project point onto ellipse perimeter
-                                    val projectedPoint = ellipseState.projectPointToPerimeter(scaledOffset)
+                                    val projectedPoint = currentEllipseState.projectPointToPerimeter(scaledOffset)
                                     onUpdateDrawing(projectedPoint)
                                 }
                                 HandleType.BOTTOM_EXIT, HandleType.NONE -> {
@@ -202,8 +199,6 @@ fun EllipseOverlay(
                         },
                         onDragEnd = {
                             if (activeHandle == HandleType.CANVAS_DRAW) {
-                                isDrawing = false
-                                lastDrawAngle = null
                                 onEndDrawing()
                             }
                             activeHandle = HandleType.NONE
@@ -357,44 +352,4 @@ private fun DrawScope.drawMoveHandle(position: Offset) {
     )
 }
 
-/**
- * Draw a path that follows the ellipse
- */
-private fun DrawScope.drawEllipsePath(
-    drawingPath: DrawingPath,
-    color: Color,
-    strokeWidth: Float,
-    opacity: Float
-) {
-    val points = drawingPath.points
-    if (points.size > 1) {
-        val path = Path().apply {
-            moveTo(points[0].x, points[0].y)
-            for (i in 1 until points.size) {
-                val prev = points[i - 1]
-                val cur = points[i]
-                val midX = (prev.x + cur.x) / 2f
-                val midY = (prev.y + cur.y) / 2f
-                quadraticTo(prev.x, prev.y, midX, midY)
-            }
-        }
-        drawPath(
-            path = path,
-            color = color,
-            alpha = opacity,
-            style = Stroke(
-                width = strokeWidth,
-                cap = StrokeCap.Round,
-                join = StrokeJoin.Round
-            )
-        )
-    } else if (points.size == 1) {
-        drawCircle(
-            color = color,
-            radius = strokeWidth / 2f,
-            center = points[0],
-            alpha = opacity
-        )
-    }
-}
 
