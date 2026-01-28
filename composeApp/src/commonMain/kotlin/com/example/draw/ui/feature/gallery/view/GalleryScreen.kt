@@ -49,6 +49,9 @@ import com.example.draw.ui.feature.gallery.viewModel.GalleryEffect
 import com.example.draw.ui.feature.gallery.viewModel.GalleryEvent
 import com.example.draw.ui.feature.gallery.viewModel.GalleryScreenViewModel
 import com.example.draw.ui.support_feature.drawingProject.create.mainComponent.CreateDrawingProjectButton
+import com.example.draw.platform.rememberFileSaver
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import androidx.compose.ui.tooling.preview.Preview
 
 class GalleryScreen : Screen {
@@ -58,6 +61,7 @@ class GalleryScreen : Screen {
         val viewModel = koinScreenModel<GalleryScreenViewModel>()
         val state by viewModel.state.collectAsState()
         val navigator = LocalNavigator.current
+        val fileSaver = rememberFileSaver()
 
         var showMenuForProject by remember { mutableStateOf<DrawingProject?>(null) }
         var showRenameForProject by remember { mutableStateOf<DrawingProject?>(null) }
@@ -139,6 +143,15 @@ class GalleryScreen : Screen {
                                     expanded = showMenuForProject == project,
                                     onDismissRequest = { showMenuForProject = null }
                                 ) {
+                                    DropdownMenuItem(
+                                        text = { Text("Export JSON") },
+                                        onClick = {
+                                            val jsonString = Json.encodeToString(project)
+                                            val fileName = if (project.name.endsWith(".json")) project.name else "${project.name}.json"
+                                            fileSaver.save(fileName, jsonString.encodeToByteArray())
+                                            showMenuForProject = null
+                                        }
+                                    )
                                     DropdownMenuItem(
                                         text = { Text("Rename") },
                                         onClick = {
