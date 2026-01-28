@@ -89,7 +89,7 @@ fun LayerListPanel(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .draggableHandle()
+                            .longPressDraggableHandle()
                     ) {
                         LayerItem(
                             data = layer,
