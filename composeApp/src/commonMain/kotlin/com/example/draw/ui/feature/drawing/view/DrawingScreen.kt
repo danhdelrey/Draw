@@ -1,5 +1,8 @@
 package com.example.draw.ui.feature.drawing.view
 
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Save
@@ -13,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -146,12 +150,30 @@ class DrawingScreen(
                 )
             }
         ) { paddingValues ->
-            DrawingCanvasContent(
-                state = state,
-                viewModel = viewModel,
-                rootGraphicsLayer = drawingGraphicsLayer,
-                modifier = Modifier.padding(paddingValues)
-            )
+            Box(
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .fillMaxSize()
+            ) {
+                DrawingCanvasContent(
+                    state = state,
+                    viewModel = viewModel,
+                    rootGraphicsLayer = drawingGraphicsLayer,
+                    modifier = Modifier.fillMaxSize()
+                )
+
+                if (showLayerListPanel) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .pointerInput(Unit) {
+                                detectTapGestures(
+                                    onTap = { showLayerListPanel = false }
+                                )
+                            }
+                    )
+                }
+            }
         }
     }
 }
