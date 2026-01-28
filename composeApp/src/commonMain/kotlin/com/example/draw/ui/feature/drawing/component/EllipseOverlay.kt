@@ -80,6 +80,9 @@ fun EllipseOverlay(
     // Keep a mutable reference to the latest ellipse state for use in gestures
     var currentEllipseState by remember { mutableStateOf(ellipseState) }
 
+    // Track the previous drawing angle for smooth stroke generation
+    var previousDrawingTheta by remember { mutableStateOf<Float?>(null) }
+
     // Update the current ellipse state when prop changes
     currentEllipseState = ellipseState
 
@@ -140,8 +143,11 @@ fun EllipseOverlay(
                             }
 
                             if (activeHandle == HandleType.CANVAS_DRAW) {
+                                // Reset previous angle for new stroke
+                                previousDrawingTheta = null
                                 // Project point onto ellipse and start drawing
-                                val projectedPoint = currentEllipseState.projectPointToPerimeter(scaledOffset)
+                                val (projectedPoint, theta) = currentEllipseState.projectPointToPerimeterWithAngle(scaledOffset, null)
+                                previousDrawingTheta = theta
                                 onStartDrawing(projectedPoint)
                             }
                         },
@@ -188,8 +194,12 @@ fun EllipseOverlay(
                                     }
                                 }
                                 HandleType.CANVAS_DRAW -> {
-                                    // Project point onto ellipse perimeter
-                                    val projectedPoint = currentEllipseState.projectPointToPerimeter(scaledOffset)
+                                    // Project point onto ellipse perimeter with angle tracking for stability
+                                    val (projectedPoint, theta) = currentEllipseState.projectPointToPerimeterWithAngle(
+                                        scaledOffset,
+                                        previousDrawingTheta
+                                    )
+                                    previousDrawingTheta = theta
                                     onUpdateDrawing(projectedPoint)
                                 }
                                 HandleType.BOTTOM_EXIT, HandleType.NONE -> {
@@ -199,6 +209,8 @@ fun EllipseOverlay(
                         },
                         onDragEnd = {
                             if (activeHandle == HandleType.CANVAS_DRAW) {
+                                // Reset previous angle when stroke ends
+                                previousDrawingTheta = null
                                 onEndDrawing()
                             }
                             activeHandle = HandleType.NONE

@@ -71,10 +71,16 @@ data class EllipseState(
      * Uses radial projection approach: finds the angle from center to point,
      * then returns the point on the ellipse at that angle.
      *
+     * This method ensures smooth, continuous stroke generation by:
+     * 1. Using previous angle when point is too close to center
+     * 2. Limiting maximum angle change per update to prevent jumps
+     * 3. Handling angle wrap-around (from π to -π)
+     *
      * @param point The point to project
-     * @return The projected point on the ellipse perimeter
+     * @param previousTheta Optional previous angle for continuity when point is near center
+     * @return Pair of (projected point on perimeter, theta angle used)
      */
-    fun projectPointToPerimeter(point: Offset): Offset {
+    fun projectPointToPerimeterWithAngle(point: Offset, previousTheta: Float? = null): Pair<Offset, Float> {
         // Translate point relative to center
         val dx = point.x - center.x
         val dy = point.y - center.y
@@ -83,11 +89,58 @@ data class EllipseState(
         val localX = dx * cos(-rotation) - dy * sin(-rotation)
         val localY = dx * sin(-rotation) + dy * cos(-rotation)
 
-        // Find the angle in local coordinates
-        val theta = atan2(localY / radiusY, localX / radiusX)
+        // Calculate distance from center in local coordinates
+        val distanceFromCenter = kotlin.math.sqrt(localX * localX + localY * localY)
 
-        // Return point on perimeter at this angle
-        return pointOnPerimeter(theta)
+        // Minimum distance threshold - if point is too close to center, use previous angle
+        // Use a larger threshold for better stability
+        val minDistance = kotlin.math.min(radiusX, radiusY) * 0.25f
+
+        // Calculate raw theta from current position
+        val rawTheta = atan2(localY / radiusY, localX / radiusX)
+
+        val theta: Float = if (previousTheta == null) {
+            // First point - use raw theta
+            rawTheta
+        } else if (distanceFromCenter < minDistance) {
+            // Point is too close to center, use previous angle for continuity
+            previousTheta
+        } else {
+            // Calculate the angle difference, handling wrap-around
+            var angleDiff = rawTheta - previousTheta
+
+            // Normalize angle difference to [-π, π]
+            while (angleDiff > PI) angleDiff -= (2 * PI).toFloat()
+            while (angleDiff < -PI) angleDiff += (2 * PI).toFloat()
+
+            // Limit maximum angle change per update to prevent sudden jumps
+            // Use smaller value for smoother strokes
+            val maxAngleChange = PI.toFloat() / 8f  // 22.5 degrees max per update
+            val clampedDiff = angleDiff.coerceIn(-maxAngleChange, maxAngleChange)
+
+            // Apply clamped difference to previous angle
+            var newTheta = previousTheta + clampedDiff
+
+            // Normalize result to [-π, π]
+            while (newTheta > PI) newTheta -= (2 * PI).toFloat()
+            while (newTheta < -PI) newTheta += (2 * PI).toFloat()
+
+            newTheta
+        }
+
+        // Return point on perimeter at this angle along with the angle
+        return Pair(pointOnPerimeter(theta), theta)
+    }
+
+    /**
+     * Project a point onto the ellipse perimeter (simple version without angle tracking).
+     * For backward compatibility.
+     *
+     * @param point The point to project
+     * @return The projected point on the ellipse perimeter
+     */
+    fun projectPointToPerimeter(point: Offset): Offset {
+        return projectPointToPerimeterWithAngle(point, null).first
     }
 
     /**
