@@ -13,15 +13,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.input.pointer.pointerInput
-import com.example.draw.data.model.base.DrawingPath
 import com.example.draw.data.model.shape.EllipseState
 import kotlin.math.cos
 import kotlin.math.sin
@@ -42,15 +39,16 @@ private enum class HandleType {
 /**
  * Size of control handles in pixels
  */
-private const val HANDLE_RADIUS = 20f
-private const val HANDLE_HIT_RADIUS = 35f
+private const val HANDLE_RADIUS = 30f
+private const val HANDLE_HIT_RADIUS = 60f
 
 /**
  * Ellipse overlay composable that displays the ellipse and control handles.
  * Handles all gesture interactions for manipulating the ellipse.
  *
+ * Note: Drawing path preview is handled by DrawingCanvas for proper eraser support.
+ *
  * @param ellipseState Current ellipse state
- * @param currentDrawingPath Current path being drawn (for preview)
  * @param renderScale Scale factor for rendering
  * @param inputScale Scale factor for input coordinates
  * @param onUpdateEllipse Callback when ellipse state changes
@@ -62,7 +60,6 @@ private const val HANDLE_HIT_RADIUS = 35f
 @Composable
 fun EllipseOverlay(
     ellipseState: EllipseState,
-    currentDrawingPath: DrawingPath?,
     renderScale: Float,
     inputScale: Float,
     onUpdateEllipse: (EllipseState) -> Unit,
@@ -87,7 +84,8 @@ fun EllipseOverlay(
     currentEllipseState = ellipseState
 
     Box(modifier = modifier.fillMaxSize()) {
-        // Canvas for rendering ellipse and handles
+        // Canvas for rendering ellipse and handles only
+        // Drawing path is rendered by DrawingCanvas for proper eraser support
         Canvas(
             modifier = Modifier.fillMaxSize()
         ) {
@@ -97,11 +95,6 @@ fun EllipseOverlay(
 
                 // Draw control handles
                 drawControlHandles(ellipseState)
-
-                // Draw current path being drawn (projected onto ellipse)
-                currentDrawingPath?.let { path ->
-                    drawDrawingPath(path)
-                }
             }
         }
 

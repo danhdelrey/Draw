@@ -107,7 +107,6 @@ fun DrawingCanvasContent(
                             // Ellipse Drawing Mode - show overlay with controls
                             EllipseOverlay(
                                 ellipseState = ellipseMode,
-                                currentDrawingPath = pathBeingDrawn,
                                 renderScale = renderScale,
                                 inputScale = inputScale,
                                 onUpdateEllipse = { newEllipse ->
