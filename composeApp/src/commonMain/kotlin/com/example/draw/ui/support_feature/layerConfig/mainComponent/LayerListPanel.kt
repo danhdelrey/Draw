@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -44,7 +44,9 @@ fun LayerListPanel(
 ) {
     val listState = rememberLazyListState()
     val reorderableState = rememberReorderableLazyListState(listState) { from, to ->
-        onReorderLayer(from.index, to.index)
+        if (to.index != 0) {
+            onReorderLayer(from.index, to.index)
+        }
     }
 
     Column(
@@ -81,12 +83,12 @@ fun LayerListPanel(
             state = listState,
             reverseLayout = true // Đảo ngược danh sách (Layer mới nhất ở trên)
         ) {
-            items(currentLayers, key = { it.id }) { layer ->
+            itemsIndexed(currentLayers, key = { _, item -> item.id }) { index, layer ->
                 ReorderableItem(reorderableState, key = layer.id) { isDragging ->
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .draggableHandle()
+                            .then(if (index != 0) Modifier.draggableHandle() else Modifier)
                     ) {
                         LayerItem(
                             data = layer,
@@ -95,7 +97,9 @@ fun LayerListPanel(
                             isSelected = layer.id == activeLayer.id,
                             onClick = { onSelectLayer(layer) },
                             onToggleVisibility = { onToggleVisibility(layer) },
-                            onDelete = { onDeleteLayer(layer) }
+                            onDelete = if (index != 0) {
+                                { onDeleteLayer(layer) }
+                            } else null
                         )
                         if (isDragging) {
                             Box(

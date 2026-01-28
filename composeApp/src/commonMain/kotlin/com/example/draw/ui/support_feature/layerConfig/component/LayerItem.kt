@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,7 +19,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,7 +34,7 @@ fun LayerItem(
     isSelected: Boolean,
     onClick: () -> Unit,
     onToggleVisibility: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: (() -> Unit)?
 ) {
     val backgroundColor = if (isSelected) Color(0xFF888888) else Color.Transparent
 
@@ -90,15 +88,19 @@ fun LayerItem(
         }
 
         // 3. Nút Xóa
-        IconButton(
-            onClick = onDelete,
-            modifier = Modifier.size(24.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Delete,
-                contentDescription = "Delete Layer",
-                tint = Color(0xFF1E1E1E)
-            )
+        if (onDelete != null) {
+            IconButton(
+                onClick = onDelete,
+                modifier = Modifier.size(24.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete Layer",
+                    tint = Color(0xFF1E1E1E)
+                )
+            }
+        } else {
+            Box(modifier = Modifier.size(24.dp))
         }
     }
 }
