@@ -6,6 +6,7 @@ import com.example.draw.data.model.base.DrawingPath
 import com.example.draw.data.model.brush.Brush
 import com.example.draw.data.model.layer.Layer
 import com.example.draw.data.model.serialization.DrawingProject
+import com.example.draw.data.model.shape.EllipseState
 
 sealed interface DrawingEvent{
     //load
@@ -31,4 +32,13 @@ sealed interface DrawingEvent{
 
     //save project
     data class SaveDrawingProject(val state: DrawingState) : DrawingEvent
+
+    // Ellipse Drawing Mode
+    object EnterEllipseMode : DrawingEvent
+    object ExitEllipseMode : DrawingEvent
+    data class UpdateEllipseCenter(val center: Offset) : DrawingEvent
+    data class UpdateEllipseRadii(val radiusX: Float, val radiusY: Float) : DrawingEvent
+    data class UpdateEllipseRotation(val rotation: Float) : DrawingEvent
+    data class UpdateEllipseScale(val scaleFactor: Float) : DrawingEvent
+    data class UpdateEllipseState(val ellipseState: EllipseState) : DrawingEvent
 }

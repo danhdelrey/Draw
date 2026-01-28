@@ -5,6 +5,7 @@ import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.draw.data.datasource.local.DrawingRepository
 import com.example.draw.data.model.base.DrawingPath
 import com.example.draw.data.model.layer.VectorLayer
+import com.example.draw.data.model.shape.EllipseState
 import com.example.draw.data.model.util.currentTimeMillis
 import com.example.draw.data.model.util.generateId
 import com.example.draw.data.repository.ImageRepository
@@ -58,6 +59,15 @@ class DrawingScreenViewModel(
                 // --- SAVE ---
                 is DrawingEvent.SaveDrawing -> handleSaveDrawing(event)
                 is DrawingEvent.SaveDrawingProject -> handleSaveDrawingProject(event.state)
+
+                // --- ELLIPSE DRAWING MODE ---
+                is DrawingEvent.EnterEllipseMode -> handleEnterEllipseMode()
+                is DrawingEvent.ExitEllipseMode -> handleExitEllipseMode()
+                is DrawingEvent.UpdateEllipseCenter -> handleUpdateEllipseCenter(event)
+                is DrawingEvent.UpdateEllipseRadii -> handleUpdateEllipseRadii(event)
+                is DrawingEvent.UpdateEllipseRotation -> handleUpdateEllipseRotation(event)
+                is DrawingEvent.UpdateEllipseScale -> handleUpdateEllipseScale(event)
+                is DrawingEvent.UpdateEllipseState -> handleUpdateEllipseState(event)
             }
         }
     }
@@ -196,6 +206,52 @@ class DrawingScreenViewModel(
         // No undo/redo needed
         val updatedCanvas = _state.value.canvas.setActiveLayer(event.layer.id)
         _state.value = _state.value.copy(canvas = updatedCanvas)
+    }
+
+    // --- ELLIPSE MODE HANDLERS ---
+
+    private fun handleEnterEllipseMode() {
+        val ellipseState = EllipseState.createDefault(
+            canvasWidth = _state.value.canvas.width,
+            canvasHeight = _state.value.canvas.height
+        )
+        _state.value = _state.value.copy(ellipseMode = ellipseState)
+    }
+
+    private fun handleExitEllipseMode() {
+        _state.value = _state.value.copy(ellipseMode = null)
+    }
+
+    private fun handleUpdateEllipseCenter(event: DrawingEvent.UpdateEllipseCenter) {
+        val currentEllipse = _state.value.ellipseMode ?: return
+        _state.value = _state.value.copy(
+            ellipseMode = currentEllipse.updateCenter(event.center)
+        )
+    }
+
+    private fun handleUpdateEllipseRadii(event: DrawingEvent.UpdateEllipseRadii) {
+        val currentEllipse = _state.value.ellipseMode ?: return
+        _state.value = _state.value.copy(
+            ellipseMode = currentEllipse.updateRadii(event.radiusX, event.radiusY)
+        )
+    }
+
+    private fun handleUpdateEllipseRotation(event: DrawingEvent.UpdateEllipseRotation) {
+        val currentEllipse = _state.value.ellipseMode ?: return
+        _state.value = _state.value.copy(
+            ellipseMode = currentEllipse.updateRotation(event.rotation)
+        )
+    }
+
+    private fun handleUpdateEllipseScale(event: DrawingEvent.UpdateEllipseScale) {
+        val currentEllipse = _state.value.ellipseMode ?: return
+        _state.value = _state.value.copy(
+            ellipseMode = currentEllipse.scale(event.scaleFactor)
+        )
+    }
+
+    private fun handleUpdateEllipseState(event: DrawingEvent.UpdateEllipseState) {
+        _state.value = _state.value.copy(ellipseMode = event.ellipseState)
     }
 
     private fun handleChangeBrush(event: DrawingEvent.ChangeBrush) {

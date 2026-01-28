@@ -26,6 +26,7 @@ import com.example.draw.ui.feature.drawing.viewModel.DrawingScreenViewModel
 import com.example.draw.ui.feature.drawing.viewModel.DrawingState
 import com.example.draw.ui.support_feature.brushConfig.brush.mainComponent.BrushConfigButton
 import com.example.draw.ui.support_feature.brushConfig.color.mainComponent.ColorPickerButton
+import com.example.draw.ui.support_feature.ellipseTool.mainComponent.EllipseToolButton
 import com.example.draw.ui.support_feature.layerConfig.mainComponent.LayerListPanel
 import com.example.draw.ui.support_feature.layerConfig.mainComponent.LayerListPanelButton
 import com.example.draw.ui.support_feature.undoRedo.mainComponent.UndoRedoButton
@@ -78,7 +79,20 @@ class DrawingScreen(
                 }
             },
             topBar = {
-                ToolPanel {
+                ToolPanel(
+                    leftContent = {
+                        EllipseToolButton(
+                            isActive = state.ellipseMode != null,
+                            onToggleEllipseMode = {
+                                if (state.ellipseMode != null) {
+                                    viewModel.onEvent(DrawingEvent.ExitEllipseMode)
+                                } else {
+                                    viewModel.onEvent(DrawingEvent.EnterEllipseMode)
+                                }
+                            }
+                        )
+                    }
+                ) {
                     UndoRedoButton(
                         onRedo = if (state.canRedo) {
                             { viewModel.onEvent(DrawingEvent.Redo) }
@@ -104,6 +118,7 @@ class DrawingScreen(
                                 viewModel.onEvent(DrawingEvent.ChangeBrush(newBrush))
                             }
                         )
+
                     },
                     centerContent = {
                         // Add center content here for preview

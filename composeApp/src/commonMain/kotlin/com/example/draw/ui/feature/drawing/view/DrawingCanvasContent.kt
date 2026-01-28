@@ -21,6 +21,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.draw.data.model.brush.EraserBrush
 import com.example.draw.data.model.layer.VectorLayer
 import com.example.draw.ui.feature.drawing.component.DrawingCanvas
+import com.example.draw.ui.feature.drawing.component.EllipseOverlay
 import com.example.draw.ui.feature.drawing.component.drawingInput
 import com.example.draw.ui.feature.drawing.viewModel.DrawingEvent
 import com.example.draw.ui.feature.drawing.viewModel.DrawingScreenViewModel
@@ -100,15 +101,45 @@ fun DrawingCanvasContent(
 
                     // --- LAYER INPUT ---
                     if (isActiveLayer) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .drawingInput(
-                                    onDragStart = { offset -> viewModel.onEvent(DrawingEvent.StartDrawing(offset * inputScale)) },
-                                    onDrag = { offset -> viewModel.onEvent(DrawingEvent.UpdateDrawing(offset * inputScale)) },
-                                    onDragEnd = { viewModel.onEvent(DrawingEvent.EndDrawing) }
-                                )
-                        )
+                        // Check if in ellipse mode
+                        val ellipseMode = state.ellipseMode
+                        if (ellipseMode != null) {
+                            // Ellipse Drawing Mode - show overlay with controls
+                            EllipseOverlay(
+                                ellipseState = ellipseMode,
+                                currentBrush = state.currentBrush,
+                                currentDrawingPath = pathBeingDrawn,
+                                renderScale = renderScale,
+                                inputScale = inputScale,
+                                onUpdateEllipse = { newEllipse ->
+                                    viewModel.onEvent(DrawingEvent.UpdateEllipseState(newEllipse))
+                                },
+                                onExitEllipseMode = {
+                                    viewModel.onEvent(DrawingEvent.ExitEllipseMode)
+                                },
+                                onStartDrawing = { offset ->
+                                    viewModel.onEvent(DrawingEvent.StartDrawing(offset))
+                                },
+                                onUpdateDrawing = { offset ->
+                                    viewModel.onEvent(DrawingEvent.UpdateDrawing(offset))
+                                },
+                                onEndDrawing = {
+                                    viewModel.onEvent(DrawingEvent.EndDrawing)
+                                },
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        } else {
+                            // Normal drawing mode
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .drawingInput(
+                                        onDragStart = { offset -> viewModel.onEvent(DrawingEvent.StartDrawing(offset * inputScale)) },
+                                        onDrag = { offset -> viewModel.onEvent(DrawingEvent.UpdateDrawing(offset * inputScale)) },
+                                        onDragEnd = { viewModel.onEvent(DrawingEvent.EndDrawing) }
+                                    )
+                            )
+                        }
                     }
                 }
             }

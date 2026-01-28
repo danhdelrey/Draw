@@ -5,6 +5,7 @@ import com.example.draw.data.model.base.DrawingPath
 import com.example.draw.data.model.brush.Brush
 import com.example.draw.data.model.brush.SolidBrush
 import com.example.draw.data.model.canvas.CanvasConfig
+import com.example.draw.data.model.shape.EllipseState
 import com.example.draw.data.model.canvas.CanvasMetadata
 import com.example.draw.data.model.canvas.DrawingCanvas
 import com.example.draw.data.model.layer.VectorLayer
@@ -36,7 +37,10 @@ data class DrawingState(
 
     // Undo/Redo state
     val canUndo: Boolean = false,
-    val canRedo: Boolean = false
+    val canRedo: Boolean = false,
+
+    // Ellipse Drawing Mode state
+    val ellipseMode: EllipseState? = null
 ) {
     // Convenience accessors
     val activeLayer: VectorLayer?
