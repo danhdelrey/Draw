@@ -1,11 +1,13 @@
 package com.example.draw.ui.support_feature.brushConfig.color.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -56,7 +58,9 @@ fun ColorPickerBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .background(color = MaterialTheme.colorScheme.surface)
+                .padding(16.dp)
+                ,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             HsvColorPicker(
@@ -100,7 +104,10 @@ fun ColorPickerBottomSheet(
 fun ColorPickerBottomSheetPreview() {
     PreviewComponent {
         ColorPickerBottomSheet(
-            initialBrush = SolidBrush(),
+            initialBrush = SolidBrush(
+                size = 40f,
+                colorArgb = Color.Blue.toArgb().toLong()
+            ),
 
         )
     }
