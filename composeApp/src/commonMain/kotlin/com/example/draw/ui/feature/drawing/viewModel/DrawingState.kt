@@ -40,7 +40,10 @@ data class DrawingState(
     val canRedo: Boolean = false,
 
     // Ellipse Drawing Mode state
-    val ellipseMode: EllipseState? = null
+    val ellipseMode: EllipseState? = null,
+
+    //for UX purposes
+    val isUserDrawing: Boolean = false,
 ) {
     // Convenience accessors
     val activeLayer: VectorLayer?

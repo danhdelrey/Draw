@@ -87,6 +87,7 @@ class DrawingScreen(
             },
             topBar = {
                 ToolPanel(
+                    shouldHideToolPanel = state.isUserDrawing,
                     leftContent = {
                         EllipseToolButton(
                             isActive = state.ellipseMode != null,
@@ -112,6 +113,8 @@ class DrawingScreen(
             },
             bottomBar = {
                 ToolPanel(
+                    appearFromBottom = true,
+                    shouldHideToolPanel = state.isUserDrawing,
                     leftContent = {
                         ColorPickerButton(
                             initialBrush = state.currentBrush,

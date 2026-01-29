@@ -1,5 +1,10 @@
 package com.example.draw.ui.common.component
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -21,40 +26,50 @@ import draw.composeapp.generated.resources.solid_brush
 
 @Composable
 fun ToolPanel(
-    leftContent: @Composable RowScope.() -> Unit = { },
-    centerContent: @Composable RowScope.() -> Unit = { },
-    rightContent: @Composable RowScope.() -> Unit = { }
-){
-    Row(
-        modifier = Modifier
-            .background(
-                color = Color.Transparent
-            )
-            .padding(horizontal = 15.dp)
-            .systemBarsPadding()
-
-
+    shouldHideToolPanel: Boolean = false,
+    appearFromBottom: Boolean = false,
+    leftContent: @Composable RowScope.() -> Unit = {},
+    centerContent: @Composable RowScope.() -> Unit = {},
+    rightContent: @Composable RowScope.() -> Unit = {}
+) {
+    AnimatedVisibility(
+        visible = !shouldHideToolPanel,
+        enter = slideInVertically(
+            initialOffsetY = { height ->
+                if (appearFromBottom) height else -height
+            }
+        ) + fadeIn(),
+        exit = slideOutVertically(
+            targetOffsetY = { height ->
+                if (appearFromBottom) height else -height
+            }
+        ) + fadeOut()
     ) {
         Row(
-            modifier = Modifier.weight(1f),
-            horizontalArrangement = Arrangement.spacedBy(15.dp)
+            modifier = Modifier
+                .background(Color.Transparent)
+                .padding(horizontal = 15.dp)
+                .systemBarsPadding()
         ) {
-            leftContent()
-        }
-        Row(
-            modifier = Modifier.weight(1f),
-            horizontalArrangement = Arrangement.spacedBy(15.dp)
-        ) {
-            centerContent()
-        }
-        Row(
-            modifier = Modifier.weight(1f),
-            horizontalArrangement = Arrangement.spacedBy(15.dp)
-        ) {
-            rightContent()
+            Row(
+                modifier = Modifier.weight(1f),
+                horizontalArrangement = Arrangement.spacedBy(15.dp)
+            ) { leftContent() }
+
+            Row(
+                modifier = Modifier.weight(1f),
+                horizontalArrangement = Arrangement.spacedBy(15.dp)
+            ) { centerContent() }
+
+            Row(
+                modifier = Modifier.weight(1f),
+                horizontalArrangement = Arrangement.spacedBy(15.dp)
+            ) { rightContent() }
         }
     }
 }
+
+
 
 @Preview
 @Composable

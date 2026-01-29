@@ -119,6 +119,7 @@ class DrawingScreenViewModel(
 
     private fun handleStartDrawing(event: DrawingEvent.StartDrawing) {
         _state.value = _state.value.copy(
+            isUserDrawing = true,
             currentDrawingPath = DrawingPath.create(
                 initialPoint = event.currentTouchPosition,
                 brush = _state.value.currentBrush
@@ -130,6 +131,7 @@ class DrawingScreenViewModel(
     private fun handleUpdateDrawing(event: DrawingEvent.UpdateDrawing) {
         val currentPath = _state.value.currentDrawingPath ?: return
         _state.value = _state.value.copy(
+            isUserDrawing = true,
             currentDrawingPath = currentPath.addPoint(event.currentTouchPosition),
             currentTouchPosition = event.currentTouchPosition
         )
@@ -148,6 +150,7 @@ class DrawingScreenViewModel(
 
         // Clear ephemeral state
         _state.value = _state.value.copy(
+            isUserDrawing = false,
             currentDrawingPath = null,
             currentTouchPosition = null
         )
@@ -156,6 +159,7 @@ class DrawingScreenViewModel(
     private fun handleCancelDrawing() {
         // Clear the current drawing path without saving
         _state.value = _state.value.copy(
+            isUserDrawing = false,
             currentDrawingPath = null,
             currentTouchPosition = null
         )
