@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.draw.data.model.brush.SolidBrush
@@ -27,7 +28,7 @@ fun ToolPanel(
     Row(
         modifier = Modifier
             .background(
-                color = MaterialTheme.colorScheme.surface
+                color = Color.Transparent
             )
             .padding(horizontal = 15.dp)
             .systemBarsPadding()
