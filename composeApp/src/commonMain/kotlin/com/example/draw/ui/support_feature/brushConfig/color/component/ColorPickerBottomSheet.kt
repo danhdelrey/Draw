@@ -51,6 +51,7 @@ fun ColorPickerBottomSheet(
             onBrushConfigFinished(currentBrush)
         }
     ){
+        Spacer(Modifier.height(16.dp))
         // 1. Phần Header với nét vẽ (Wavy Line)
         WavyLinePreviewWithBackground(currentBrush)
 
@@ -58,7 +59,6 @@ fun ColorPickerBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(color = MaterialTheme.colorScheme.surface)
                 .padding(16.dp)
                 ,
             horizontalAlignment = Alignment.CenterHorizontally

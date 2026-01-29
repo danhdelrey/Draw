@@ -43,6 +43,7 @@ fun BrushConfigBottomSheet(
             onBrushConfigFinished(newBrush)
         }
     ){
+        Spacer(Modifier.height(16.dp))
         WavyLinePreviewWithBackground(newBrush)
         Column(
             modifier = Modifier.padding(vertical = 30.dp, horizontal = 30.dp)

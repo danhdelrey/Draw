@@ -23,6 +23,8 @@ import com.example.draw.ui.common.preview.PreviewComponent
 import com.example.draw.ui.support_feature.brushConfig.brush.mainComponent.BrushConfigButton
 import com.example.draw.ui.support_feature.brushConfig.color.mainComponent.ColorPickerButton
 import com.example.draw.ui.support_feature.layerConfig.mainComponent.LayerListPanelButton
+import com.example.draw.ui.support_feature.undoRedo.mainComponent.RedoButton
+import com.example.draw.ui.support_feature.undoRedo.mainComponent.UndoButton
 import draw.composeapp.generated.resources.Res
 import draw.composeapp.generated.resources.solid_brush
 
@@ -71,12 +73,14 @@ fun ToolPanelPreview(){
                        size = 10f
                    )
                )
+               UndoButton {  }
                 BrushConfigButton(
                      currentBrush = SolidBrush(
                           colorArgb = 0xFFFF0000,
                           size = 10f
                      )
                 )
+               RedoButton()
 
                 LayerListPanelButton()
            }

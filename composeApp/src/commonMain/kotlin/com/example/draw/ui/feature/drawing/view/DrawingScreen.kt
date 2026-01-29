@@ -35,7 +35,8 @@ import com.example.draw.ui.support_feature.brushConfig.color.mainComponent.Color
 import com.example.draw.ui.support_feature.ellipseTool.mainComponent.EllipseToolButton
 import com.example.draw.ui.support_feature.layerConfig.mainComponent.LayerListPanel
 import com.example.draw.ui.support_feature.layerConfig.mainComponent.LayerListPanelButton
-import com.example.draw.ui.support_feature.undoRedo.mainComponent.UndoRedoButton
+import com.example.draw.ui.support_feature.undoRedo.mainComponent.RedoButton
+import com.example.draw.ui.support_feature.undoRedo.mainComponent.UndoButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -118,14 +119,16 @@ class DrawingScreen(
                                 }
                             }
                         )
-                        UndoRedoButton(
-                            onRedo = if (state.canRedo) {
-                                { viewModel.onEvent(DrawingEvent.Redo) }
-                            } else null,
-                            onUndo = if (state.canUndo) {
-                                { viewModel.onEvent(DrawingEvent.Undo) }
-                            } else null
-                        )
+                        CustomIconButton(
+                            icon = Icons.Default.Save,
+                        ) {
+                            viewModel.onEvent(DrawingEvent.SaveDrawingProject(state))
+                            scope.launch(Dispatchers.Default) {
+                                //Chụp ảnh (Main Thread)
+                                val bitmap = drawingGraphicsLayer.toImageBitmap()
+                                viewModel.onEvent(DrawingEvent.SaveDrawing(bitmap))
+                            }
+                        }
                     }
                 }
 
@@ -144,22 +147,22 @@ class DrawingScreen(
                                 viewModel.onEvent(DrawingEvent.ChangeBrush(newBrush))
                             }
                         )
+                        UndoButton(
+                            onUndo = if (state.canUndo) {
+                                { viewModel.onEvent(DrawingEvent.Undo) }
+                            } else null
+                        )
                         BrushConfigButton(
                             currentBrush = state.currentBrush,
                             onBrushConfigFinished = { newBrush ->
                                 viewModel.onEvent(DrawingEvent.ChangeBrush(newBrush))
                             }
                         )
-                        CustomIconButton(
-                            icon = Icons.Default.Save,
-                        ) {
-                            viewModel.onEvent(DrawingEvent.SaveDrawingProject(state))
-                            scope.launch(Dispatchers.Default) {
-                                //Chụp ảnh (Main Thread)
-                                val bitmap = drawingGraphicsLayer.toImageBitmap()
-                                viewModel.onEvent(DrawingEvent.SaveDrawing(bitmap))
-                            }
-                        }
+                        RedoButton(
+                            onRedo = if (state.canRedo) {
+                                { viewModel.onEvent(DrawingEvent.Redo) }
+                            } else null
+                        )
                         LayerListPanelButton(
                             onClick = {
                                 showLayerListPanel = !showLayerListPanel
