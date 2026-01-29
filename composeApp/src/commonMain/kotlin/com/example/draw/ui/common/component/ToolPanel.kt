@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.draw.data.model.brush.SolidBrush
 import com.example.draw.ui.common.preview.PreviewComponent
+import com.example.draw.ui.support_feature.brushConfig.brush.mainComponent.BrushConfigButton
 import com.example.draw.ui.support_feature.brushConfig.color.mainComponent.ColorPickerButton
 import com.example.draw.ui.support_feature.layerConfig.mainComponent.LayerListPanelButton
 import draw.composeapp.generated.resources.Res
@@ -47,7 +48,7 @@ fun ToolPanel(
     ) {
         Row(
             modifier = Modifier
-                .background(Color.Transparent)
+                .background(MaterialTheme.colorScheme.surfaceContainerLowest)
                 .padding(horizontal = 15.dp)
                 .systemBarsPadding()
         ) {
@@ -80,10 +81,8 @@ fun ToolPanelPreview(){
                 ColorPickerButton(
                     initialBrush = SolidBrush(),
                 )
-                ImageButton(
-                    imageResource = Res.drawable.solid_brush,
-                    isSelected = true,
-                    onClick = {}
+                BrushConfigButton(
+                    currentBrush = SolidBrush(),
                 )
             },
             centerContent = {

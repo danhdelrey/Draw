@@ -14,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush.Companion.linearGradient
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,17 +36,26 @@ fun ColorPickerButton(
     }
     Box(
         modifier = Modifier
-
-            .height(48.dp)
-            .width(48.dp)
+            .height(40.dp)
+            .width(40.dp)
             .clip(CircleShape)
             .border(
-                width = 5.dp,
-                color = Color.Black,
+                width = 2.dp,
+                brush = linearGradient(
+                    colors = listOf(
+                        Color.Red,
+                        Color.Yellow,
+                        Color.Green,
+                        Color.Cyan,
+                        Color.Blue,
+                        Color.Magenta,
+                        Color.Red
+                    )
+                ),
                 shape = CircleShape
             )
             .background(Color(initialBrush.colorArgb))
-            .clickable{
+            .clickable {
                 showColorPickerBottomSheet = true
             }
     )
