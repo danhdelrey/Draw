@@ -116,8 +116,8 @@ fun DrawingCanvasContent(
 
                             if (pointerCount >= 2) {
                                 // Intercept! Consume all changes so child sees them as consumed in Main pass.
-                                event.changes.forEach {
-                                    it.consume()
+                                event.changes.forEach { 
+                                    it.consume() 
                                 }
 
                                 if (!transformStarted) {

@@ -305,10 +305,10 @@ fun Modifier.drawingInput(
                     break
                 }
 
-                if (change.position != change.previousPosition && !change.isConsumed) {
+                if (change.position != change.previousPosition) {
                     onDrag(change.position.clampToSize(size.toSize()))
-                    change.consume()
                 }
+                change.consume()
             }
         }
     }
