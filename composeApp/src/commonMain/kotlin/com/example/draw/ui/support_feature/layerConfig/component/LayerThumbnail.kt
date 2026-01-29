@@ -17,7 +17,7 @@ fun LayerThumbnail(
     modifier: Modifier = Modifier
 ) {
     CanvasThumbnail(
-        layers = listOf(layer),
+        layers = listOf(layer.copy(isVisible = true)),
         canvasWidth = canvasWidth,
         canvasHeight = canvasHeight,
         modifier = modifier
