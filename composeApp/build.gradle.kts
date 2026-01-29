@@ -59,6 +59,9 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
 
             implementation(libs.colorpicker.compose)
+
+            implementation(libs.kotlinx.datetime)
+
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

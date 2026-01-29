@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -125,7 +126,17 @@ class DrawingScreen(
                                 contentDescription = null
                             )
                         }
+                        UndoButton(
+                            onUndo = if (state.canUndo) {
+                                { viewModel.onEvent(DrawingEvent.Undo) }
+                            } else null
+                        )
                         Text(state.projectName)
+                        RedoButton(
+                            onRedo = if (state.canRedo) {
+                                { viewModel.onEvent(DrawingEvent.Redo) }
+                            } else null
+                        )
                         SaveImageButton {
                             viewModel.onEvent(DrawingEvent.SaveDrawingProject(state))
                             scope.launch(Dispatchers.Default) {
@@ -170,21 +181,12 @@ class DrawingScreen(
                                 )
                             }
                         }
+                        Spacer(Modifier.height(15.dp))
                         ToolPanel(
                             appearFromBottom = true,
                             shouldHideToolPanel = state.isUserDrawing,
                         ) {
-                            ColorPickerButton(
-                                initialBrush = state.currentBrush,
-                                onBrushConfigFinished = { newBrush ->
-                                    viewModel.onEvent(DrawingEvent.ChangeBrush(newBrush))
-                                }
-                            )
-                            UndoButton(
-                                onUndo = if (state.canUndo) {
-                                    { viewModel.onEvent(DrawingEvent.Undo) }
-                                } else null
-                            )
+
                             EllipseToolButton(
                                 isActive = state.ellipseMode != null,
                                 onToggleEllipseMode = {
@@ -195,17 +197,19 @@ class DrawingScreen(
                                     }
                                 }
                             )
+                            ColorPickerButton(
+                                initialBrush = state.currentBrush,
+                                onBrushConfigFinished = { newBrush ->
+                                    viewModel.onEvent(DrawingEvent.ChangeBrush(newBrush))
+                                }
+                            )
                             BrushConfigButton(
                                 currentBrush = state.currentBrush,
                                 onBrushConfigFinished = { newBrush ->
                                     viewModel.onEvent(DrawingEvent.ChangeBrush(newBrush))
                                 }
                             )
-                            RedoButton(
-                                onRedo = if (state.canRedo) {
-                                    { viewModel.onEvent(DrawingEvent.Redo) }
-                                } else null
-                            )
+
                             LayerListPanelButton(
                                 onClick = {
                                     showLayerListPanel = !showLayerListPanel

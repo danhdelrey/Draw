@@ -52,6 +52,7 @@ import com.example.draw.ui.support_feature.drawingProject.create.mainComponent.C
 import com.example.draw.platform.rememberFileSaver
 import kotlinx.serialization.json.Json
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.draw.core.extensions.toDateTimeString
 
 class GalleryScreen : Screen {
     @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -128,7 +129,9 @@ class GalleryScreen : Screen {
                                             }
                                         )
                                 ) {
-                                    Column {
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
                                         DrawingProjectThumbnail(
                                             project = project,
                                             modifier = Modifier
@@ -137,8 +140,13 @@ class GalleryScreen : Screen {
                                         )
                                         Text(
                                             text = project.name.removeSuffix(".json"),
-                                            modifier = Modifier.padding(8.dp),
-                                            style = MaterialTheme.typography.bodyMedium
+                                            modifier = Modifier.padding(top = 8.dp),
+                                            style = MaterialTheme.typography.titleMedium
+                                        )
+                                        Text(
+                                            modifier = Modifier.padding(bottom = 8.dp),
+                                            text = project.lastModified.toDateTimeString(),
+                                            style = MaterialTheme.typography.bodySmall
                                         )
                                     }
                                 }
