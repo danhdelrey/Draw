@@ -35,7 +35,7 @@ fun CreateDrawingProjectDialog(
     onCreateRequest: (CanvasConfig, String) -> Unit
 ) {
     // State management
-    var projectName by remember { mutableStateOf("Untitled Project") }
+    var projectName by remember { mutableStateOf("untitled-project") }
     var widthText by remember { mutableStateOf(CanvasConfig.DEFAULT_WIDTH.toInt().toString()) }
     var heightText by remember { mutableStateOf(CanvasConfig.DEFAULT_HEIGHT.toInt().toString()) }
 
@@ -47,6 +47,7 @@ fun CreateDrawingProjectDialog(
         derivedStateOf {
             projectName.isNotBlank() &&
                     projectName.length <= 20 &&
+                    !projectName.contains(" ") && // Không chứa khoảng trắng
                     (widthText.toIntOrNull() ?: 0) >= 100 &&
                     (heightText.toIntOrNull() ?: 0) >= 100
         }
@@ -83,6 +84,8 @@ fun CreateDrawingProjectDialog(
             supportingText = {
                 if (projectName.length > 20) {
                     Text("Project name must be 20 characters or less", color = MaterialTheme.colorScheme.error)
+                } else if (projectName.contains(" ")) {
+                    Text("Project name must not contain spaces", color = MaterialTheme.colorScheme.error)
                 }
             }
         )
