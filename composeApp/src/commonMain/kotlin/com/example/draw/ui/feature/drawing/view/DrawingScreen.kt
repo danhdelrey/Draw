@@ -2,6 +2,7 @@ package com.example.draw.ui.feature.drawing.view
 
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -61,33 +62,6 @@ class DrawingScreen(
 
         Scaffold(
             containerColor = MaterialTheme.colorScheme.surfaceDim,
-            floatingActionButton = {
-                if(showLayerListPanel) {
-                    state.canvas.activeLayer?.let { activeLayer ->
-                        LayerListPanel(
-                            activeLayer = activeLayer,
-                            currentLayers = state.layers,
-                            canvasWidth = state.canvas.width,
-                            canvasHeight = state.canvas.height,
-                            onAddLayer = {
-                                viewModel.onEvent(DrawingEvent.AddLayer)
-                            },
-                            onSelectLayer = {
-                                viewModel.onEvent(DrawingEvent.SelectLayer(it))
-                            },
-                            onToggleVisibility = {
-                                viewModel.onEvent(DrawingEvent.ToggleLayerVisibility(it))
-                            },
-                            onDeleteLayer = {
-                                viewModel.onEvent(DrawingEvent.DeleteLayer(it))
-                            },
-                            onReorderLayer = { fromIndex, toIndex ->
-                                viewModel.onEvent(DrawingEvent.ReorderLayer(fromIndex, toIndex))
-                            }
-                        )
-                    }
-                }
-            }
         ) { paddingValues ->
             Box(
                 modifier = Modifier
@@ -137,37 +111,66 @@ class DrawingScreen(
                         .fillMaxWidth()
                         .align(Alignment.BottomCenter)
                 ) {
-                    ToolPanel(
-                        appearFromBottom = true,
-                        shouldHideToolPanel = state.isUserDrawing,
-                    ){
-                        ColorPickerButton(
-                            initialBrush = state.currentBrush,
-                            onBrushConfigFinished = { newBrush ->
-                                viewModel.onEvent(DrawingEvent.ChangeBrush(newBrush))
+                    Column(
+                        horizontalAlignment = Alignment.End
+                    ) {
+                        if(showLayerListPanel) {
+                            state.canvas.activeLayer?.let { activeLayer ->
+                                LayerListPanel(
+                                    activeLayer = activeLayer,
+                                    currentLayers = state.layers,
+                                    canvasWidth = state.canvas.width,
+                                    canvasHeight = state.canvas.height,
+                                    onAddLayer = {
+                                        viewModel.onEvent(DrawingEvent.AddLayer)
+                                    },
+                                    onSelectLayer = {
+                                        viewModel.onEvent(DrawingEvent.SelectLayer(it))
+                                    },
+                                    onToggleVisibility = {
+                                        viewModel.onEvent(DrawingEvent.ToggleLayerVisibility(it))
+                                    },
+                                    onDeleteLayer = {
+                                        viewModel.onEvent(DrawingEvent.DeleteLayer(it))
+                                    },
+                                    onReorderLayer = { fromIndex, toIndex ->
+                                        viewModel.onEvent(DrawingEvent.ReorderLayer(fromIndex, toIndex))
+                                    }
+                                )
                             }
-                        )
-                        UndoButton(
-                            onUndo = if (state.canUndo) {
-                                { viewModel.onEvent(DrawingEvent.Undo) }
-                            } else null
-                        )
-                        BrushConfigButton(
-                            currentBrush = state.currentBrush,
-                            onBrushConfigFinished = { newBrush ->
-                                viewModel.onEvent(DrawingEvent.ChangeBrush(newBrush))
-                            }
-                        )
-                        RedoButton(
-                            onRedo = if (state.canRedo) {
-                                { viewModel.onEvent(DrawingEvent.Redo) }
-                            } else null
-                        )
-                        LayerListPanelButton(
-                            onClick = {
-                                showLayerListPanel = !showLayerListPanel
-                            }
-                        )
+                        }
+                        ToolPanel(
+                            appearFromBottom = true,
+                            shouldHideToolPanel = state.isUserDrawing,
+                        ) {
+                            ColorPickerButton(
+                                initialBrush = state.currentBrush,
+                                onBrushConfigFinished = { newBrush ->
+                                    viewModel.onEvent(DrawingEvent.ChangeBrush(newBrush))
+                                }
+                            )
+                            UndoButton(
+                                onUndo = if (state.canUndo) {
+                                    { viewModel.onEvent(DrawingEvent.Undo) }
+                                } else null
+                            )
+                            BrushConfigButton(
+                                currentBrush = state.currentBrush,
+                                onBrushConfigFinished = { newBrush ->
+                                    viewModel.onEvent(DrawingEvent.ChangeBrush(newBrush))
+                                }
+                            )
+                            RedoButton(
+                                onRedo = if (state.canRedo) {
+                                    { viewModel.onEvent(DrawingEvent.Redo) }
+                                } else null
+                            )
+                            LayerListPanelButton(
+                                onClick = {
+                                    showLayerListPanel = !showLayerListPanel
+                                }
+                            )
+                        }
                     }
                 }
 
