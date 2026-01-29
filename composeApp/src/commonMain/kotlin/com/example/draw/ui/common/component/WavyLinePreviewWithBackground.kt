@@ -2,6 +2,7 @@ package com.example.draw.ui.common.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -34,11 +35,12 @@ fun WavyLinePreviewWithBackground(brush: Brush = SolidBrush.default()) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(120.dp)
-            .background(backgroundColor)
-            .padding(vertical = 24.dp),
+            .height(120.dp),
         contentAlignment = Alignment.Center
     ) {
+        CheckerboardBackground(
+            modifier = Modifier.fillMaxSize()
+        )
         WavyLinePreview(brush = brush)
     }
 }

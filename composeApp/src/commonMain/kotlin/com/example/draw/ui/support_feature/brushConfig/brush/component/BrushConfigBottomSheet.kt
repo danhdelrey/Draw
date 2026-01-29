@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.example.draw.data.model.brush.AirBrush
 import com.example.draw.data.model.brush.Brush
 import com.example.draw.data.model.brush.BrushProperties
+import com.example.draw.data.model.brush.EraserBrush
 import com.example.draw.data.model.brush.SolidBrush
 import com.example.draw.ui.common.component.CustomBottomSheet
 import com.example.draw.ui.common.component.SliderWithLabels
@@ -25,6 +26,7 @@ import com.example.draw.ui.common.preview.PreviewComponent
 @Composable
 fun BrushConfigBottomSheet(
     initialBrush: Brush,
+    lastActiveColor: Long = 0xFF000000,
     onBrushConfigFinished: (Brush) -> Unit = {},
 ) {
     var brushSize by remember { mutableFloatStateOf(initialBrush.size) }
@@ -55,17 +57,18 @@ fun BrushConfigBottomSheet(
                 }
             )
             Spacer(modifier = Modifier.height(15.dp))
-
-            SliderWithLabels(
-                label = "Opacity",
-                valueRange = 0f..100f,
-                initialValue = brushOpacity * 100f,
-                valueSuffix = "%",
-                onValueChange = {
-                    brushOpacity = it / 100f
-                    newBrush = newBrush.updateOpacity(it / 100f)
-                }
-            )
+            if (newBrush !is EraserBrush){
+                SliderWithLabels(
+                    label = "Opacity",
+                    valueRange = 0f..100f,
+                    initialValue = brushOpacity * 100f,
+                    valueSuffix = "%",
+                    onValueChange = {
+                        brushOpacity = it / 100f
+                        newBrush = newBrush.updateOpacity(it / 100f)
+                    }
+                )
+            }
 
             // Show density slider only for AirBrush
             if (newBrush is AirBrush) {
@@ -89,10 +92,16 @@ fun BrushConfigBottomSheet(
                 initialBrush = newBrush,
                 onBrushSelected = { selectedBrush ->
                     // Preserve size, opacity, and color when switching brush type
+                    val targetColor = if (initialBrush is EraserBrush) {
+                        lastActiveColor
+                    } else {
+                        initialBrush.colorArgb
+                    }
+
                     var updatedBrush = selectedBrush
                         .updateSize(brushSize)
                         .updateOpacity(brushOpacity)
-                        .updateColor(initialBrush.colorArgb)
+                        .updateColor(targetColor)
 
                     // If switching to AirBrush, set density
                     if (updatedBrush is AirBrush) {
