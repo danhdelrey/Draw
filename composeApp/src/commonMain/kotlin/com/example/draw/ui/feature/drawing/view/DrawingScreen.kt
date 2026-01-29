@@ -60,6 +60,13 @@ class DrawingScreen(
             }
         }
 
+        LaunchedEffect(state.isUserDrawing){
+            //Ẩn panel khi đang vẽ
+            if(state.isUserDrawing){
+                showLayerListPanel = false
+            }
+        }
+
         Scaffold(
             containerColor = MaterialTheme.colorScheme.surfaceDim,
         ) { paddingValues ->
@@ -174,17 +181,6 @@ class DrawingScreen(
                     }
                 }
 
-                if (showLayerListPanel) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .pointerInput(Unit) {
-                                detectTapGestures(
-                                    onTap = { showLayerListPanel = false }
-                                )
-                            }
-                    )
-                }
             }
         }
     }

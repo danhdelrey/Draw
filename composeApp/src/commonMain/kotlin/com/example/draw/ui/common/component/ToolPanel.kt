@@ -50,7 +50,6 @@ fun ToolPanel(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surfaceContainerLowest)
                 ,
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
