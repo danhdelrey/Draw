@@ -1,15 +1,24 @@
 package com.example.draw.ui.feature.drawing.view
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Save
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -19,12 +28,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
+import cafe.adriel.voyager.navigator.LocalNavigator
 import com.example.draw.ui.common.component.CustomIconButton
 import com.example.draw.ui.common.component.ToolPanel
 import com.example.draw.ui.common.preview.PreviewComponent
@@ -36,6 +48,7 @@ import com.example.draw.ui.support_feature.brushConfig.color.mainComponent.Color
 import com.example.draw.ui.support_feature.ellipseTool.mainComponent.EllipseToolButton
 import com.example.draw.ui.support_feature.layerConfig.mainComponent.LayerListPanel
 import com.example.draw.ui.support_feature.layerConfig.mainComponent.LayerListPanelButton
+import com.example.draw.ui.support_feature.saveImage.mainComponent.SaveImageButton
 import com.example.draw.ui.support_feature.undoRedo.mainComponent.RedoButton
 import com.example.draw.ui.support_feature.undoRedo.mainComponent.UndoButton
 import kotlinx.coroutines.Dispatchers
@@ -48,6 +61,8 @@ class DrawingScreen(
     override fun Content() {
         val viewModel = koinScreenModel<DrawingScreenViewModel>()
         val state by viewModel.state.collectAsStateWithLifecycle()
+
+        val navigator = LocalNavigator.current
 
         val scope = rememberCoroutineScope()
         val drawingGraphicsLayer = rememberGraphicsLayer()
@@ -90,19 +105,28 @@ class DrawingScreen(
                     ToolPanel(
                         shouldHideToolPanel = state.isUserDrawing,
                     ){
-                        EllipseToolButton(
-                            isActive = state.ellipseMode != null,
-                            onToggleEllipseMode = {
-                                if (state.ellipseMode != null) {
-                                    viewModel.onEvent(DrawingEvent.ExitEllipseMode)
-                                } else {
-                                    viewModel.onEvent(DrawingEvent.EnterEllipseMode)
-                                }
-                            }
-                        )
-                        CustomIconButton(
-                            icon = Icons.Default.Save,
+                        Box(
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.outlineVariant)
+                                .width(40.dp)
+                                .height(40.dp)
+                                .clickable {
+                                    navigator?.pop()
+                                },
+                            contentAlignment = Alignment.Center
                         ) {
+                            Icon(
+                                modifier = Modifier
+                                    .width(24.dp)
+                                    .height(24.dp),
+                                imageVector = Icons.Default.ChevronLeft,
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                contentDescription = null
+                            )
+                        }
+                        Text(state.projectName)
+                        SaveImageButton {
                             viewModel.onEvent(DrawingEvent.SaveDrawingProject(state))
                             scope.launch(Dispatchers.Default) {
                                 //Chụp ảnh (Main Thread)
@@ -160,6 +184,16 @@ class DrawingScreen(
                                 onUndo = if (state.canUndo) {
                                     { viewModel.onEvent(DrawingEvent.Undo) }
                                 } else null
+                            )
+                            EllipseToolButton(
+                                isActive = state.ellipseMode != null,
+                                onToggleEllipseMode = {
+                                    if (state.ellipseMode != null) {
+                                        viewModel.onEvent(DrawingEvent.ExitEllipseMode)
+                                    } else {
+                                        viewModel.onEvent(DrawingEvent.EnterEllipseMode)
+                                    }
+                                }
                             )
                             BrushConfigButton(
                                 currentBrush = state.currentBrush,

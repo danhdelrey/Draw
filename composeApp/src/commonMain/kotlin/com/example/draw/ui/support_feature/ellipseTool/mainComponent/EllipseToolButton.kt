@@ -9,6 +9,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Circle
+import androidx.compose.material.icons.filled.Layers
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -36,63 +40,22 @@ fun EllipseToolButton(
     Box(
         modifier = Modifier
             .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.surfaceContainer)
-            .border(
-                width = 5.dp,
-                color = if (isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainer,
-                shape = CircleShape
-            )
-            .clickable { onToggleEllipseMode() }
+            .background(if(isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant)
+            .width(40.dp)
+            .height(40.dp)
+            .clickable {
+                onToggleEllipseMode()
+            },
+        contentAlignment = Alignment.Center
     ) {
-        // Custom ellipse icon drawn with Canvas
-        Canvas(
+        Icon(
             modifier = Modifier
-                .padding(12.dp)
                 .width(24.dp)
-                .height(24.dp)
-                .align(Alignment.Center)
-        ) {
-            val iconColor = if (isActive) {
-                Color(0xFF6200EE) // Primary color
-            } else {
-                Color.DarkGray
-            }
-
-            // Draw an ellipse icon
-            drawOval(
-                color = iconColor,
-                topLeft = Offset(size.width * 0.1f, size.height * 0.25f),
-                size = Size(size.width * 0.8f, size.height * 0.5f),
-                style = Stroke(width = 2.dp.toPx())
-            )
-
-            // Draw small control points to hint at the tool function
-            val dotRadius = 2.dp.toPx()
-            // Left dot
-            drawCircle(
-                color = iconColor,
-                radius = dotRadius,
-                center = Offset(size.width * 0.1f, size.height * 0.5f)
-            )
-            // Right dot
-            drawCircle(
-                color = iconColor,
-                radius = dotRadius,
-                center = Offset(size.width * 0.9f, size.height * 0.5f)
-            )
-            // Top dot
-            drawCircle(
-                color = iconColor,
-                radius = dotRadius,
-                center = Offset(size.width * 0.5f, size.height * 0.25f)
-            )
-            // Bottom dot
-            drawCircle(
-                color = iconColor,
-                radius = dotRadius,
-                center = Offset(size.width * 0.5f, size.height * 0.75f)
-            )
-        }
+                .height(24.dp),
+            imageVector = Icons.Default.Circle,
+            tint = if(isActive) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
+            contentDescription = null
+        )
     }
 }
 
