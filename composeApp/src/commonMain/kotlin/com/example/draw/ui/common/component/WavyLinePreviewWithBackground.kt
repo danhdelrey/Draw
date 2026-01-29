@@ -5,12 +5,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush as ComposeBrush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.draw.data.model.brush.AirBrush
@@ -25,13 +26,6 @@ import com.example.draw.ui.common.preview.PreviewComponent
  */
 @Composable
 fun WavyLinePreviewWithBackground(brush: Brush = SolidBrush.default()) {
-    // Choose background color based on brush type for best visibility
-    val backgroundColor = when (brush) {
-        is EraserBrush -> Color.Black // Dark background to show eraser effect
-        is AirBrush -> MaterialTheme.colorScheme.surface // Neutral for spray visibility
-        else -> MaterialTheme.colorScheme.surface // Default surface color
-    }
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -41,7 +35,38 @@ fun WavyLinePreviewWithBackground(brush: Brush = SolidBrush.default()) {
         CheckerboardBackground(
             modifier = Modifier.fillMaxSize()
         )
-        WavyLinePreview(brush = brush)
+
+        // Wrapper for content that interacts with the background
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .graphicsLayer {
+                    // Use offscreen compositing for EraserBrush so it blends with the gradient
+                    // instead of clearing the destination (which includes Checkerboard and window)
+                    if (brush is EraserBrush) {
+                        compositingStrategy = CompositingStrategy.Offscreen
+                    }
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            // For EraserBrush, add a gradient background to erase
+            if (brush is EraserBrush) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            ComposeBrush.linearGradient(
+                                colors = listOf(
+                                    Color(0xFF8BC34A),
+                                    Color(0xFF03A9F4)
+                                )
+                            )
+                        )
+                )
+            }
+
+            WavyLinePreview(brush = brush)
+        }
     }
 }
 
@@ -61,3 +86,10 @@ fun WavyLinePreviewAirBrushWithBackgroundPreview() {
     }
 }
 
+@Preview
+@Composable
+fun WavyLinePreviewEraserBrushWithBackgroundPreview() {
+    PreviewComponent {
+        WavyLinePreviewWithBackground(brush = EraserBrush.default())
+    }
+}
