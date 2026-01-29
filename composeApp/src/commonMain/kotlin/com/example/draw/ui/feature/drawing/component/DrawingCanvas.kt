@@ -1,7 +1,8 @@
 package com.example.draw.ui.feature.drawing.component
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -267,19 +268,48 @@ fun Offset.clampToSize(size: Size): Offset {
 fun Modifier.drawingInput(
     onDragStart: (Offset) -> Unit,
     onDrag: (Offset) -> Unit,
-    onDragEnd: () -> Unit
+    onDragEnd: () -> Unit,
+    onDragCancel: () -> Unit
 ): Modifier {
     return this.pointerInput(Unit) {
-        detectDragGestures(
-            onDragStart = { offset ->
-                // Tự động kẹp tọa độ vào trong size của canvas
-                onDragStart(offset.clampToSize(size.toSize()))
-            },
-            onDrag = { change, _ ->
-                // Tự động kẹp tọa độ
-                onDrag(change.position.clampToSize(size.toSize()))
-            },
-            onDragEnd = { onDragEnd() }
-        )
+        awaitEachGesture {
+            val down = awaitFirstDown(requireUnconsumed = false)
+            var dragStarted = false
+            val pointerId = down.id
+
+            if (down.pressed) {
+                onDragStart(down.position.clampToSize(size.toSize()))
+                dragStarted = true
+                down.consume()
+            }
+
+            while (true) {
+                val event = awaitPointerEvent()
+
+                // Abort drawing if multi-touch is detected (likely a transform gesture)
+                if (event.changes.size > 1) {
+                    if (dragStarted) {
+                        onDragCancel()
+                        dragStarted = false
+                    }
+                    break
+                }
+
+                val change = event.changes.find { it.id == pointerId }
+
+                if (change == null || !change.pressed) {
+                    if (dragStarted) {
+                        onDragEnd()
+                        dragStarted = false
+                    }
+                    break
+                }
+
+                if (change.position != change.previousPosition && !change.isConsumed) {
+                    onDrag(change.position.clampToSize(size.toSize()))
+                    change.consume()
+                }
+            }
+        }
     }
 }

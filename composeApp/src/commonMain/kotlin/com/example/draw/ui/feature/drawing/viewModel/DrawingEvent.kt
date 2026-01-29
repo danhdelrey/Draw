@@ -15,6 +15,7 @@ sealed interface DrawingEvent{
     data class StartDrawing(val currentTouchPosition: Offset) : DrawingEvent
     data class UpdateDrawing(val currentTouchPosition: Offset) : DrawingEvent
     object EndDrawing : DrawingEvent
+    object CancelDrawing : DrawingEvent
     data class SaveDrawing(val imageBitmap: ImageBitmap) : DrawingEvent
 
     //Brush

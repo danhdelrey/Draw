@@ -42,6 +42,7 @@ class DrawingScreenViewModel(
                 is DrawingEvent.StartDrawing -> handleStartDrawing(event)
                 is DrawingEvent.UpdateDrawing -> handleUpdateDrawing(event)
                 is DrawingEvent.EndDrawing -> handleEndDrawing()
+                is DrawingEvent.CancelDrawing -> handleCancelDrawing()
 
                 // --- UNDO/REDO ---
                 is DrawingEvent.Undo -> handleUndo()
@@ -146,6 +147,14 @@ class DrawingScreenViewModel(
         performCommand(command)
 
         // Clear ephemeral state
+        _state.value = _state.value.copy(
+            currentDrawingPath = null,
+            currentTouchPosition = null
+        )
+    }
+
+    private fun handleCancelDrawing() {
+        // Clear the current drawing path without saving
         _state.value = _state.value.copy(
             currentDrawingPath = null,
             currentTouchPosition = null
