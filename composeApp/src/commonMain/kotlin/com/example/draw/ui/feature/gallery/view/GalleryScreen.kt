@@ -50,7 +50,6 @@ import com.example.draw.ui.feature.gallery.viewModel.GalleryEvent
 import com.example.draw.ui.feature.gallery.viewModel.GalleryScreenViewModel
 import com.example.draw.ui.support_feature.drawingProject.create.mainComponent.CreateDrawingProjectButton
 import com.example.draw.platform.rememberFileSaver
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -195,7 +194,7 @@ class GalleryScreen : Screen {
                 project = showDeleteForProject!!,
                 onDismiss = { showDeleteForProject = null },
                 onConfirm = {
-                    viewModel.onEvent(GalleryEvent.DeleteDrawingProject(showDeleteForProject!!.name))
+                    viewModel.onEvent(GalleryEvent.DeleteDrawingProject(showDeleteForProject!!.id))
                     showDeleteForProject = null
                 }
             )

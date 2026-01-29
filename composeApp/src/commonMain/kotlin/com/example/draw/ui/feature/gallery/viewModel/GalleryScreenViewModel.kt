@@ -6,6 +6,7 @@ import com.example.draw.data.datasource.local.DrawingRepository
 import com.example.draw.data.model.canvas.CanvasConfig
 import com.example.draw.data.model.serialization.DrawingProject
 import com.example.draw.data.model.util.currentTimeMillis
+import com.example.draw.data.model.util.generateId
 import com.example.draw.ui.feature.drawing.viewModel.DrawingState
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +29,7 @@ class GalleryScreenViewModel(
             when (event) {
                 is GalleryEvent.LoadDrawingProjects -> loadDrawingsProjects()
                 is GalleryEvent.CreateDrawingProject -> createDrawingProject(event.canvasConfig, event.projectName)
-                is GalleryEvent.DeleteDrawingProject -> deleteDrawingProject(event.name)
+                is GalleryEvent.DeleteDrawingProject -> deleteDrawingProject(event.id)
                 is GalleryEvent.RenameDrawingProject -> renameDrawingProject(event.project, event.newName)
                 is GalleryEvent.ImportDrawingProject -> importDrawingProject(event.project)
             }
@@ -37,13 +38,9 @@ class GalleryScreenViewModel(
 
     private suspend fun importDrawingProject(project: DrawingProject) {
         val importedProject = project.copy(
+            id = generateId(),
             lastModified = currentTimeMillis()
         )
-        // Ensure name uniqueness? DrawingRepository implementation dependent.
-        // Assuming saveDrawingProject overwrites if exists or just saves.
-        // It's safer to ensure we don't overwrite existing without asking, but for now let's assume simple import.
-        // To avoid collision, we might want to check existence or append suffix.
-        // But for simplicity of this task, let's just save.
 
         if (drawingRepository.saveDrawingProject(importedProject)) {
              _effect.send(GalleryEffect.CreateDrawingProjectSuccess(drawingState = DrawingState.fromDrawingProject(importedProject)))
@@ -56,13 +53,12 @@ class GalleryScreenViewModel(
             lastModified = currentTimeMillis()
         )
         if (drawingRepository.saveDrawingProject(newProject)) {
-            drawingRepository.deleteDrawingProject(project.name)
             loadDrawingsProjects()
         }
     }
 
-    private suspend fun deleteDrawingProject(name: String) {
-        if (drawingRepository.deleteDrawingProject(name)) {
+    private suspend fun deleteDrawingProject(id: String) {
+        if (drawingRepository.deleteDrawingProject(id)) {
             loadDrawingsProjects()
         }
     }

@@ -2,14 +2,14 @@ package com.example.draw.data.datasource.local
 
 import com.example.draw.data.model.canvas.CanvasConfig
 import com.example.draw.data.model.serialization.DrawingProject
+import com.example.draw.data.model.util.generateId
 import com.example.draw.data.service.FileStorageService
 import kotlinx.serialization.json.Json
 
 interface DrawingRepository {
     suspend fun getAllDrawingProjects(): List<DrawingProject>
-    suspend fun getDrawingProjectByName(name: String): DrawingProject?
     suspend fun saveDrawingProject(drawing: DrawingProject): Boolean
-    suspend fun deleteDrawingProject(name: String): Boolean
+    suspend fun deleteDrawingProject(id: String): Boolean
     suspend fun createDrawingProject(projectName: String, canvasConfig: CanvasConfig): DrawingProject
 }
 
@@ -26,17 +26,10 @@ class DrawingRepositoryImpl(
         }
     }
 
-    override suspend fun getDrawingProjectByName(name: String): DrawingProject? {
-        val project = fileStorageService.readFile(name, "drawings")
-        return project?.let { data ->
-            Json.decodeFromString<DrawingProject>(data.decodeToString())
-        }
-    }
-
     override suspend fun saveDrawingProject(drawing: DrawingProject): Boolean {
         try {
            val path = fileStorageService.saveFile(
-                fileName = drawing.name,
+                fileName = drawing.id,
                 folderPath = "drawings",
                 content = Json.encodeToString(drawing).encodeToByteArray()
             )
@@ -49,25 +42,25 @@ class DrawingRepositoryImpl(
 
     }
 
-    override suspend fun deleteDrawingProject(name: String): Boolean {
-        return fileStorageService.deleteFile(name, "drawings")
+    override suspend fun deleteDrawingProject(id: String): Boolean {
+        return fileStorageService.deleteFile(id, "drawings")
     }
 
     override suspend fun createDrawingProject(projectName: String, canvasConfig: CanvasConfig): DrawingProject {
-        val projectPath = fileStorageService.saveFile(
-            fileName = projectName,
-            folderPath = "drawings",
-            content = Json.encodeToString(
-                DrawingProject.defaultProject().copy(
-                    id = projectName,
-                    name = projectName,
-                    width = canvasConfig.width,
-                    height = canvasConfig.height
-                )
-            ).encodeToByteArray()
+        val newId = generateId()
+        val newProject = DrawingProject.defaultProject().copy(
+            id = newId,
+            name = projectName,
+            width = canvasConfig.width,
+            height = canvasConfig.height
+        )
 
+        val projectPath = fileStorageService.saveFile(
+            fileName = newId,
+            folderPath = "drawings",
+            content = Json.encodeToString(newProject).encodeToByteArray()
         )
         println("Created new drawing project at path: $projectPath")
-        return getDrawingProjectByName(projectName)!!
+        return newProject
     }
 }

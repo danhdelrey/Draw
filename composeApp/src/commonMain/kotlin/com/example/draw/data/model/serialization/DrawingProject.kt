@@ -9,8 +9,8 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class DrawingProject(
-    val id: String, //path to file + file name
-    val name: String, // file name
+    val id: String, // Unique identifier, used as filename
+    val name: String, // Display name of the project
     val width: Float,
     val height: Float,
     val backgroundColor: Long = 0xFFFFFFFF,
