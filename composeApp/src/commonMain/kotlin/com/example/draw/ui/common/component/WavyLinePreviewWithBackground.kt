@@ -11,6 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush as ComposeBrush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -29,7 +31,8 @@ fun WavyLinePreviewWithBackground(brush: Brush = SolidBrush.default()) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(120.dp),
+            .height(120.dp)
+            .clip(RectangleShape), // Clip content to avoid any overflow artifacts
         contentAlignment = Alignment.Center
     ) {
         CheckerboardBackground(
