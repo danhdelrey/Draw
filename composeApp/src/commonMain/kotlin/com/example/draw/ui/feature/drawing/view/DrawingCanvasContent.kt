@@ -149,7 +149,8 @@ fun DrawingCanvasContent(
 
                         } while (event.changes.any { it.pressed })
                     }
-                }
+                },
+            contentAlignment = Alignment.Center
         ) {
             Box(
                 modifier = Modifier
