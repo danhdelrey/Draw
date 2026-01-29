@@ -17,7 +17,7 @@ fun Long.toDateTimeString(
         hour()
         char(':')
         minute()
-        char(' ')
+        char('\n') // Thêm ký tự xuống dòng
         day()
         char('/')
         monthNumber()

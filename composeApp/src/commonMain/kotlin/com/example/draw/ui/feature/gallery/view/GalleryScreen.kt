@@ -35,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
@@ -130,7 +131,6 @@ class GalleryScreen : Screen {
                                         )
                                 ) {
                                     Column(
-                                        horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
                                         DrawingProjectThumbnail(
                                             project = project,
@@ -140,13 +140,15 @@ class GalleryScreen : Screen {
                                         )
                                         Text(
                                             text = project.name.removeSuffix(".json"),
-                                            modifier = Modifier.padding(top = 8.dp),
-                                            style = MaterialTheme.typography.titleMedium
+                                            modifier = Modifier.padding(top = 8.dp).padding(horizontal = 8.dp),
+                                            style = MaterialTheme.typography.titleMedium,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
                                         )
                                         Text(
-                                            modifier = Modifier.padding(bottom = 8.dp),
+                                            modifier = Modifier.padding(bottom = 8.dp).padding(horizontal = 8.dp),
                                             text = project.lastModified.toDateTimeString(),
-                                            style = MaterialTheme.typography.bodySmall
+                                            style = MaterialTheme.typography.bodySmall,
                                         )
                                     }
                                 }
