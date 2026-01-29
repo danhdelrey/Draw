@@ -46,8 +46,9 @@ fun CreateDrawingProjectDialog(
     val isValidInput by remember {
         derivedStateOf {
             projectName.isNotBlank() &&
-                    (widthText.toIntOrNull() ?: 0) > 0 &&
-                    (heightText.toIntOrNull() ?: 0) > 0
+                    projectName.length <= 20 &&
+                    (widthText.toIntOrNull() ?: 0) >= 100 &&
+                    (heightText.toIntOrNull() ?: 0) >= 100
         }
     }
 
@@ -70,13 +71,20 @@ fun CreateDrawingProjectDialog(
         // 1. Project Name Input
         OutlinedTextField(
             value = projectName,
-            onValueChange = { projectName = it },
+            onValueChange = {
+                if (it.length <= 20) projectName = it
+            },
             label = { Text("Project Name") },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-            keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
+            keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
+            supportingText = {
+                if (projectName.length > 20) {
+                    Text("Project name must be 20 characters or less", color = MaterialTheme.colorScheme.error)
+                }
+            }
         )
 
         // 2. Width & Height Inputs (Nằm cùng 1 hàng)
@@ -97,7 +105,13 @@ fun CreateDrawingProjectDialog(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Next
                 ),
-                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Right) })
+                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Right) }),
+                supportingText = {
+                    val value = widthText.toIntOrNull() ?: 0
+                    if (value < 100) {
+                        Text("Min: 100", color = MaterialTheme.colorScheme.error)
+                    }
+                }
             )
 
             // Height
@@ -116,7 +130,13 @@ fun CreateDrawingProjectDialog(
                 keyboardActions = KeyboardActions(onDone = {
                     // Ẩn bàn phím khi xong
                     focusManager.clearFocus()
-                })
+                }),
+                supportingText = {
+                    val value = heightText.toIntOrNull() ?: 0
+                    if (value < 100) {
+                        Text("Min: 100", color = MaterialTheme.colorScheme.error)
+                    }
+                }
             )
         }
     }

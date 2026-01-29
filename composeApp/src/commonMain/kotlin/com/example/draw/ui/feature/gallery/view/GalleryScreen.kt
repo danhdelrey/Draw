@@ -218,17 +218,26 @@ fun RenameProjectDialog(
     onDismiss: () -> Unit,
     onConfirm: (String) -> Unit
 ) {
-    var newName by remember { mutableStateOf(project.name.removeSuffix(".json")) }
+    val maxLength = 20
+    var newName by remember { mutableStateOf(project.name.removeSuffix(".json").take(maxLength)) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Rename Project") },
         text = {
-            TextField(
-                value = newName,
-                onValueChange = { newName = it },
-                label = { Text("Project Name") }
-            )
+            Column {
+                TextField(
+                    value = newName,
+                    onValueChange = { newName = it.take(maxLength) },
+                    label = { Text("Project Name") }
+                )
+                Text(
+                    text = "${newName.length}/$maxLength",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
         },
         confirmButton = {
             Button(
