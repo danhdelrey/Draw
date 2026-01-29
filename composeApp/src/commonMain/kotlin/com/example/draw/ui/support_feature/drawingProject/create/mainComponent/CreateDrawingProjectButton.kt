@@ -55,7 +55,11 @@ fun CreateDrawingProjectButton(
                              try {
                                  val jsonString = content.decodeToString()
                                  val project = Json.decodeFromString<DrawingProject>(jsonString)
-                                 onImportRequest(project)
+                                 // Ensure project name is at most 20 characters
+                                 val trimmedProject = project.copy(
+                                     name = if (project.name.length > 20) project.name.take(20) else project.name
+                                 )
+                                 onImportRequest(trimmedProject)
                              } catch (e: Exception) {
                                  e.printStackTrace()
                              }

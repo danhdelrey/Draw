@@ -131,7 +131,7 @@ class DrawingScreen(
                                 { viewModel.onEvent(DrawingEvent.Undo) }
                             } else null
                         )
-                        Text(state.projectName)
+                        Text(state.projectName.removeSuffix(".json"))
                         RedoButton(
                             onRedo = if (state.canRedo) {
                                 { viewModel.onEvent(DrawingEvent.Redo) }
@@ -158,30 +158,38 @@ class DrawingScreen(
                     ) {
                         if(showLayerListPanel) {
                             state.canvas.activeLayer?.let { activeLayer ->
-                                LayerListPanel(
-                                    activeLayer = activeLayer,
-                                    currentLayers = state.layers,
-                                    canvasWidth = state.canvas.width,
-                                    canvasHeight = state.canvas.height,
-                                    onAddLayer = {
-                                        viewModel.onEvent(DrawingEvent.AddLayer)
-                                    },
-                                    onSelectLayer = {
-                                        viewModel.onEvent(DrawingEvent.SelectLayer(it))
-                                    },
-                                    onToggleVisibility = {
-                                        viewModel.onEvent(DrawingEvent.ToggleLayerVisibility(it))
-                                    },
-                                    onDeleteLayer = {
-                                        viewModel.onEvent(DrawingEvent.DeleteLayer(it))
-                                    },
-                                    onReorderLayer = { fromIndex, toIndex ->
-                                        viewModel.onEvent(DrawingEvent.ReorderLayer(fromIndex, toIndex))
-                                    }
-                                )
+                                Box(
+                                    modifier = Modifier.padding(15.dp)
+                                ) {
+                                    LayerListPanel(
+                                        activeLayer = activeLayer,
+                                        currentLayers = state.layers,
+                                        canvasWidth = state.canvas.width,
+                                        canvasHeight = state.canvas.height,
+                                        onAddLayer = {
+                                            viewModel.onEvent(DrawingEvent.AddLayer)
+                                        },
+                                        onSelectLayer = {
+                                            viewModel.onEvent(DrawingEvent.SelectLayer(it))
+                                        },
+                                        onToggleVisibility = {
+                                            viewModel.onEvent(DrawingEvent.ToggleLayerVisibility(it))
+                                        },
+                                        onDeleteLayer = {
+                                            viewModel.onEvent(DrawingEvent.DeleteLayer(it))
+                                        },
+                                        onReorderLayer = { fromIndex, toIndex ->
+                                            viewModel.onEvent(
+                                                DrawingEvent.ReorderLayer(
+                                                    fromIndex,
+                                                    toIndex
+                                                )
+                                            )
+                                        }
+                                    )
+                                }
                             }
                         }
-                        Spacer(Modifier.height(15.dp))
                         ToolPanel(
                             appearFromBottom = true,
                             shouldHideToolPanel = state.isUserDrawing,
