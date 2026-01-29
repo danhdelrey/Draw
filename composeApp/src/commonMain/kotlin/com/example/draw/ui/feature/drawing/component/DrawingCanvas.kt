@@ -273,7 +273,7 @@ fun Modifier.drawingInput(
 ): Modifier {
     return this.pointerInput(Unit) {
         awaitEachGesture {
-            val down = awaitFirstDown(requireUnconsumed = false)
+            val down = awaitFirstDown(requireUnconsumed = true)
             var dragStarted = false
             val pointerId = down.id
 
@@ -296,6 +296,14 @@ fun Modifier.drawingInput(
                 }
 
                 val change = event.changes.find { it.id == pointerId }
+
+                if (change?.isConsumed == true) {
+                     if (dragStarted) {
+                         onDragCancel()
+                         dragStarted = false
+                     }
+                     break
+                }
 
                 if (change == null || !change.pressed) {
                     if (dragStarted) {
