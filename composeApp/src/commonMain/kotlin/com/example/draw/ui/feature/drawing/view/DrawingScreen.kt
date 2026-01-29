@@ -3,6 +3,7 @@ package com.example.draw.ui.feature.drawing.view
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Save
@@ -15,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.graphics.rememberGraphicsLayer
@@ -84,73 +86,6 @@ class DrawingScreen(
                         )
                     }
                 }
-            },
-            topBar = {
-                ToolPanel(
-                    shouldHideToolPanel = state.isUserDrawing,
-                    leftContent = {
-                        EllipseToolButton(
-                            isActive = state.ellipseMode != null,
-                            onToggleEllipseMode = {
-                                if (state.ellipseMode != null) {
-                                    viewModel.onEvent(DrawingEvent.ExitEllipseMode)
-                                } else {
-                                    viewModel.onEvent(DrawingEvent.EnterEllipseMode)
-                                }
-                            }
-                        )
-                    }
-                ) {
-                    UndoRedoButton(
-                        onRedo = if (state.canRedo) {
-                            { viewModel.onEvent(DrawingEvent.Redo) }
-                        } else null,
-                        onUndo = if (state.canUndo) {
-                            { viewModel.onEvent(DrawingEvent.Undo) }
-                        } else null
-                    )
-                }
-            },
-            bottomBar = {
-                ToolPanel(
-                    appearFromBottom = true,
-                    shouldHideToolPanel = state.isUserDrawing,
-                    leftContent = {
-                        ColorPickerButton(
-                            initialBrush = state.currentBrush,
-                            onBrushConfigFinished = { newBrush ->
-                                viewModel.onEvent(DrawingEvent.ChangeBrush(newBrush))
-                            }
-                        )
-                        BrushConfigButton(
-                            currentBrush = state.currentBrush,
-                            onBrushConfigFinished = { newBrush ->
-                                viewModel.onEvent(DrawingEvent.ChangeBrush(newBrush))
-                            }
-                        )
-
-                    },
-                    centerContent = {
-                        // Add center content here for preview
-                    },
-                    rightContent = {
-                        CustomIconButton(
-                            icon = Icons.Default.Save,
-                        ) {
-                            viewModel.onEvent(DrawingEvent.SaveDrawingProject(state))
-                            scope.launch(Dispatchers.Default) {
-                                //Chụp ảnh (Main Thread)
-                                val bitmap = drawingGraphicsLayer.toImageBitmap()
-                                viewModel.onEvent(DrawingEvent.SaveDrawing(bitmap))
-                            }
-                        }
-                        LayerListPanelButton(
-                            onClick = {
-                                showLayerListPanel = !showLayerListPanel
-                            }
-                        )
-                    }
-                )
             }
         ) { paddingValues ->
             Box(
@@ -164,6 +99,83 @@ class DrawingScreen(
                     rootGraphicsLayer = drawingGraphicsLayer,
                     modifier = Modifier.fillMaxSize()
                 )
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.TopCenter)
+                ) {
+                    ToolPanel(
+                        shouldHideToolPanel = state.isUserDrawing,
+                        leftContent = {
+                            EllipseToolButton(
+                                isActive = state.ellipseMode != null,
+                                onToggleEllipseMode = {
+                                    if (state.ellipseMode != null) {
+                                        viewModel.onEvent(DrawingEvent.ExitEllipseMode)
+                                    } else {
+                                        viewModel.onEvent(DrawingEvent.EnterEllipseMode)
+                                    }
+                                }
+                            )
+                        }
+                    ) {
+                        UndoRedoButton(
+                            onRedo = if (state.canRedo) {
+                                { viewModel.onEvent(DrawingEvent.Redo) }
+                            } else null,
+                            onUndo = if (state.canUndo) {
+                                { viewModel.onEvent(DrawingEvent.Undo) }
+                            } else null
+                        )
+                    }
+                }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.BottomCenter)
+                ) {
+                    ToolPanel(
+                        appearFromBottom = true,
+                        shouldHideToolPanel = state.isUserDrawing,
+                        leftContent = {
+                            ColorPickerButton(
+                                initialBrush = state.currentBrush,
+                                onBrushConfigFinished = { newBrush ->
+                                    viewModel.onEvent(DrawingEvent.ChangeBrush(newBrush))
+                                }
+                            )
+                            BrushConfigButton(
+                                currentBrush = state.currentBrush,
+                                onBrushConfigFinished = { newBrush ->
+                                    viewModel.onEvent(DrawingEvent.ChangeBrush(newBrush))
+                                }
+                            )
+
+                        },
+                        centerContent = {
+                            // Add center content here for preview
+                        },
+                        rightContent = {
+                            CustomIconButton(
+                                icon = Icons.Default.Save,
+                            ) {
+                                viewModel.onEvent(DrawingEvent.SaveDrawingProject(state))
+                                scope.launch(Dispatchers.Default) {
+                                    //Chụp ảnh (Main Thread)
+                                    val bitmap = drawingGraphicsLayer.toImageBitmap()
+                                    viewModel.onEvent(DrawingEvent.SaveDrawing(bitmap))
+                                }
+                            }
+                            LayerListPanelButton(
+                                onClick = {
+                                    showLayerListPanel = !showLayerListPanel
+                                }
+                            )
+                        }
+                    )
+                }
 
                 if (showLayerListPanel) {
                     Box(
