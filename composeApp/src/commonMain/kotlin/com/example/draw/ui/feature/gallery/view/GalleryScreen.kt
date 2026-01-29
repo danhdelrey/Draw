@@ -220,6 +220,8 @@ fun RenameProjectDialog(
 ) {
     val maxLength = 20
     var newName by remember { mutableStateOf(project.name.removeSuffix(".json").filterNot { it.isWhitespace() }.take(maxLength)) }
+    val trimmedName = newName.trim()
+    val isValid = trimmedName.isNotEmpty()
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -228,8 +230,11 @@ fun RenameProjectDialog(
             Column {
                 TextField(
                     value = newName,
-                    onValueChange = { newName = it.filterNot { ch -> ch.isWhitespace() }.take(maxLength) },
-                    label = { Text("Project Name") }
+                    onValueChange = {
+                        newName = it.filterNot { ch -> ch.isWhitespace() }.take(maxLength)
+                    },
+                    label = { Text("Project Name") },
+                    isError = !isValid
                 )
                 Text(
                     text = "${newName.length}/$maxLength",
@@ -237,14 +242,23 @@ fun RenameProjectDialog(
                     color = Color.Gray,
                     modifier = Modifier.padding(top = 4.dp)
                 )
+                if (!isValid) {
+                    Text(
+                        text = "Name cannot be empty",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
             }
         },
         confirmButton = {
             Button(
                 onClick = {
-                    val finalName = if (newName.endsWith(".json")) newName else "$newName.json"
+                    val finalName = if (trimmedName.endsWith(".json")) trimmedName else "$trimmedName.json"
                     onConfirm(finalName)
-                }
+                },
+                enabled = isValid
             ) {
                 Text("Rename")
             }
