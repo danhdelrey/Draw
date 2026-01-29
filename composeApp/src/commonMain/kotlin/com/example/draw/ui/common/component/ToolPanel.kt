@@ -9,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.MaterialTheme
@@ -29,9 +30,7 @@ import draw.composeapp.generated.resources.solid_brush
 fun ToolPanel(
     shouldHideToolPanel: Boolean = false,
     appearFromBottom: Boolean = false,
-    leftContent: @Composable RowScope.() -> Unit = {},
-    centerContent: @Composable RowScope.() -> Unit = {},
-    rightContent: @Composable RowScope.() -> Unit = {}
+    content: @Composable RowScope.() -> Unit = {},
 ) {
     AnimatedVisibility(
         visible = !shouldHideToolPanel,
@@ -48,24 +47,12 @@ fun ToolPanel(
     ) {
         Row(
             modifier = Modifier
+                .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.surfaceContainerLowest)
-                .padding(horizontal = 15.dp)
-                .systemBarsPadding()
+                ,
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            Row(
-                modifier = Modifier.weight(1f),
-                horizontalArrangement = Arrangement.spacedBy(15.dp)
-            ) { leftContent() }
-
-            Row(
-                modifier = Modifier.weight(1f),
-                horizontalArrangement = Arrangement.spacedBy(15.dp)
-            ) { centerContent() }
-
-            Row(
-                modifier = Modifier.weight(1f),
-                horizontalArrangement = Arrangement.spacedBy(15.dp)
-            ) { rightContent() }
+            content()
         }
     }
 }
@@ -77,20 +64,22 @@ fun ToolPanel(
 fun ToolPanelPreview(){
     PreviewComponent {
         ToolPanel(
-            leftContent = {
-                ColorPickerButton(
-                    initialBrush = SolidBrush(),
-                )
+           content = {
+               ColorPickerButton(
+                   initialBrush = SolidBrush(
+                       colorArgb = 0xFFFF0000,
+                       size = 10f
+                   )
+               )
                 BrushConfigButton(
-                    currentBrush = SolidBrush(),
+                     currentBrush = SolidBrush(
+                          colorArgb = 0xFFFF0000,
+                          size = 10f
+                     )
                 )
-            },
-            centerContent = {
-                // Add center content here for preview
-            },
-            rightContent = {
+
                 LayerListPanelButton()
-            }
+           }
         )
     }
 }

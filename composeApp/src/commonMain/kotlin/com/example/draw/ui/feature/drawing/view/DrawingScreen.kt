@@ -107,19 +107,17 @@ class DrawingScreen(
                 ) {
                     ToolPanel(
                         shouldHideToolPanel = state.isUserDrawing,
-                        leftContent = {
-                            EllipseToolButton(
-                                isActive = state.ellipseMode != null,
-                                onToggleEllipseMode = {
-                                    if (state.ellipseMode != null) {
-                                        viewModel.onEvent(DrawingEvent.ExitEllipseMode)
-                                    } else {
-                                        viewModel.onEvent(DrawingEvent.EnterEllipseMode)
-                                    }
+                    ){
+                        EllipseToolButton(
+                            isActive = state.ellipseMode != null,
+                            onToggleEllipseMode = {
+                                if (state.ellipseMode != null) {
+                                    viewModel.onEvent(DrawingEvent.ExitEllipseMode)
+                                } else {
+                                    viewModel.onEvent(DrawingEvent.EnterEllipseMode)
                                 }
-                            )
-                        }
-                    ) {
+                            }
+                        )
                         UndoRedoButton(
                             onRedo = if (state.canRedo) {
                                 { viewModel.onEvent(DrawingEvent.Redo) }
@@ -139,42 +137,35 @@ class DrawingScreen(
                     ToolPanel(
                         appearFromBottom = true,
                         shouldHideToolPanel = state.isUserDrawing,
-                        leftContent = {
-                            ColorPickerButton(
-                                initialBrush = state.currentBrush,
-                                onBrushConfigFinished = { newBrush ->
-                                    viewModel.onEvent(DrawingEvent.ChangeBrush(newBrush))
-                                }
-                            )
-                            BrushConfigButton(
-                                currentBrush = state.currentBrush,
-                                onBrushConfigFinished = { newBrush ->
-                                    viewModel.onEvent(DrawingEvent.ChangeBrush(newBrush))
-                                }
-                            )
-
-                        },
-                        centerContent = {
-                            // Add center content here for preview
-                        },
-                        rightContent = {
-                            CustomIconButton(
-                                icon = Icons.Default.Save,
-                            ) {
-                                viewModel.onEvent(DrawingEvent.SaveDrawingProject(state))
-                                scope.launch(Dispatchers.Default) {
-                                    //Chụp ảnh (Main Thread)
-                                    val bitmap = drawingGraphicsLayer.toImageBitmap()
-                                    viewModel.onEvent(DrawingEvent.SaveDrawing(bitmap))
-                                }
+                    ){
+                        ColorPickerButton(
+                            initialBrush = state.currentBrush,
+                            onBrushConfigFinished = { newBrush ->
+                                viewModel.onEvent(DrawingEvent.ChangeBrush(newBrush))
                             }
-                            LayerListPanelButton(
-                                onClick = {
-                                    showLayerListPanel = !showLayerListPanel
-                                }
-                            )
+                        )
+                        BrushConfigButton(
+                            currentBrush = state.currentBrush,
+                            onBrushConfigFinished = { newBrush ->
+                                viewModel.onEvent(DrawingEvent.ChangeBrush(newBrush))
+                            }
+                        )
+                        CustomIconButton(
+                            icon = Icons.Default.Save,
+                        ) {
+                            viewModel.onEvent(DrawingEvent.SaveDrawingProject(state))
+                            scope.launch(Dispatchers.Default) {
+                                //Chụp ảnh (Main Thread)
+                                val bitmap = drawingGraphicsLayer.toImageBitmap()
+                                viewModel.onEvent(DrawingEvent.SaveDrawing(bitmap))
+                            }
                         }
-                    )
+                        LayerListPanelButton(
+                            onClick = {
+                                showLayerListPanel = !showLayerListPanel
+                            }
+                        )
+                    }
                 }
 
                 if (showLayerListPanel) {
