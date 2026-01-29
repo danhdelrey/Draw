@@ -80,12 +80,24 @@ data class DrawingCanvas(
      * Remove a layer by ID
      */
     fun removeLayer(layerId: String): DrawingCanvas {
+        val index = layers.indexOfFirst { it.id == layerId }
         val updatedLayers = layers.filter { it.id != layerId }
+
         val newActiveId = if (activeLayerId == layerId) {
-            updatedLayers.firstOrNull()?.id ?: ""
+            if (updatedLayers.isEmpty()) {
+                ""
+            } else if (index != -1) {
+                // Select layer above (which takes the deleted layer's index)
+                // or layer below if strictly top layer was deleted
+                val newIndex = index.coerceAtMost(updatedLayers.lastIndex)
+                updatedLayers[newIndex].id
+            } else {
+                updatedLayers.first().id
+            }
         } else {
             activeLayerId
         }
+
         return copy(
             layers = updatedLayers,
             activeLayerId = newActiveId,
