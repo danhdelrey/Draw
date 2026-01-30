@@ -131,7 +131,6 @@ class DrawingScreen(
                                 { viewModel.onEvent(DrawingEvent.Undo) }
                             } else null
                         )
-                        Text(state.projectName.removeSuffix(".json"))
                         RedoButton(
                             onRedo = if (state.canRedo) {
                                 { viewModel.onEvent(DrawingEvent.Redo) }
