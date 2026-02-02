@@ -122,7 +122,8 @@ fun LayerListPanel(
                             isSelected = layer.id == activeLayer.id,
                             onClick = { onSelectLayer(layer) },
                             onToggleVisibility = { onToggleVisibility(layer) },
-                            onDelete = if (draggableLayers.size > 1) { { onDeleteLayer(layer) } } else null
+                            onDelete = if (draggableLayers.size > 1) { { onDeleteLayer(layer) } } else null,
+                            showTransparentBackground = true // Show checkerboard for draggable layers
                         )
                         if (isDragging) {
                             Box(

@@ -34,7 +34,8 @@ fun LayerItem(
     isSelected: Boolean,
     onClick: (() -> Unit)?,
     onToggleVisibility: (() -> Unit)?,
-    onDelete: (() -> Unit)?
+    onDelete: (() -> Unit)?,
+    showTransparentBackground: Boolean = false // New parameter
 ) {
     val backgroundColor = if (isSelected) Color(0xFF888888) else Color.Transparent
 
@@ -81,6 +82,7 @@ fun LayerItem(
                     layer = data,
                     canvasWidth = canvasWidth,
                     canvasHeight = canvasHeight,
+                    showTransparentBackground = showTransparentBackground, // Pass it down
                     modifier = Modifier.fillMaxSize()
                 )
             } else {

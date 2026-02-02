@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
 import com.example.draw.data.model.layer.VectorLayer
 import com.example.draw.ui.feature.drawing.component.drawDrawingPath
 
@@ -24,6 +25,7 @@ fun CanvasThumbnail(
     canvasWidth: Float,
     canvasHeight: Float,
     backgroundColor: Color = Color.White,
+    showTransparentBackground: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     BoxWithConstraints(
@@ -51,8 +53,15 @@ fun CanvasThumbnail(
                     width = with(density) { displayedWidth.toDp() },
                     height = with(density) { displayedHeight.toDp() }
                 )
-                .background(backgroundColor)
+                .background(if (showTransparentBackground) Color.Transparent else backgroundColor)
         ) {
+            if (showTransparentBackground) {
+                CheckerboardBackground(
+                    modifier = Modifier.fillMaxSize(),
+                    cellSize = 4.dp
+                )
+            }
+
             layers.forEach { layer ->
                 if (layer.isVisible) {
                     Canvas(
@@ -77,4 +86,3 @@ fun CanvasThumbnail(
         }
     }
 }
-
