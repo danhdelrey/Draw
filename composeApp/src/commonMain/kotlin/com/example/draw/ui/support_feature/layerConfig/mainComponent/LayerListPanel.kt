@@ -122,7 +122,7 @@ fun LayerListPanel(
                             isSelected = layer.id == activeLayer.id,
                             onClick = { onSelectLayer(layer) },
                             onToggleVisibility = { onToggleVisibility(layer) },
-                            onDelete = { onDeleteLayer(layer) }
+                            onDelete = if (draggableLayers.size > 1) { { onDeleteLayer(layer) } } else null
                         )
                         if (isDragging) {
                             Box(
@@ -142,8 +142,8 @@ fun LayerListPanel(
                 canvasWidth = canvasWidth,
                 canvasHeight = canvasHeight,
                 isSelected = backgroundLayer.id == activeLayer.id,
-                onClick = { onSelectLayer(backgroundLayer) },
-                onToggleVisibility = { onToggleVisibility(backgroundLayer) },
+                onClick = {}, // Disable selection
+                onToggleVisibility = null,
                 onDelete = null
             )
         }

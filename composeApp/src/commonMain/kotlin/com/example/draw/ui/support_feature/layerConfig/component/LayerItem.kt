@@ -33,7 +33,7 @@ fun LayerItem(
     canvasHeight: Float,
     isSelected: Boolean,
     onClick: () -> Unit,
-    onToggleVisibility: () -> Unit,
+    onToggleVisibility: (() -> Unit)?,
     onDelete: (() -> Unit)?
 ) {
     val backgroundColor = if (isSelected) Color(0xFF888888) else Color.Transparent
@@ -48,17 +48,23 @@ fun LayerItem(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        // 1. Nút Mắt
-        IconButton(
-            onClick = onToggleVisibility,
-            modifier = Modifier.size(24.dp)
-        ) {
-            Icon(
-                imageVector = if (data.isVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                contentDescription = "Toggle Visibility",
-                tint = Color(0xFF1E1E1E)
-            )
+        if(onToggleVisibility == null) {
+            // Nếu không có onToggleVisibility, giữ khoảng trống cho nút mắt
+            Box(modifier = Modifier.size(24.dp))
+        }else{
+            // 1. Nút Mắt
+            IconButton(
+                onClick = onToggleVisibility,
+                modifier = Modifier.size(24.dp)
+            ) {
+                Icon(
+                    imageVector = if (data.isVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                    contentDescription = "Toggle Visibility",
+                    tint = Color(0xFF1E1E1E)
+                )
+            }
         }
+
 
         // 2. Vùng chứa Thumbnail
         // Box này đóng vai trò là container giới hạn

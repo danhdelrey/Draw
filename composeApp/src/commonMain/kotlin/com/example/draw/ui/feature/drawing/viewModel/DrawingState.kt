@@ -46,8 +46,6 @@ data class DrawingState(
     val isUserDrawing: Boolean = false,
 ) {
     // Convenience accessors
-    val activeLayer: VectorLayer?
-        get() = canvas.activeLayer as? VectorLayer
 
     val layers: List<com.example.draw.data.model.layer.Layer>
         get() = canvas.layers
@@ -76,15 +74,23 @@ data class DrawingState(
          * Create default canvas with initial layer
          */
         private fun createDefaultCanvas(): DrawingCanvas {
-            val defaultLayer = VectorLayer.create(
+            val layer1 = VectorLayer.create(
                 id = "default_layer",
                 name = "Layer 1"
+            ).copy(isLocked = true) // First layer is locked
+
+            val layer2 = VectorLayer.create(
+                id = "default_layer_2",
+                name = "Layer 2"
             )
+
+            // Start with layer 1, then add layer 2 and set it as active
             return DrawingCanvas.create(
                 width = CanvasConfig.DEFAULT_WIDTH,
                 height = CanvasConfig.DEFAULT_HEIGHT,
-                initialLayer = defaultLayer
-            )
+                initialLayer = layer1
+            ).addLayer(layer2)
+             .setActiveLayer(layer2.id)
         }
 
         fun fromDrawingProject(project: DrawingProject): DrawingState {

@@ -22,16 +22,21 @@ data class DrawingProject(
 ){
     companion object{
         fun defaultProject(): DrawingProject{
-            return DrawingProject(
-                id = "untitled_project",
-                name = "untitled_project",
-                width = 1920f,
-                height = 1080f,
-                backgroundColor = 0xFFFFFFFF,
-                layers = listOf(
-                    LayerData(
+            val layer1 = LayerData(
                         id = "layer_1",
                         name = "Layer 1",
+                        type = "VECTOR",
+                        isVisible = true,
+                        isLocked = true,
+                        opacity = 1.0f,
+                        blendMode = "NORMAL",
+                        paths = emptyList(),
+                        bitmapContent = null,
+                        metadata = emptyMap()
+                    )
+            val layer2 = LayerData(
+                        id = "layer_2",
+                        name = "Layer 2",
                         type = "VECTOR",
                         isVisible = true,
                         isLocked = false,
@@ -41,8 +46,15 @@ data class DrawingProject(
                         bitmapContent = null,
                         metadata = emptyMap()
                     )
-                ),
-                activeLayerId = "layer_1",
+
+            return DrawingProject(
+                id = "untitled_project",
+                name = "untitled_project",
+                width = 1920f,
+                height = 1080f,
+                backgroundColor = 0xFFFFFFFF,
+                layers = listOf(layer1, layer2),
+                activeLayerId = "layer_2",
                 createdAt = currentTimeMillis(),
                 lastModified = currentTimeMillis(),
                 currentBrush = null
@@ -109,4 +121,3 @@ data class BrushData(
     // Properties stored as strings for simplicity
     val properties: Map<String, String> = emptyMap()
 )
-

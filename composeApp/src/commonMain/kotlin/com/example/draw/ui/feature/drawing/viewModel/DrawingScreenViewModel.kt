@@ -118,6 +118,11 @@ class DrawingScreenViewModel(
     // --- Event Handlers ---
 
     private fun handleStartDrawing(event: DrawingEvent.StartDrawing) {
+        val activeLayer = _state.value.canvas.activeLayer
+        if (activeLayer == null || activeLayer.isLocked) {
+            return
+        }
+
         _state.value = _state.value.copy(
             isUserDrawing = true,
             currentDrawingPath = DrawingPath.create(
@@ -200,8 +205,8 @@ class DrawingScreenViewModel(
     }
 
     private fun handleDeleteLayer(event: DrawingEvent.DeleteLayer) {
-        // Don't allow deleting the default layer
-        if (event.layer.id == "default_layer") return
+        // Don't allow deleting locked layers
+        if (event.layer.isLocked) return
 
         val index = _state.value.layers.indexOfFirst { it.id == event.layer.id }
         if (index != -1 && event.layer is VectorLayer) {
@@ -323,6 +328,9 @@ class DrawingScreenViewModel(
         )
     }
 }
+
+
+
 
 
 
