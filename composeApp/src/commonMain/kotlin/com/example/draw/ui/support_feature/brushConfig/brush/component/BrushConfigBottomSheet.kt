@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.example.draw.data.model.brush.AirBrush
 import com.example.draw.data.model.brush.Brush
 import com.example.draw.data.model.brush.BrushProperties
+import com.example.draw.data.model.brush.BrushType
 import com.example.draw.data.model.brush.EraserBrush
 import com.example.draw.data.model.brush.SolidBrush
 import com.example.draw.ui.common.component.CustomBottomSheet
@@ -29,6 +30,19 @@ fun BrushConfigBottomSheet(
     lastActiveColor: Long = 0xFF000000,
     onBrushConfigFinished: (Brush) -> Unit = {},
 ) {
+    // Determine the shared color to use.
+    // If initial brush has a valid color (non-transparent), use it.
+    // Otherwise (e.g. legacy Eraser with 0 color), use lastActiveColor.
+    val activeColor = remember(initialBrush, lastActiveColor) {
+        if (initialBrush.colorArgb != 0L) initialBrush.colorArgb else lastActiveColor
+    }
+
+    val brushConfigurations = remember {
+        mutableMapOf<BrushType, Brush>().apply {
+            put(initialBrush.type, initialBrush)
+        }
+    }
+
     var brushSize by remember { mutableFloatStateOf(initialBrush.size) }
     var brushOpacity by remember { mutableFloatStateOf(initialBrush.opacity) }
     var brushDensity by remember {
@@ -48,71 +62,68 @@ fun BrushConfigBottomSheet(
         Column(
             modifier = Modifier.padding(vertical = 30.dp, horizontal = 30.dp)
         ) {
-            SliderWithLabels(
-                label = "Size",
-                valueRange = 1f..100f,
-                initialValue = brushSize,
-                onValueChange = {
-                    brushSize = it
-                    newBrush = newBrush.updateSize(it)
-                }
-            )
-            Spacer(modifier = Modifier.height(15.dp))
-            if (newBrush !is EraserBrush){
+            androidx.compose.runtime.key(newBrush.type) {
                 SliderWithLabels(
-                    label = "Opacity",
-                    valueRange = 0f..100f,
-                    initialValue = brushOpacity * 100f,
-                    valueSuffix = "%",
+                    label = "Size",
+                    valueRange = 1f..100f,
+                    initialValue = brushSize,
                     onValueChange = {
-                        brushOpacity = it / 100f
-                        newBrush = newBrush.updateOpacity(it / 100f)
+                        brushSize = it
+                        newBrush = newBrush.updateSize(it)
                     }
                 )
-            }
-
-            // Show density slider only for AirBrush
-            if (newBrush is AirBrush) {
                 Spacer(modifier = Modifier.height(15.dp))
-                SliderWithLabels(
-                    label = "Density",
-                    valueRange = 0f..100f,
-                    initialValue = brushDensity * 100f,
-                    valueSuffix = "%",
-                    onValueChange = {
-                        brushDensity = it / 100f
-                        newBrush = newBrush.updateProperties(
-                            BrushProperties(mapOf(BrushProperties.DENSITY to brushDensity))
-                        )
-                    }
-                )
+                if (newBrush !is EraserBrush){
+                    SliderWithLabels(
+                        label = "Opacity",
+                        valueRange = 0f..100f,
+                        initialValue = brushOpacity * 100f,
+                        valueSuffix = "%",
+                        onValueChange = {
+                            brushOpacity = it / 100f
+                            newBrush = newBrush.updateOpacity(it / 100f)
+                        }
+                    )
+                }
+
+                // Show density slider only for AirBrush
+                if (newBrush is AirBrush) {
+                    Spacer(modifier = Modifier.height(15.dp))
+                    SliderWithLabels(
+                        label = "Density",
+                        valueRange = 0f..100f,
+                        initialValue = brushDensity * 100f,
+                        valueSuffix = "%",
+                        onValueChange = {
+                            brushDensity = it / 100f
+                            newBrush = newBrush.updateProperties(
+                                BrushProperties(mapOf(BrushProperties.DENSITY to brushDensity))
+                            )
+                        }
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(25.dp))
             BrushSelection(
                 initialBrush = newBrush,
                 onBrushSelected = { selectedBrush ->
-                    // Preserve size, opacity, and color when switching brush type
-                    val targetColor = if (initialBrush is EraserBrush) {
-                        lastActiveColor
-                    } else {
-                        initialBrush.colorArgb
+                    brushConfigurations[newBrush.type] = newBrush
+
+                    var targetBrush = brushConfigurations.getOrElse(selectedBrush.type) {
+                        selectedBrush
                     }
 
-                    var updatedBrush = selectedBrush
-                        .updateSize(brushSize)
-                        .updateOpacity(brushOpacity)
-                        .updateColor(targetColor)
+                    // Apply shared color to the target brush
+                    targetBrush = targetBrush.updateColor(activeColor)
 
-                    // If switching to AirBrush, set density
-                    if (updatedBrush is AirBrush) {
-                        brushDensity = updatedBrush.density
-                        updatedBrush = updatedBrush.updateProperties(
-                            BrushProperties(mapOf(BrushProperties.DENSITY to brushDensity))
-                        )
+                    brushSize = targetBrush.size
+                    brushOpacity = targetBrush.opacity
+                    if (targetBrush is AirBrush) {
+                        brushDensity = targetBrush.density
                     }
 
-                    newBrush = updatedBrush
+                    newBrush = targetBrush
                 }
             )
 

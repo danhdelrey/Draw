@@ -17,12 +17,12 @@ data class EraserBrush(
     override val id: String = generateId(),
     override val size: Float = 20f,
     override val opacity: Float = 1f,
+    override val colorArgb: Long = 0xFF000000,
     override val imageResource: DrawableResource = Res.drawable.eraser,
     override val properties: BrushProperties = BrushProperties()
 ) : Brush {
 
     override val type: BrushType = BrushType.ERASER
-    override val colorArgb: Long = 0x00000000  // Always transparent
 
     override fun updateSize(size: Float): Brush =
         copy(size = size)
@@ -31,7 +31,7 @@ data class EraserBrush(
         copy(opacity = opacity)
 
     override fun updateColor(colorArgb: Long): Brush =
-        this  // Eraser color cannot be changed
+        copy(colorArgb = colorArgb)
 
     override fun updateProperties(properties: BrushProperties): Brush =
         copy(properties = properties)
