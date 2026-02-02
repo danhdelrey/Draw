@@ -142,7 +142,7 @@ fun LayerListPanel(
                 canvasWidth = canvasWidth,
                 canvasHeight = canvasHeight,
                 isSelected = backgroundLayer.id == activeLayer.id,
-                onClick = {}, // Disable selection
+                onClick = null,
                 onToggleVisibility = null,
                 onDelete = null
             )

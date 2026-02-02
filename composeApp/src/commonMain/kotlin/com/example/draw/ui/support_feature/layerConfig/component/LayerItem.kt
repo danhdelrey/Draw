@@ -32,7 +32,7 @@ fun LayerItem(
     canvasWidth: Float,
     canvasHeight: Float,
     isSelected: Boolean,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)?,
     onToggleVisibility: (() -> Unit)?,
     onDelete: (() -> Unit)?
 ) {
@@ -43,7 +43,7 @@ fun LayerItem(
             .fillMaxWidth()
             .height(100.dp) // Chiều cao cố định cho item
             .background(backgroundColor)
-            .clickable { onClick() }
+            .clickable(enabled = onClick != null) { onClick?.invoke() }
             .padding(4.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
