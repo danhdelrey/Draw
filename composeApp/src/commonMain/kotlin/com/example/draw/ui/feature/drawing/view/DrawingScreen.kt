@@ -50,6 +50,7 @@ import com.example.draw.ui.support_feature.ellipseTool.mainComponent.EllipseTool
 import com.example.draw.ui.support_feature.layerConfig.mainComponent.LayerListPanel
 import com.example.draw.ui.support_feature.layerConfig.mainComponent.LayerListPanelButton
 import com.example.draw.ui.support_feature.saveImage.mainComponent.SaveImageButton
+import com.example.draw.ui.support_feature.selection.mainComponent.SelectionToolButton
 import com.example.draw.ui.support_feature.undoRedo.mainComponent.RedoButton
 import com.example.draw.ui.support_feature.undoRedo.mainComponent.UndoButton
 import kotlinx.coroutines.Dispatchers
@@ -193,7 +194,9 @@ class DrawingScreen(
                             appearFromBottom = true,
                             shouldHideToolPanel = state.isUserDrawing,
                         ) {
+                            SelectionToolButton(
 
+                            )
                             EllipseToolButton(
                                 isActive = state.ellipseMode != null,
                                 onToggleEllipseMode = {
