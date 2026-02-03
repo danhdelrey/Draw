@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.InvertColors
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material.icons.filled.SwapVert
+import androidx.compose.material.icons.filled.Transform
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.DropdownMenu
@@ -49,6 +50,7 @@ fun LayerItem(
     onInvert: (() -> Unit)? = null,
     onFlipHorizontal: (() -> Unit)? = null,
     onFlipVertical: (() -> Unit)? = null,
+    onEnterTransformationMode: (() -> Unit)? = null,
     showTransparentBackground: Boolean = false // New parameter
 ) {
     val backgroundColor = if (isSelected) Color(0xFF888888) else Color.Transparent
@@ -182,6 +184,21 @@ fun LayerItem(
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Default.SwapVert,
+                                    contentDescription = null
+                                )
+                            }
+                        )
+                    }
+                    if (onEnterTransformationMode != null) {
+                        DropdownMenuItem(
+                            text = { Text("Transform") },
+                            onClick = {
+                                expanded = false
+                                onEnterTransformationMode()
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Transform,
                                     contentDescription = null
                                 )
                             }

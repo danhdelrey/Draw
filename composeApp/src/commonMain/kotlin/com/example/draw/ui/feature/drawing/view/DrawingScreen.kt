@@ -187,6 +187,9 @@ class DrawingScreen(
                                         onFlipLayerVertical = {
                                             viewModel.onEvent(DrawingEvent.FlipLayerVertical(it))
                                         },
+                                        onEnterTransformationMode = {
+                                            //enter layer transformation mode
+                                        },
                                         onReorderLayer = { fromIndex, toIndex ->
                                             viewModel.onEvent(
                                                 DrawingEvent.ReorderLayer(
