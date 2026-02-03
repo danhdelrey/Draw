@@ -24,7 +24,6 @@ import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material.icons.filled.Transform
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -43,6 +42,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.draw.data.model.layer.Layer
 import com.example.draw.data.model.layer.VectorLayer
+import com.example.draw.ui.common.component.CustomBottomSheet
 import com.example.draw.ui.common.component.SliderWithLabels
 import com.example.draw.ui.common.preview.PreviewComponent
 
@@ -123,9 +123,9 @@ fun LayerItem(
         // 3. Nút Menu
         if (onDelete != null || onInvert != null || onFlipHorizontal != null || onFlipVertical != null || onOpacityChange != null) {
             Box {
-                var showDialog by remember { mutableStateOf(false) }
+                var showBottomSheet by remember { mutableStateOf(false) }
                 IconButton(
-                    onClick = { showDialog = true },
+                    onClick = { showBottomSheet = true },
                     modifier = Modifier.size(24.dp)
                 ) {
                     Icon(
@@ -135,71 +135,105 @@ fun LayerItem(
                     )
                 }
 
-                if (showDialog) {
-                    AlertDialog(
-                        onDismissRequest = { showDialog = false },
-                        title = { Text("Layer Options") },
-                        text = {
-                            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                                if (onOpacityChange != null) {
-                                    SliderWithLabels(
-                                        label = "Opacity",
-                                        initialValue = data.opacity * 100f,
-                                        onValueChange = { newValue ->
-                                            onOpacityChange(newValue / 100f)
-                                        },
-                                        valueRange = 0f..100f,
-                                        valueSuffix = "%"
-                                    )
-                                    Spacer(modifier = Modifier.height(16.dp))
-                                }
+                if (showBottomSheet) {
+                    CustomBottomSheet(
+                        onDismissRequest = { showBottomSheet = false }
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                                .verticalScroll(rememberScrollState())
+                        ) {
+                            Text(
+                                "Layer Options",
+                                style = MaterialTheme.typography.titleLarge,
+                                modifier = Modifier
+                                    .padding(bottom = 16.dp)
+                                    .align(Alignment.CenterHorizontally)
+                            )
 
-                                if (onEnterTransformationMode != null) {
-                                    TextButton(onClick = { showDialog = false; onEnterTransformationMode() }) {
+                            if (onOpacityChange != null) {
+                                SliderWithLabels(
+                                    label = "Opacity",
+                                    initialValue = data.opacity * 100f,
+                                    onValueChange = { },
+                                    onValueChangeFinished = { newValue ->
+                                        onOpacityChange(newValue / 100f)
+                                    },
+                                    valueRange = 0f..100f,
+                                    valueSuffix = "%"
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                            }
+
+                            if (onEnterTransformationMode != null) {
+                                TextButton(
+                                    onClick = { showBottomSheet = false; onEnterTransformationMode() },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onSurface)
+                                ) {
+                                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start) {
                                         Icon(Icons.Default.Transform, null)
-                                        Spacer(Modifier.width(8.dp))
+                                        Spacer(Modifier.width(16.dp))
                                         Text("Transform")
                                     }
                                 }
-                                if (onFlipHorizontal != null) {
-                                   TextButton(onClick = { showDialog = false; onFlipHorizontal() }) {
+                            }
+                            if (onFlipHorizontal != null) {
+                                TextButton(
+                                    onClick = { showBottomSheet = false; onFlipHorizontal() },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onSurface)
+                                ) {
+                                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start) {
                                         Icon(Icons.Default.SwapHoriz, null)
-                                        Spacer(Modifier.width(8.dp))
+                                        Spacer(Modifier.width(16.dp))
                                         Text("Flip Horizontal")
                                     }
                                 }
-                                if (onFlipVertical != null) {
-                                    TextButton(onClick = { showDialog = false; onFlipVertical() }) {
+                            }
+                            if (onFlipVertical != null) {
+                                TextButton(
+                                    onClick = { showBottomSheet = false; onFlipVertical() },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onSurface)
+                                ) {
+                                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start) {
                                         Icon(Icons.Default.SwapVert, null)
-                                        Spacer(Modifier.width(8.dp))
+                                        Spacer(Modifier.width(16.dp))
                                         Text("Flip Vertical")
                                     }
                                 }
-                                if (onInvert != null) {
-                                    TextButton(onClick = { showDialog = false; onInvert() }) {
+                            }
+                            if (onInvert != null) {
+                                TextButton(
+                                    onClick = { showBottomSheet = false; onInvert() },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onSurface)
+                                ) {
+                                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start) {
                                         Icon(Icons.Default.InvertColors, null)
-                                        Spacer(Modifier.width(8.dp))
+                                        Spacer(Modifier.width(16.dp))
                                         Text("Invert Layer")
                                     }
                                 }
-                                if (onDelete != null) {
-                                    TextButton(
-                                        onClick = { showDialog = false; onDelete() },
-                                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
-                                    ) {
+                            }
+                            if (onDelete != null) {
+                                TextButton(
+                                    onClick = { showBottomSheet = false; onDelete() },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                                ) {
+                                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start) {
                                         Icon(Icons.Default.Delete, null)
-                                        Spacer(Modifier.width(8.dp))
+                                        Spacer(Modifier.width(16.dp))
                                         Text("Delete Layer")
                                     }
                                 }
                             }
-                        },
-                        confirmButton = {
-                            TextButton(onClick = { showDialog = false }) {
-                                Text("Done")
-                            }
+                            Spacer(Modifier.height(32.dp))
                         }
-                    )
+                    }
                 }
             }
         } else {

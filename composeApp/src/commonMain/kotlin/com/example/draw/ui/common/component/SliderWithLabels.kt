@@ -36,6 +36,7 @@ fun SliderWithLabels(
     valueSuffix: String = "",
     initialValue: Float,
     onValueChange: (Float) -> Unit,
+    onValueChangeFinished: ((Float) -> Unit)? = null,
     valueRange: ClosedFloatingPointRange<Float> = 1f..100f
 ){
     val primary = MaterialTheme.colorScheme.primary
@@ -56,6 +57,9 @@ fun SliderWithLabels(
             onValueChange = {
                 currentValue = it
                 onValueChange(it)
+            },
+            onValueChangeFinished = {
+                onValueChangeFinished?.invoke(currentValue)
             },
             valueRange = valueRange,
             colors = SliderDefaults.colors(
