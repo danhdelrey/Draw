@@ -93,7 +93,18 @@ fun DrawingCanvasContent(
                 val maxX = points.maxOf { it.x }
                 val minY = points.minOf { it.y }
                 val maxY = points.maxOf { it.y }
-                Rect(minX, minY, maxX, maxY)
+
+                val maxStrokeRadius = activeTransformLayer
+                    ?.paths
+                    ?.maxOfOrNull { it.brush.size / 2f }
+                    ?: 0f
+
+                Rect(
+                    minX - maxStrokeRadius,
+                    minY - maxStrokeRadius,
+                    maxX + maxStrokeRadius,
+                    maxY + maxStrokeRadius
+                )
             }
 
         LaunchedEffect(state.isInLayerTransformationMode, boundsCanvas) {
