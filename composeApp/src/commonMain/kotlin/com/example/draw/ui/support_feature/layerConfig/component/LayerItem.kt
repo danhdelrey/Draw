@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.SwapHoriz
+import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.DropdownMenu
@@ -44,6 +46,8 @@ fun LayerItem(
     onToggleVisibility: (() -> Unit)?,
     onDelete: (() -> Unit)?,
     onInvert: (() -> Unit)? = null,
+    onFlipHorizontal: (() -> Unit)? = null,
+    onFlipVertical: (() -> Unit)? = null,
     showTransparentBackground: Boolean = false // New parameter
 ) {
     val backgroundColor = if (isSelected) Color(0xFF888888) else Color.Transparent
@@ -105,7 +109,7 @@ fun LayerItem(
         }
 
         // 3. Nút Menu
-        if (onDelete != null || onInvert != null) {
+        if (onDelete != null || onInvert != null || onFlipHorizontal != null || onFlipVertical != null) {
             Box {
                 var expanded by remember { mutableStateOf(false) }
                 IconButton(
@@ -146,6 +150,36 @@ fun LayerItem(
                             }
                         )
                     }
+                    if (onFlipHorizontal != null) {
+                        DropdownMenuItem(
+                            text = { Text("Flip Horizontal") },
+                            onClick = {
+                                expanded = false
+                                onFlipHorizontal()
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.SwapHoriz,
+                                    contentDescription = null
+                                )
+                            }
+                        )
+                    }
+                    if (onFlipVertical != null) {
+                        DropdownMenuItem(
+                            text = { Text("Flip Vertical") },
+                            onClick = {
+                                expanded = false
+                                onFlipVertical()
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.SwapVert,
+                                    contentDescription = null
+                                )
+                            }
+                        )
+                    }
                 }
             }
         } else {
@@ -165,7 +199,9 @@ fun LayerItemPreview() {
             onClick = {},
             onToggleVisibility = {},
             onDelete = {},
-            onInvert = {}
+            onInvert = {},
+            onFlipHorizontal = {},
+            onFlipVertical = {}
         )
     }
 }

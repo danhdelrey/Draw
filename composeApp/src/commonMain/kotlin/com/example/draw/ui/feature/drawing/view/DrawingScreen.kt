@@ -181,6 +181,12 @@ class DrawingScreen(
                                         onInvertLayer = {
                                             viewModel.onEvent(DrawingEvent.InvertLayer(it))
                                         },
+                                        onFlipLayerHorizontal = {
+                                            viewModel.onEvent(DrawingEvent.FlipLayerHorizontal(it))
+                                        },
+                                        onFlipLayerVertical = {
+                                            viewModel.onEvent(DrawingEvent.FlipLayerVertical(it))
+                                        },
                                         onReorderLayer = { fromIndex, toIndex ->
                                             viewModel.onEvent(
                                                 DrawingEvent.ReorderLayer(

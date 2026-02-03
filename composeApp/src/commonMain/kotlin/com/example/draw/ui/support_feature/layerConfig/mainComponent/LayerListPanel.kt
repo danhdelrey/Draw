@@ -45,6 +45,8 @@ fun LayerListPanel(
     onToggleVisibility: (Layer) -> Unit,
     onDeleteLayer: (Layer) -> Unit,
     onInvertLayer: (Layer) -> Unit = {},
+    onFlipLayerHorizontal: (Layer) -> Unit = {},
+    onFlipLayerVertical: (Layer) -> Unit = {},
     onReorderLayer: (Int, Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -125,6 +127,8 @@ fun LayerListPanel(
                             onToggleVisibility = { onToggleVisibility(layer) },
                             onDelete = if (draggableLayers.size > 1) { { onDeleteLayer(layer) } } else null,
                             onInvert = { onInvertLayer(layer) },
+                            onFlipHorizontal = { onFlipLayerHorizontal(layer) },
+                            onFlipVertical = { onFlipLayerVertical(layer) },
                             showTransparentBackground = true // Show checkerboard for draggable layers
                         )
                         if (isDragging) {

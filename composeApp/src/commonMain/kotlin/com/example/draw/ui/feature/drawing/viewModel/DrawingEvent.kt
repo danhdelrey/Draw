@@ -2,10 +2,8 @@ package com.example.draw.ui.feature.drawing.viewModel
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ImageBitmap
-import com.example.draw.data.model.base.DrawingPath
 import com.example.draw.data.model.brush.Brush
 import com.example.draw.data.model.layer.Layer
-import com.example.draw.data.model.serialization.DrawingProject
 import com.example.draw.data.model.shape.EllipseState
 
 sealed interface DrawingEvent{
@@ -26,6 +24,8 @@ sealed interface DrawingEvent{
     data class DeleteLayer(val layer: Layer) : DrawingEvent
     data class ToggleLayerVisibility(val layer: Layer) : DrawingEvent
     data class InvertLayer(val layer: Layer) : DrawingEvent // Add InvertLayer event
+    data class FlipLayerHorizontal(val layer: Layer) : DrawingEvent
+    data class FlipLayerVertical(val layer: Layer) : DrawingEvent
     data class ReorderLayer(val fromIndex: Int, val toIndex: Int) : DrawingEvent
     object AddLayer : DrawingEvent
 

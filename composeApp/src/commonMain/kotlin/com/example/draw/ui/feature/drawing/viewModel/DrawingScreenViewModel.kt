@@ -55,6 +55,8 @@ class DrawingScreenViewModel(
                 is DrawingEvent.ReorderLayer -> handleReorderLayer(event)
                 is DrawingEvent.SelectLayer -> handleSelectLayer(event)
                 is DrawingEvent.InvertLayer -> handleInvertLayer(event)
+                is DrawingEvent.FlipLayerHorizontal -> handleFlipLayerHorizontal(event)
+                is DrawingEvent.FlipLayerVertical -> handleFlipLayerVertical(event)
 
                 // --- BRUSH CONFIGURATION ---
                 is DrawingEvent.ChangeBrush -> handleChangeBrush(event)
@@ -236,6 +238,16 @@ class DrawingScreenViewModel(
         performCommand(command)
     }
 
+    private fun handleFlipLayerHorizontal(event: DrawingEvent.FlipLayerHorizontal) {
+        val command = FlipLayerHorizontalCommand(event.layer.id)
+        performCommand(command)
+    }
+
+    private fun handleFlipLayerVertical(event: DrawingEvent.FlipLayerVertical) {
+        val command = FlipLayerVerticalCommand(event.layer.id)
+        performCommand(command)
+    }
+
     // --- ELLIPSE MODE HANDLERS ---
 
     private fun handleEnterEllipseMode() {
@@ -332,6 +344,10 @@ class DrawingScreenViewModel(
         )
     }
 }
+
+
+
+
 
 
 

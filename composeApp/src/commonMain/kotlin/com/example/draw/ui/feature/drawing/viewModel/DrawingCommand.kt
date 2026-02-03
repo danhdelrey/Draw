@@ -219,3 +219,65 @@ data class InvertLayerCommand(
         return execute(state)
     }
 }
+
+/**
+ * Command 9: Flip layer horizontal
+ */
+data class FlipLayerHorizontalCommand(
+    val layerId: String
+) : DrawingCommand {
+
+    override fun execute(state: DrawingState): DrawingState {
+        val canvasWidth = state.canvas.width
+        val updatedCanvas = state.canvas.updateLayer(layerId) { layer ->
+            if (layer is VectorLayer) {
+                val newPaths = layer.paths.map { path ->
+                    val newPoints = path.points.map { point ->
+                        point.copy(x = canvasWidth - point.x)
+                    }
+                    path.copy(points = newPoints)
+                }
+                layer.updatePaths(newPaths)
+            } else {
+                layer
+            }
+        }
+        return state.copy(canvas = updatedCanvas)
+    }
+
+    override fun undo(state: DrawingState): DrawingState {
+        // Flip again to restore
+        return execute(state)
+    }
+}
+
+/**
+ * Command 10: Flip layer vertical
+ */
+data class FlipLayerVerticalCommand(
+    val layerId: String
+) : DrawingCommand {
+
+    override fun execute(state: DrawingState): DrawingState {
+        val canvasHeight = state.canvas.height
+        val updatedCanvas = state.canvas.updateLayer(layerId) { layer ->
+            if (layer is VectorLayer) {
+                val newPaths = layer.paths.map { path ->
+                    val newPoints = path.points.map { point ->
+                        point.copy(y = canvasHeight - point.y)
+                    }
+                    path.copy(points = newPoints)
+                }
+                layer.updatePaths(newPaths)
+            } else {
+                layer
+            }
+        }
+        return state.copy(canvas = updatedCanvas)
+    }
+
+    override fun undo(state: DrawingState): DrawingState {
+        // Flip again to restore
+        return execute(state)
+    }
+}
