@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.InvertColors
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material.icons.filled.SwapVert
@@ -147,6 +148,12 @@ fun LayerItem(
                             onClick = {
                                 expanded = false
                                 onInvert()
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.InvertColors,
+                                    contentDescription = null
+                                )
                             }
                         )
                     }
