@@ -173,6 +173,7 @@ private fun DrawScope.drawAirBrushPath(drawingPath: DrawingPath, color: Color) {
         drawSprayParticles(
             center = points[0],
             radius = brushSize / 2f,
+            brushSize = brushSize,
             particleCount = particlesPerPoint,
             color = color,
             opacity = opacity,
@@ -202,6 +203,7 @@ private fun DrawScope.drawAirBrushPath(drawingPath: DrawingPath, color: Color) {
                 drawSprayParticles(
                     center = center,
                     radius = brushSize / 2f,
+                    brushSize = brushSize,
                     particleCount = (particlesPerPoint * 0.5f).toInt().coerceAtLeast(2),
                     color = color,
                     opacity = opacity,
@@ -214,6 +216,7 @@ private fun DrawScope.drawAirBrushPath(drawingPath: DrawingPath, color: Color) {
         drawSprayParticles(
             center = points.last(),
             radius = brushSize / 2f,
+            brushSize = brushSize,
             particleCount = particlesPerPoint,
             color = color,
             opacity = opacity,
@@ -228,6 +231,7 @@ private fun DrawScope.drawAirBrushPath(drawingPath: DrawingPath, color: Color) {
 private fun DrawScope.drawSprayParticles(
     center: Offset,
     radius: Float,
+    brushSize: Float,
     particleCount: Int,
     color: Color,
     opacity: Float,
@@ -241,8 +245,8 @@ private fun DrawScope.drawSprayParticles(
         val x = center.x + cos(angle) * distance
         val y = center.y + sin(angle) * distance
 
-        // Random particle size (smaller particles)
-        val particleSize = random.nextFloat() * 2f + 1f
+        // Random particle size (scaled with brush size)
+        val particleSize = (random.nextFloat() * 0.1f + 0.05f) * brushSize
 
         // Random opacity variation for more natural look
         val particleOpacity = (opacity * (0.3f + random.nextFloat() * 0.7f)).coerceIn(0f, 1f)
