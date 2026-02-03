@@ -140,7 +140,7 @@ fun DrawingCanvasContent(
                                     transformStarted = true
                                     viewModel.onEvent(DrawingEvent.CancelDrawing)
 
-                                    if (isLayerTransform) {
+                                    if (isLayerTransform && currentDrawingState.layerTransformPivot == null) {
                                         val centroidCanvas = (centroid.rotateBy(-angle) / zoom) / renderScale
                                         viewModel.onEvent(DrawingEvent.UpdateLayerTransformPivot(centroidCanvas))
                                     }
