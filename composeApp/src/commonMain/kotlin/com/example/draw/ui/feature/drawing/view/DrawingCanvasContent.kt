@@ -140,8 +140,8 @@ fun DrawingCanvasContent(
                                         val currentTransform = currentDrawingState.layerTransformState
                                         val newScale = currentTransform.scale * zoomChangeStep
                                         val newRotation = currentTransform.rotation + rotationChangeStep
-                                        // Adjust pan for view rotation and zoom
-                                        val correctedPan = pan.rotateBy(-angle) / zoom
+                                        // Adjust pan for view rotation/zoom and convert to canvas coordinates.
+                                        val correctedPan = (pan.rotateBy(-angle) / zoom) / renderScale
                                         val newTranslation = currentTransform.translation + correctedPan
 
                                         viewModel.onEvent(DrawingEvent.UpdateLayerTransform(
@@ -210,8 +210,8 @@ fun DrawingCanvasContent(
                                         scaleX = state.layerTransformState.scale
                                         scaleY = state.layerTransformState.scale
                                         rotationZ = state.layerTransformState.rotation
-                                        translationX = state.layerTransformState.translation.x
-                                        translationY = state.layerTransformState.translation.y
+                                        translationX = state.layerTransformState.translation.x * renderScale
+                                        translationY = state.layerTransformState.translation.y * renderScale
                                     }
                                 }
                         ) {
@@ -252,8 +252,8 @@ fun DrawingCanvasContent(
                                  scaleX = state.layerTransformState.scale
                                  scaleY = state.layerTransformState.scale
                                  rotationZ = state.layerTransformState.rotation
-                                 translationX = state.layerTransformState.translation.x
-                                 translationY = state.layerTransformState.translation.y
+                                 translationX = state.layerTransformState.translation.x * renderScale
+                                 translationY = state.layerTransformState.translation.y * renderScale
                              }
                      ) {
                          drawRect(

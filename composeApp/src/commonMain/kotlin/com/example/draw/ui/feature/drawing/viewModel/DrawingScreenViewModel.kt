@@ -1,5 +1,6 @@
 package com.example.draw.ui.feature.drawing.viewModel
 
+import androidx.compose.ui.geometry.Offset
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.draw.data.datasource.local.DrawingRepository
@@ -84,8 +85,37 @@ class DrawingScreenViewModel(
     }
 
     private fun handleConfirmTransformLayer() {
-        // TODO: Apply transformation to layer data (scale/rotate/translate paths)
-        // For now, we just exit the mode, losing the transformation
+        val transformState = _state.value.layerTransformState
+        val isIdentityTransform =
+            transformState.scale == 1f &&
+            transformState.rotation == 0f &&
+            transformState.translation == Offset.Zero
+
+        val targetLayerId = _state.value.transformLayerId ?: _state.value.canvas.activeLayerId
+        val targetLayer = _state.value.canvas.layers
+            .firstOrNull { it.id == targetLayerId }
+
+        if (targetLayer is VectorLayer && !isIdentityTransform) {
+            val allPoints = targetLayer.paths.flatMap { it.points }
+            val pivot = if (allPoints.isNotEmpty()) {
+                val minX = allPoints.minOf { it.x }
+                val maxX = allPoints.maxOf { it.x }
+                val minY = allPoints.minOf { it.y }
+                val maxY = allPoints.maxOf { it.y }
+                Offset((minX + maxX) / 2f, (minY + maxY) / 2f)
+            } else {
+                Offset.Zero
+            }
+
+            val command = TransformLayerCommand(
+                layerId = targetLayer.id,
+                originalPaths = targetLayer.paths,
+                transform = transformState,
+                pivot = pivot
+            )
+            performCommand(command)
+        }
+
         _state.value = _state.value.copy(
             isInLayerTransformationMode = false,
             transformLayerId = null,
@@ -396,6 +426,10 @@ class DrawingScreenViewModel(
         )
     }
 }
+
+
+
+
 
 
 

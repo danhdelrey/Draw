@@ -1,7 +1,13 @@
 package com.example.draw.ui.feature.drawing.viewModel
 
+import androidx.compose.ui.geometry.Offset
 import com.example.draw.data.model.base.DrawingPath
+import com.example.draw.data.model.brush.Brush
 import com.example.draw.data.model.layer.VectorLayer
+import com.example.draw.data.model.transform.LayerTransformState
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 
 /**
  * Interface defining commands that can be executed and undone.
@@ -279,5 +285,67 @@ data class FlipLayerVerticalCommand(
     override fun undo(state: DrawingState): DrawingState {
         // Flip again to restore
         return execute(state)
+    }
+}
+
+/**
+ * Command 11: Apply a transform to a layer's vector paths
+ */
+data class TransformLayerCommand(
+    val layerId: String,
+    val originalPaths: List<DrawingPath>,
+    val transform: LayerTransformState,
+    val pivot: Offset
+) : DrawingCommand {
+
+    override fun execute(state: DrawingState): DrawingState {
+        val updatedCanvas = state.canvas.updateLayer(layerId) { layer ->
+            if (layer is VectorLayer) {
+                val transformedPaths = applyTransform(originalPaths, transform, pivot)
+                layer.updatePaths(transformedPaths)
+            } else {
+                layer
+            }
+        }
+        return state.copy(canvas = updatedCanvas)
+    }
+
+    override fun undo(state: DrawingState): DrawingState {
+        val updatedCanvas = state.canvas.updateLayer(layerId) { layer ->
+            if (layer is VectorLayer) {
+                layer.updatePaths(originalPaths)
+            } else {
+                layer
+            }
+        }
+        return state.copy(canvas = updatedCanvas)
+    }
+
+    private fun applyTransform(
+        paths: List<DrawingPath>,
+        transform: LayerTransformState,
+        pivot: Offset
+    ): List<DrawingPath> {
+        val rotationRad = transform.rotation * PI / 180.0
+        val cosVal = cos(rotationRad)
+        val sinVal = sin(rotationRad)
+
+        return paths.map { path ->
+            val newPoints = path.points.map { point ->
+                val relative = point - pivot
+                val scaled = relative * transform.scale
+                val rotated = Offset(
+                    (scaled.x * cosVal - scaled.y * sinVal).toFloat(),
+                    (scaled.x * sinVal + scaled.y * cosVal).toFloat()
+                )
+                rotated + pivot + transform.translation
+            }
+            val scaledBrush = scaleBrush(path.brush, transform.scale)
+            path.copy(points = newPoints, brush = scaledBrush)
+        }
+    }
+
+    private fun scaleBrush(brush: Brush, scale: Float): Brush {
+        return brush.updateSize(brush.size * scale)
     }
 }
