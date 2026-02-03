@@ -4,12 +4,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.InvertColors
@@ -19,11 +24,13 @@ import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material.icons.filled.Transform
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,6 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.draw.data.model.layer.Layer
 import com.example.draw.data.model.layer.VectorLayer
+import com.example.draw.ui.common.component.SliderWithLabels
 import com.example.draw.ui.common.preview.PreviewComponent
 
 @Composable
@@ -51,6 +59,7 @@ fun LayerItem(
     onFlipHorizontal: (() -> Unit)? = null,
     onFlipVertical: (() -> Unit)? = null,
     onEnterTransformationMode: (() -> Unit)? = null,
+    onOpacityChange: ((Float) -> Unit)? = null,
     showTransparentBackground: Boolean = false // New parameter
 ) {
     val backgroundColor = if (isSelected) Color(0xFF888888) else Color.Transparent
@@ -112,11 +121,11 @@ fun LayerItem(
         }
 
         // 3. Nút Menu
-        if (onDelete != null || onInvert != null || onFlipHorizontal != null || onFlipVertical != null) {
+        if (onDelete != null || onInvert != null || onFlipHorizontal != null || onFlipVertical != null || onOpacityChange != null) {
             Box {
-                var expanded by remember { mutableStateOf(false) }
+                var showDialog by remember { mutableStateOf(false) }
                 IconButton(
-                    onClick = { expanded = true },
+                    onClick = { showDialog = true },
                     modifier = Modifier.size(24.dp)
                 ) {
                     Icon(
@@ -125,85 +134,72 @@ fun LayerItem(
                         tint = Color(0xFF1E1E1E)
                     )
                 }
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    if (onDelete != null) {
-                        DropdownMenuItem(
-                            text = { Text("Delete Layer") },
-                            onClick = {
-                                expanded = false
-                                onDelete()
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.Delete,
-                                    contentDescription = null
-                                )
+
+                if (showDialog) {
+                    AlertDialog(
+                        onDismissRequest = { showDialog = false },
+                        title = { Text("Layer Options") },
+                        text = {
+                            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                                if (onOpacityChange != null) {
+                                    SliderWithLabels(
+                                        label = "Opacity",
+                                        initialValue = data.opacity * 100f,
+                                        onValueChange = { newValue ->
+                                            onOpacityChange(newValue / 100f)
+                                        },
+                                        valueRange = 0f..100f,
+                                        valueSuffix = "%"
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                }
+
+                                if (onEnterTransformationMode != null) {
+                                    TextButton(onClick = { showDialog = false; onEnterTransformationMode() }) {
+                                        Icon(Icons.Default.Transform, null)
+                                        Spacer(Modifier.width(8.dp))
+                                        Text("Transform")
+                                    }
+                                }
+                                if (onFlipHorizontal != null) {
+                                   TextButton(onClick = { showDialog = false; onFlipHorizontal() }) {
+                                        Icon(Icons.Default.SwapHoriz, null)
+                                        Spacer(Modifier.width(8.dp))
+                                        Text("Flip Horizontal")
+                                    }
+                                }
+                                if (onFlipVertical != null) {
+                                    TextButton(onClick = { showDialog = false; onFlipVertical() }) {
+                                        Icon(Icons.Default.SwapVert, null)
+                                        Spacer(Modifier.width(8.dp))
+                                        Text("Flip Vertical")
+                                    }
+                                }
+                                if (onInvert != null) {
+                                    TextButton(onClick = { showDialog = false; onInvert() }) {
+                                        Icon(Icons.Default.InvertColors, null)
+                                        Spacer(Modifier.width(8.dp))
+                                        Text("Invert Layer")
+                                    }
+                                }
+                                if (onDelete != null) {
+                                    TextButton(
+                                        onClick = { showDialog = false; onDelete() },
+                                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                                    ) {
+                                        Icon(Icons.Default.Delete, null)
+                                        Spacer(Modifier.width(8.dp))
+                                        Text("Delete Layer")
+                                    }
+                                }
                             }
-                        )
-                    }
-                    if (onInvert != null) {
-                        DropdownMenuItem(
-                            text = { Text("Invert Layer") },
-                            onClick = {
-                                expanded = false
-                                onInvert()
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.InvertColors,
-                                    contentDescription = null
-                                )
+                        },
+                        confirmButton = {
+                            TextButton(onClick = { showDialog = false }) {
+                                Text("Done")
                             }
-                        )
-                    }
-                    if (onFlipHorizontal != null) {
-                        DropdownMenuItem(
-                            text = { Text("Flip Horizontal") },
-                            onClick = {
-                                expanded = false
-                                onFlipHorizontal()
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.SwapHoriz,
-                                    contentDescription = null
-                                )
-                            }
-                        )
-                    }
-                    if (onFlipVertical != null) {
-                        DropdownMenuItem(
-                            text = { Text("Flip Vertical") },
-                            onClick = {
-                                expanded = false
-                                onFlipVertical()
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.SwapVert,
-                                    contentDescription = null
-                                )
-                            }
-                        )
-                    }
-                    if (onEnterTransformationMode != null) {
-                        DropdownMenuItem(
-                            text = { Text("Transform") },
-                            onClick = {
-                                expanded = false
-                                onEnterTransformationMode()
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.Transform,
-                                    contentDescription = null
-                                )
-                            }
-                        )
-                    }
+                        }
+                    )
                 }
             }
         } else {
@@ -225,7 +221,8 @@ fun LayerItemPreview() {
             onDelete = {},
             onInvert = {},
             onFlipHorizontal = {},
-            onFlipVertical = {}
+            onFlipVertical = {},
+            onOpacityChange = {}
         )
     }
 }
