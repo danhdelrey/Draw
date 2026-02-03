@@ -23,15 +23,13 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.pointer.positionChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.draw.data.model.brush.EraserBrush
 import com.example.draw.data.model.layer.VectorLayer
 import com.example.draw.ui.feature.drawing.component.DrawingCanvas
@@ -104,14 +102,10 @@ fun DrawingCanvasContent(
                         var transformStarted = false
                         // Use PointerEventPass.Initial to observe events BEFORE the child (DrawingCanvas)
                         // This allows us to intercept 2-finger gestures and consume them so the child stops drawing.
-                        val down = awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
+                        awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
 
                         do {
                             val event = awaitPointerEvent(pass = PointerEventPass.Initial)
-                            val canceled = event.changes.any { it.isConsumed }
-                            // We do NOT break if canceled, because we might be the one consuming it,
-                            // or the child consumed the 1st finger but we are now seeing the 2nd finger.
-
                             val pointerCount = event.changes.size
 
                             if (pointerCount >= 2) {
@@ -201,7 +195,7 @@ fun DrawingCanvasContent(
                         }
 
                         // --- LAYER INPUT (only for normal mode, not ellipse mode) ---
-                        if (isActiveLayer && state.ellipseMode == null) {
+                        if (isActiveLayer && state.ellipseMode == null && !state.isInLayerTransformationMode) {
                             // Normal drawing mode - Inputs are localized due to wrapper graphicsLayer
                             Box(
                                 modifier = Modifier
@@ -215,6 +209,16 @@ fun DrawingCanvasContent(
                             )
                         }
                     }
+                }
+
+                // --- TRANSFORM LAYER MODE INDICATOR ---
+                if (state.isInLayerTransformationMode) {
+                     androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
+                         drawRect(
+                             color = Color.Blue,
+                             style = Stroke(width = 8f)
+                         )
+                     }
                 }
 
                 // --- ELLIPSE OVERLAY (Inside transformed box for alignment) ---
@@ -249,4 +253,3 @@ fun DrawingCanvasContent(
         }
     }
 }
-
