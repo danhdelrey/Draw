@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.TransformOrigin
@@ -75,6 +77,31 @@ fun DrawingCanvasContent(
 
         val displayedWidth = canvasWidth * scale
         val displayedHeight = canvasHeight * scale
+
+        val activeTransformLayer = state.layers
+            .firstOrNull { it.id == (state.transformLayerId ?: state.canvas.activeLayerId) }
+            as? VectorLayer
+
+        val layerPoints = activeTransformLayer
+            ?.paths
+            ?.flatMap { it.points }
+            ?.ifEmpty { null }
+
+        val boundsCanvas = layerPoints
+            ?.let { points ->
+                val minX = points.minOf { it.x }
+                val maxX = points.maxOf { it.x }
+                val minY = points.minOf { it.y }
+                val maxY = points.maxOf { it.y }
+                Rect(minX, minY, maxX, maxY)
+            }
+
+        LaunchedEffect(state.isInLayerTransformationMode, boundsCanvas) {
+            if (state.isInLayerTransformationMode && state.layerTransformPivot == null && boundsCanvas != null) {
+                val center = boundsCanvas.center
+                viewModel.onEvent(DrawingEvent.UpdateLayerTransformPivot(center))
+            }
+        }
 
         val pivot = state.layerTransformPivot
         val layerTransformOrigin = if (pivot != null && canvasWidth != 0f && canvasHeight != 0f) {
@@ -257,7 +284,14 @@ fun DrawingCanvasContent(
                 }
 
                 // --- TRANSFORM LAYER MODE INDICATOR ---
-                if (state.isInLayerTransformationMode) {
+                if (state.isInLayerTransformationMode && boundsCanvas != null) {
+                     val boundsScreen = Rect(
+                         left = boundsCanvas.left * renderScale,
+                         top = boundsCanvas.top * renderScale,
+                         right = boundsCanvas.right * renderScale,
+                         bottom = boundsCanvas.bottom * renderScale
+                     )
+
                      androidx.compose.foundation.Canvas(
                          modifier = Modifier
                              .fillMaxSize()
@@ -272,6 +306,8 @@ fun DrawingCanvasContent(
                      ) {
                          drawRect(
                              color = Color.Blue,
+                             topLeft = boundsScreen.topLeft,
+                             size = boundsScreen.size,
                              style = Stroke(width = 8f)
                          )
                      }
