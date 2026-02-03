@@ -178,6 +178,9 @@ class DrawingScreen(
                                         onDeleteLayer = {
                                             viewModel.onEvent(DrawingEvent.DeleteLayer(it))
                                         },
+                                        onInvertLayer = {
+                                            viewModel.onEvent(DrawingEvent.InvertLayer(it))
+                                        },
                                         onReorderLayer = { fromIndex, toIndex ->
                                             viewModel.onEvent(
                                                 DrawingEvent.ReorderLayer(

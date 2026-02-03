@@ -160,7 +160,7 @@ data class RenameLayerCommand(
 }
 
 /**
- * Command 5: Reorder layer
+ * Command 7: Reorder layer
  */
 data class ReorderLayerCommand(
     val fromIndex: Int,
@@ -181,3 +181,41 @@ data class ReorderLayerCommand(
     }
 }
 
+/**
+ * Command 8: Invert layer colors
+ */
+data class InvertLayerCommand(
+    val layerId: String
+) : DrawingCommand {
+
+    override fun execute(state: DrawingState): DrawingState {
+        val updatedCanvas = state.canvas.updateLayer(layerId) { layer ->
+            if (layer is VectorLayer) {
+                val newPaths = layer.paths.map { path ->
+                    val originalColor = path.brush.colorArgb
+                    val alpha = (originalColor shr 24) and 0xFF
+                    val red = (originalColor shr 16) and 0xFF
+                    val green = (originalColor shr 8) and 0xFF
+                    val blue = originalColor and 0xFF
+
+                    val newRed = 255 - red
+                    val newGreen = 255 - green
+                    val newBlue = 255 - blue
+
+                    val newColor = (alpha shl 24) or (newRed shl 16) or (newGreen shl 8) or newBlue
+                    val newBrush = path.brush.updateColor(newColor)
+                    path.updateBrush(newBrush)
+                }
+                layer.updatePaths(newPaths)
+            } else {
+                layer
+            }
+        }
+        return state.copy(canvas = updatedCanvas)
+    }
+
+    override fun undo(state: DrawingState): DrawingState {
+        // Invert again to restore
+        return execute(state)
+    }
+}

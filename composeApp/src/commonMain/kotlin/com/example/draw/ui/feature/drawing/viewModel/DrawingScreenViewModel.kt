@@ -54,6 +54,7 @@ class DrawingScreenViewModel(
                 is DrawingEvent.ToggleLayerVisibility -> handleToggleLayerVisibility(event)
                 is DrawingEvent.ReorderLayer -> handleReorderLayer(event)
                 is DrawingEvent.SelectLayer -> handleSelectLayer(event)
+                is DrawingEvent.InvertLayer -> handleInvertLayer(event)
 
                 // --- BRUSH CONFIGURATION ---
                 is DrawingEvent.ChangeBrush -> handleChangeBrush(event)
@@ -226,10 +227,13 @@ class DrawingScreenViewModel(
     }
 
     private fun handleSelectLayer(event: DrawingEvent.SelectLayer) {
-        // Select layer doesn't change data, only view state
-        // No undo/redo needed
         val updatedCanvas = _state.value.canvas.setActiveLayer(event.layer.id)
         _state.value = _state.value.copy(canvas = updatedCanvas)
+    }
+
+    private fun handleInvertLayer(event: DrawingEvent.InvertLayer) {
+        val command = InvertLayerCommand(event.layer.id)
+        performCommand(command)
     }
 
     // --- ELLIPSE MODE HANDLERS ---
@@ -328,6 +332,8 @@ class DrawingScreenViewModel(
         )
     }
 }
+
+
 
 
 
