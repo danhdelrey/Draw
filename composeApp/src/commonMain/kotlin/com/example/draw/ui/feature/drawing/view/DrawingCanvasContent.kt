@@ -76,6 +76,13 @@ fun DrawingCanvasContent(
         val displayedWidth = canvasWidth * scale
         val displayedHeight = canvasHeight * scale
 
+        val pivot = state.layerTransformPivot
+        val layerTransformOrigin = if (pivot != null && canvasWidth != 0f && canvasHeight != 0f) {
+            TransformOrigin(pivot.x / canvasWidth, pivot.y / canvasHeight)
+        } else {
+            TransformOrigin(0.5f, 0.5f)
+        }
+
         // Calculate canvas offset from top-left of the container (Alignment.Center places it here)
         val layoutOffsetX = (availableWidth - displayedWidth) / 2f
         val layoutOffsetY = (availableHeight - displayedHeight) / 2f
@@ -124,15 +131,20 @@ fun DrawingCanvasContent(
                                     it.consume()
                                 }
 
-                                if (!transformStarted) {
-                                    transformStarted = true
-                                    viewModel.onEvent(DrawingEvent.CancelDrawing)
-                                }
-
                                 val centroid = event.calculateCentroid(useCurrent = false)
                                 val pan = event.calculatePan()
                                 val zoomChangeStep = event.calculateZoom()
                                 val rotationChangeStep = event.calculateRotation()
+
+                                if (!transformStarted) {
+                                    transformStarted = true
+                                    viewModel.onEvent(DrawingEvent.CancelDrawing)
+
+                                    if (isLayerTransform) {
+                                        val centroidCanvas = (centroid.rotateBy(-angle) / zoom) / renderScale
+                                        viewModel.onEvent(DrawingEvent.UpdateLayerTransformPivot(centroidCanvas))
+                                    }
+                                }
 
                                 // Apply changes
                                 if (zoomChangeStep != 1f || rotationChangeStep != 0f || pan != Offset.Zero) {
@@ -212,6 +224,7 @@ fun DrawingCanvasContent(
                                         rotationZ = state.layerTransformState.rotation
                                         translationX = state.layerTransformState.translation.x * renderScale
                                         translationY = state.layerTransformState.translation.y * renderScale
+                                        transformOrigin = layerTransformOrigin
                                     }
                                 }
                         ) {
@@ -254,6 +267,7 @@ fun DrawingCanvasContent(
                                  rotationZ = state.layerTransformState.rotation
                                  translationX = state.layerTransformState.translation.x * renderScale
                                  translationY = state.layerTransformState.translation.y * renderScale
+                                 transformOrigin = layerTransformOrigin
                              }
                      ) {
                          drawRect(

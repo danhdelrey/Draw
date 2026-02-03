@@ -32,6 +32,7 @@ sealed interface DrawingEvent{
     data class EnterTransformLayerMode(val layer: Layer? = null) : DrawingEvent
     object ExitTransformLayerMode : DrawingEvent
     data class UpdateLayerTransform(val transform: LayerTransformState) : DrawingEvent
+    data class UpdateLayerTransformPivot(val pivot: Offset) : DrawingEvent
     object ConfirmTransformLayer: DrawingEvent
     object AddLayer : DrawingEvent
 

@@ -63,6 +63,7 @@ class DrawingScreenViewModel(
                 is DrawingEvent.EnterTransformLayerMode -> handleEnterTransformLayerMode(event)
                 is DrawingEvent.ExitTransformLayerMode -> handleExitTransformLayerMode()
                 is DrawingEvent.UpdateLayerTransform -> handleUpdateLayerTransform(event)
+                is DrawingEvent.UpdateLayerTransformPivot -> handleUpdateLayerTransformPivot(event)
                 is DrawingEvent.ConfirmTransformLayer -> handleConfirmTransformLayer()
 
                 // --- BRUSH CONFIGURATION ---
@@ -97,7 +98,7 @@ class DrawingScreenViewModel(
 
         if (targetLayer is VectorLayer && !isIdentityTransform) {
             val allPoints = targetLayer.paths.flatMap { it.points }
-            val pivot = if (allPoints.isNotEmpty()) {
+            val fallbackPivot = if (allPoints.isNotEmpty()) {
                 val minX = allPoints.minOf { it.x }
                 val maxX = allPoints.maxOf { it.x }
                 val minY = allPoints.minOf { it.y }
@@ -106,6 +107,7 @@ class DrawingScreenViewModel(
             } else {
                 Offset.Zero
             }
+            val pivot = _state.value.layerTransformPivot ?: fallbackPivot
 
             val command = TransformLayerCommand(
                 layerId = targetLayer.id,
@@ -119,7 +121,8 @@ class DrawingScreenViewModel(
         _state.value = _state.value.copy(
             isInLayerTransformationMode = false,
             transformLayerId = null,
-            layerTransformState = LayerTransformState() // Reset
+            layerTransformState = LayerTransformState(),
+            layerTransformPivot = null
         )
     }
 
@@ -127,7 +130,8 @@ class DrawingScreenViewModel(
         _state.value = _state.value.copy(
             isInLayerTransformationMode = false,
             transformLayerId = null,
-            layerTransformState = LayerTransformState() // Reset
+            layerTransformState = LayerTransformState(),
+            layerTransformPivot = null
         )
     }
 
@@ -136,13 +140,20 @@ class DrawingScreenViewModel(
         _state.value = _state.value.copy(
             isInLayerTransformationMode = true,
             transformLayerId = targetLayerId,
-            layerTransformState = LayerTransformState() // Start with identity
+            layerTransformState = LayerTransformState(),
+            layerTransformPivot = null
         )
     }
 
     private fun handleUpdateLayerTransform(event: DrawingEvent.UpdateLayerTransform) {
         _state.value = _state.value.copy(
             layerTransformState = event.transform
+        )
+    }
+
+    private fun handleUpdateLayerTransformPivot(event: DrawingEvent.UpdateLayerTransformPivot) {
+        _state.value = _state.value.copy(
+            layerTransformPivot = event.pivot
         )
     }
 
@@ -426,6 +437,8 @@ class DrawingScreenViewModel(
         )
     }
 }
+
+
 
 
 
