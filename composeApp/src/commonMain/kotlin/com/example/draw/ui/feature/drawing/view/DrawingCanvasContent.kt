@@ -12,10 +12,10 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,6 +33,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import com.example.draw.data.model.brush.EraserBrush
 import com.example.draw.data.model.layer.VectorLayer
+import com.example.draw.data.model.transform.LayerTransformState
 import com.example.draw.ui.feature.drawing.component.DrawingCanvas
 import com.example.draw.ui.feature.drawing.component.EllipseOverlay
 import com.example.draw.ui.feature.drawing.component.drawingInput
@@ -84,19 +85,6 @@ fun DrawingCanvasContent(
         var angle by remember { mutableStateOf(0f) }
         var translation by remember { mutableStateOf(Offset.Zero) }
 
-        // --- LAYER TRANSFORMATION STATE ---
-        var layerScale by remember { mutableStateOf(1f) }
-        var layerRotation by remember { mutableStateOf(0f) }
-        var layerTranslation by remember { mutableStateOf(Offset.Zero) }
-
-        LaunchedEffect(state.isInLayerTransformationMode) {
-            if (!state.isInLayerTransformationMode) {
-                 layerScale = 1f
-                 layerRotation = 0f
-                 layerTranslation = Offset.Zero
-            }
-        }
-
         // Helper for rotation
         fun Offset.rotateBy(angleDegrees: Float): Offset {
             val angleRad = angleDegrees * PI / 180
@@ -107,6 +95,8 @@ fun DrawingCanvasContent(
                 (x * sinVal + y * cosVal).toFloat()
             )
         }
+
+        val currentState by rememberUpdatedState(state)
 
         Box(
             modifier = Modifier
@@ -124,7 +114,8 @@ fun DrawingCanvasContent(
 
                             // In layer mode, we handle ALL gestures (pan, zoom, rotate).
                             // In normal mode, we only handle multi-touch (view panning/zooming).
-                            val isLayerTransform = state.isInLayerTransformationMode
+                            val currentDrawingState = currentState
+                            val isLayerTransform = currentDrawingState.isInLayerTransformationMode
                             val isViewTransform = !isLayerTransform && pointerCount >= 2
 
                             if (isLayerTransform || isViewTransform) {
@@ -146,11 +137,16 @@ fun DrawingCanvasContent(
                                 // Apply changes
                                 if (zoomChangeStep != 1f || rotationChangeStep != 0f || pan != Offset.Zero) {
                                     if (isLayerTransform) {
-                                        layerScale *= zoomChangeStep
-                                        layerRotation += rotationChangeStep
+                                        val currentTransform = currentDrawingState.layerTransformState
+                                        val newScale = currentTransform.scale * zoomChangeStep
+                                        val newRotation = currentTransform.rotation + rotationChangeStep
                                         // Adjust pan for view rotation and zoom
                                         val correctedPan = pan.rotateBy(-angle) / zoom
-                                        layerTranslation += correctedPan
+                                        val newTranslation = currentTransform.translation + correctedPan
+
+                                        viewModel.onEvent(DrawingEvent.UpdateLayerTransform(
+                                            LayerTransformState(newScale, newRotation, newTranslation)
+                                        ))
                                     } else {
                                         val newZoom = zoom * zoomChangeStep
                                         zoom = newZoom
@@ -208,6 +204,14 @@ fun DrawingCanvasContent(
                                 .graphicsLayer {
                                     alpha = layer.opacity
                                     compositingStrategy = CompositingStrategy.Offscreen
+
+                                    if (isActiveLayer && state.isInLayerTransformationMode) {
+                                        scaleX = state.layerTransformState.scale
+                                        scaleY = state.layerTransformState.scale
+                                        rotationZ = state.layerTransformState.rotation
+                                        translationX = state.layerTransformState.translation.x
+                                        translationY = state.layerTransformState.translation.y
+                                    }
                                 }
                         ) {
                             DrawingCanvas(
@@ -244,11 +248,11 @@ fun DrawingCanvasContent(
                          modifier = Modifier
                              .fillMaxSize()
                              .graphicsLayer {
-                                 scaleX = layerScale
-                                 scaleY = layerScale
-                                 rotationZ = layerRotation
-                                 translationX = layerTranslation.x
-                                 translationY = layerTranslation.y
+                                 scaleX = state.layerTransformState.scale
+                                 scaleY = state.layerTransformState.scale
+                                 rotationZ = state.layerTransformState.rotation
+                                 translationX = state.layerTransformState.translation.x
+                                 translationY = state.layerTransformState.translation.y
                              }
                      ) {
                          drawRect(

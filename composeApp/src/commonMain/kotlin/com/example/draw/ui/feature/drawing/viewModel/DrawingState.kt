@@ -12,6 +12,7 @@ import com.example.draw.data.model.layer.VectorLayer
 import com.example.draw.data.model.serialization.DrawingProject
 import com.example.draw.data.model.serialization.toDomain
 import com.example.draw.data.model.serialization.toDto
+import com.example.draw.data.model.transform.LayerTransformState
 
 /**
  * Drawing state using the new refactored models.
@@ -44,7 +45,8 @@ data class DrawingState(
 
     //for UX purposes
     val isUserDrawing: Boolean = false,
-    val isInLayerTransformationMode: Boolean = false
+    val isInLayerTransformationMode: Boolean = false,
+    val layerTransformState: LayerTransformState = LayerTransformState()
 ) {
     // Convenience accessors
 

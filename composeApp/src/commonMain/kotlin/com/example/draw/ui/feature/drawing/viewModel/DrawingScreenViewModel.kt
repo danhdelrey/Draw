@@ -4,8 +4,11 @@ import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.draw.data.datasource.local.DrawingRepository
 import com.example.draw.data.model.base.DrawingPath
+import com.example.draw.data.model.layer.LayerType
 import com.example.draw.data.model.layer.VectorLayer
+import androidx.compose.ui.geometry.Offset
 import com.example.draw.data.model.shape.EllipseState
+import com.example.draw.data.model.transform.LayerTransformState
 import com.example.draw.data.model.util.currentTimeMillis
 import com.example.draw.data.model.util.generateId
 import com.example.draw.data.repository.ImageRepository
@@ -60,6 +63,7 @@ class DrawingScreenViewModel(
                 is DrawingEvent.FlipLayerVertical -> handleFlipLayerVertical(event)
                 is DrawingEvent.EnterTransformLayerMode -> handleEnterTransformLayerMode()
                 is DrawingEvent.ExitTransformLayerMode -> handleExitTransformLayerMode()
+                is DrawingEvent.UpdateLayerTransform -> handleUpdateLayerTransform(event)
                 is DrawingEvent.ConfirmTransformLayer -> handleConfirmTransformLayer()
 
                 // --- BRUSH CONFIGURATION ---
@@ -82,18 +86,33 @@ class DrawingScreenViewModel(
     }
 
     private fun handleConfirmTransformLayer() {
-        // Simply exit the transformation mode for now
-        _state.value = _state.value.copy(isInLayerTransformationMode = false)
+        // TODO: Apply transformation to layer data (scale/rotate/translate paths)
+        // For now, we just exit the mode, losing the transformation
+        _state.value = _state.value.copy(
+            isInLayerTransformationMode = false,
+            layerTransformState = LayerTransformState() // Reset
+        )
     }
 
     private fun handleExitTransformLayerMode() {
-        _state.value = _state.value.copy(isInLayerTransformationMode = false)
+        _state.value = _state.value.copy(
+            isInLayerTransformationMode = false,
+            layerTransformState = LayerTransformState() // Reset
+        )
     }
 
     private fun handleEnterTransformLayerMode() {
-        _state.value = _state.value.copy(isInLayerTransformationMode = true)
+        _state.value = _state.value.copy(
+            isInLayerTransformationMode = true,
+            layerTransformState = LayerTransformState() // Start with identity
+        )
     }
 
+    private fun handleUpdateLayerTransform(event: DrawingEvent.UpdateLayerTransform) {
+        _state.value = _state.value.copy(
+            layerTransformState = event.transform
+        )
+    }
 
     private fun handleLoadInitialState(state: DrawingState) {
         println("⏳ Loading drawing project...")
@@ -375,6 +394,8 @@ class DrawingScreenViewModel(
         )
     }
 }
+
+
 
 
 

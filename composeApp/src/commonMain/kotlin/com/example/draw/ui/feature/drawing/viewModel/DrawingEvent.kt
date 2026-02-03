@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import com.example.draw.data.model.brush.Brush
 import com.example.draw.data.model.layer.Layer
 import com.example.draw.data.model.shape.EllipseState
+import com.example.draw.data.model.transform.LayerTransformState
 
 sealed interface DrawingEvent{
     //load
@@ -30,6 +31,7 @@ sealed interface DrawingEvent{
     data class ReorderLayer(val fromIndex: Int, val toIndex: Int) : DrawingEvent
     object EnterTransformLayerMode : DrawingEvent
     object ExitTransformLayerMode : DrawingEvent
+    data class UpdateLayerTransform(val transform: LayerTransformState) : DrawingEvent
     object ConfirmTransformLayer: DrawingEvent
     object AddLayer : DrawingEvent
 
