@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Save
@@ -105,7 +107,52 @@ class DrawingScreen(
                         .align(Alignment.TopCenter)
                 ) {
                     ToolPanel(
-                        shouldHideToolPanel = state.isUserDrawing,
+                        shouldHideToolPanel = !state.isInLayerTransformationMode,
+                    ){
+                        Box(
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.outlineVariant)
+                                .width(40.dp)
+                                .height(40.dp)
+                                .clickable {
+                                    viewModel.onEvent(DrawingEvent.ExitTransformLayerMode)
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                modifier = Modifier
+                                    .width(24.dp)
+                                    .height(24.dp),
+                                imageVector = Icons.Default.Cancel,
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                contentDescription = null
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.outlineVariant)
+                                .width(40.dp)
+                                .height(40.dp)
+                                .clickable {
+                                    viewModel.onEvent(DrawingEvent.ConfirmTransformLayer)
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                modifier = Modifier
+                                    .width(24.dp)
+                                    .height(24.dp),
+                                imageVector = Icons.Default.Check,
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                contentDescription = null
+                            )
+                        }
+
+                    }
+                    ToolPanel(
+                        shouldHideToolPanel = state.isUserDrawing || state.isInLayerTransformationMode,
                     ){
                         Box(
                             modifier = Modifier
@@ -188,7 +235,8 @@ class DrawingScreen(
                                             viewModel.onEvent(DrawingEvent.FlipLayerVertical(it))
                                         },
                                         onEnterTransformationMode = {
-                                            //enter layer transformation mode
+                                            showLayerListPanel = false
+                                            viewModel.onEvent(DrawingEvent.EnterTransformLayerMode)
                                         },
                                         onReorderLayer = { fromIndex, toIndex ->
                                             viewModel.onEvent(
@@ -204,7 +252,7 @@ class DrawingScreen(
                         }
                         ToolPanel(
                             appearFromBottom = true,
-                            shouldHideToolPanel = state.isUserDrawing,
+                            shouldHideToolPanel = state.isUserDrawing || state.isInLayerTransformationMode,
                         ) {
                             SelectionToolButton(
 

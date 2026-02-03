@@ -27,6 +27,9 @@ sealed interface DrawingEvent{
     data class FlipLayerHorizontal(val layer: Layer) : DrawingEvent
     data class FlipLayerVertical(val layer: Layer) : DrawingEvent
     data class ReorderLayer(val fromIndex: Int, val toIndex: Int) : DrawingEvent
+    object EnterTransformLayerMode : DrawingEvent
+    object ExitTransformLayerMode : DrawingEvent
+    object ConfirmTransformLayer: DrawingEvent
     object AddLayer : DrawingEvent
 
     //Undo/Redo

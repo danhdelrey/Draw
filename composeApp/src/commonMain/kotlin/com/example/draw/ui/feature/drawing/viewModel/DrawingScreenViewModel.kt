@@ -10,6 +10,7 @@ import com.example.draw.data.model.util.currentTimeMillis
 import com.example.draw.data.model.util.generateId
 import com.example.draw.data.repository.ImageRepository
 import com.example.draw.platform.util.toPngByteArray
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -57,6 +58,9 @@ class DrawingScreenViewModel(
                 is DrawingEvent.InvertLayer -> handleInvertLayer(event)
                 is DrawingEvent.FlipLayerHorizontal -> handleFlipLayerHorizontal(event)
                 is DrawingEvent.FlipLayerVertical -> handleFlipLayerVertical(event)
+                is DrawingEvent.EnterTransformLayerMode -> handleEnterTransformLayerMode()
+                is DrawingEvent.ExitTransformLayerMode -> handleExitTransformLayerMode()
+                is DrawingEvent.ConfirmTransformLayer -> handleConfirmTransformLayer()
 
                 // --- BRUSH CONFIGURATION ---
                 is DrawingEvent.ChangeBrush -> handleChangeBrush(event)
@@ -76,6 +80,21 @@ class DrawingScreenViewModel(
             }
         }
     }
+
+    private fun handleConfirmTransformLayer() {
+        // Simply exit the transformation mode for now
+        _state.value = _state.value.copy(isInLayerTransformationMode = false)
+    }
+
+    private fun handleExitTransformLayerMode() {
+        _state.value = _state.value.copy(isInLayerTransformationMode = false)
+    }
+
+    private fun handleEnterTransformLayerMode() {
+        _state.value = _state.value.copy(isInLayerTransformationMode = true)
+    }
+
+
     private fun handleLoadInitialState(state: DrawingState) {
         println("⏳ Loading drawing project...")
         _state.value = state
