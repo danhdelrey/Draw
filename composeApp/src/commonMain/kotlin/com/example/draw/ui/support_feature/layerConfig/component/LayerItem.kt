@@ -12,11 +12,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,6 +43,7 @@ fun LayerItem(
     onClick: (() -> Unit)?,
     onToggleVisibility: (() -> Unit)?,
     onDelete: (() -> Unit)?,
+    onInvert: (() -> Unit)? = null,
     showTransparentBackground: Boolean = false // New parameter
 ) {
     val backgroundColor = if (isSelected) Color(0xFF888888) else Color.Transparent
@@ -95,17 +104,49 @@ fun LayerItem(
             }
         }
 
-        // 3. Nút Xóa
-        if (onDelete != null) {
-            IconButton(
-                onClick = onDelete,
-                modifier = Modifier.size(24.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete Layer",
-                    tint = Color(0xFF1E1E1E)
-                )
+        // 3. Nút Menu
+        if (onDelete != null || onInvert != null) {
+            Box {
+                var expanded by remember { mutableStateOf(false) }
+                IconButton(
+                    onClick = { expanded = true },
+                    modifier = Modifier.size(24.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "Layer Options",
+                        tint = Color(0xFF1E1E1E)
+                    )
+                }
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    if (onDelete != null) {
+                        DropdownMenuItem(
+                            text = { Text("Delete Layer") },
+                            onClick = {
+                                expanded = false
+                                onDelete()
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = null
+                                )
+                            }
+                        )
+                    }
+                    if (onInvert != null) {
+                        DropdownMenuItem(
+                            text = { Text("Invert Layer") },
+                            onClick = {
+                                expanded = false
+                                onInvert()
+                            }
+                        )
+                    }
+                }
             }
         } else {
             Box(modifier = Modifier.size(24.dp))
@@ -123,7 +164,8 @@ fun LayerItemPreview() {
             isSelected = true,
             onClick = {},
             onToggleVisibility = {},
-            onDelete = {}
+            onDelete = {},
+            onInvert = {}
         )
     }
 }
