@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -83,6 +84,19 @@ fun DrawingCanvasContent(
         var angle by remember { mutableStateOf(0f) }
         var translation by remember { mutableStateOf(Offset.Zero) }
 
+        // --- LAYER TRANSFORMATION STATE ---
+        var layerScale by remember { mutableStateOf(1f) }
+        var layerRotation by remember { mutableStateOf(0f) }
+        var layerTranslation by remember { mutableStateOf(Offset.Zero) }
+
+        LaunchedEffect(state.isInLayerTransformationMode) {
+            if (!state.isInLayerTransformationMode) {
+                 layerScale = 1f
+                 layerRotation = 0f
+                 layerTranslation = Offset.Zero
+            }
+        }
+
         // Helper for rotation
         fun Offset.rotateBy(angleDegrees: Float): Offset {
             val angleRad = angleDegrees * PI / 180
@@ -108,10 +122,15 @@ fun DrawingCanvasContent(
                             val event = awaitPointerEvent(pass = PointerEventPass.Initial)
                             val pointerCount = event.changes.size
 
-                            if (pointerCount >= 2) {
+                            // In layer mode, we handle ALL gestures (pan, zoom, rotate).
+                            // In normal mode, we only handle multi-touch (view panning/zooming).
+                            val isLayerTransform = state.isInLayerTransformationMode
+                            val isViewTransform = !isLayerTransform && pointerCount >= 2
+
+                            if (isLayerTransform || isViewTransform) {
                                 // Intercept! Consume all changes so child sees them as consumed in Main pass.
-                                event.changes.forEach { 
-                                    it.consume() 
+                                event.changes.forEach {
+                                    it.consume()
                                 }
 
                                 if (!transformStarted) {
@@ -126,16 +145,24 @@ fun DrawingCanvasContent(
 
                                 // Apply changes
                                 if (zoomChangeStep != 1f || rotationChangeStep != 0f || pan != Offset.Zero) {
-                                    val newZoom = zoom * zoomChangeStep
-                                    zoom = newZoom
-                                    angle += rotationChangeStep
+                                    if (isLayerTransform) {
+                                        layerScale *= zoomChangeStep
+                                        layerRotation += rotationChangeStep
+                                        // Adjust pan for view rotation and zoom
+                                        val correctedPan = pan.rotateBy(-angle) / zoom
+                                        layerTranslation += correctedPan
+                                    } else {
+                                        val newZoom = zoom * zoomChangeStep
+                                        zoom = newZoom
+                                        angle += rotationChangeStep
 
-                                    val layoutPos = Offset(layoutOffsetX, layoutOffsetY)
-                                    val currentVisualPos = layoutPos + translation
-                                    val vectorToTopLeft = currentVisualPos - centroid
-                                    val newVector = vectorToTopLeft.rotateBy(rotationChangeStep) * zoomChangeStep
-                                    val newVisualPos = centroid + newVector + pan
-                                    translation = newVisualPos - layoutPos
+                                        val layoutPos = Offset(layoutOffsetX, layoutOffsetY)
+                                        val currentVisualPos = layoutPos + translation
+                                        val vectorToTopLeft = currentVisualPos - centroid
+                                        val newVector = vectorToTopLeft.rotateBy(rotationChangeStep) * zoomChangeStep
+                                        val newVisualPos = centroid + newVector + pan
+                                        translation = newVisualPos - layoutPos
+                                    }
                                 }
                             } else {
                                 transformStarted = false
@@ -213,7 +240,17 @@ fun DrawingCanvasContent(
 
                 // --- TRANSFORM LAYER MODE INDICATOR ---
                 if (state.isInLayerTransformationMode) {
-                     androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
+                     androidx.compose.foundation.Canvas(
+                         modifier = Modifier
+                             .fillMaxSize()
+                             .graphicsLayer {
+                                 scaleX = layerScale
+                                 scaleY = layerScale
+                                 rotationZ = layerRotation
+                                 translationX = layerTranslation.x
+                                 translationY = layerTranslation.y
+                             }
+                     ) {
                          drawRect(
                              color = Color.Blue,
                              style = Stroke(width = 8f)
