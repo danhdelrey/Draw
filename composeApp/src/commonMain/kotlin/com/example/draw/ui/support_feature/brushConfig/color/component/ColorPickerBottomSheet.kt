@@ -25,7 +25,6 @@ import com.example.draw.data.model.brush.SolidBrush
 import com.example.draw.ui.common.component.CustomBottomSheet
 import com.example.draw.ui.common.component.WavyLinePreviewWithBackground
 import com.example.draw.ui.common.preview.PreviewComponent
-import com.github.skydoves.colorpicker.compose.AlphaSlider
 import com.github.skydoves.colorpicker.compose.BrightnessSlider
 import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
@@ -71,18 +70,9 @@ fun ColorPickerBottomSheet(
                 controller = controller,
                 initialColor = Color(currentBrush.colorArgb),
                 onColorChanged = { envelope ->
-                    currentBrush = currentBrush.updateColor(envelope.color.toArgb().toLong())
+                    val opaqueColor = envelope.color.copy(alpha = 1f)
+                    currentBrush = currentBrush.updateColor(opaqueColor.toArgb().toLong())
                 }
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            AlphaSlider(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(35.dp)
-                    .padding(10.dp),
-                controller = controller,
             )
 
             Spacer(modifier = Modifier.height(16.dp))
