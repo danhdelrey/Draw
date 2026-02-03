@@ -250,7 +250,7 @@ class DrawingScreen(
                                             viewModel.onEvent(DrawingEvent.ChangeLayerOpacity(layer, opacity))
                                         },
                                         onEnterTransformationMode = {
-                                            viewModel.onEvent(DrawingEvent.EnterTransformLayerMode)
+                                            viewModel.onEvent(DrawingEvent.EnterTransformLayerMode(it))
                                             showLayerListPanel = false
                                         },
                                         onReorderLayer = { fromIndex, toIndex ->

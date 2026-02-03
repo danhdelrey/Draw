@@ -46,6 +46,7 @@ data class DrawingState(
     //for UX purposes
     val isUserDrawing: Boolean = false,
     val isInLayerTransformationMode: Boolean = false,
+    val transformLayerId: String? = null,
     val layerTransformState: LayerTransformState = LayerTransformState()
 ) {
     // Convenience accessors

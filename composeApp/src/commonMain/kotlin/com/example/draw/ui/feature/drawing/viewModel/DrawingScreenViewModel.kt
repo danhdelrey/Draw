@@ -4,9 +4,7 @@ import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.example.draw.data.datasource.local.DrawingRepository
 import com.example.draw.data.model.base.DrawingPath
-import com.example.draw.data.model.layer.LayerType
 import com.example.draw.data.model.layer.VectorLayer
-import androidx.compose.ui.geometry.Offset
 import com.example.draw.data.model.shape.EllipseState
 import com.example.draw.data.model.transform.LayerTransformState
 import com.example.draw.data.model.util.currentTimeMillis
@@ -61,7 +59,7 @@ class DrawingScreenViewModel(
                 is DrawingEvent.InvertLayer -> handleInvertLayer(event)
                 is DrawingEvent.FlipLayerHorizontal -> handleFlipLayerHorizontal(event)
                 is DrawingEvent.FlipLayerVertical -> handleFlipLayerVertical(event)
-                is DrawingEvent.EnterTransformLayerMode -> handleEnterTransformLayerMode()
+                is DrawingEvent.EnterTransformLayerMode -> handleEnterTransformLayerMode(event)
                 is DrawingEvent.ExitTransformLayerMode -> handleExitTransformLayerMode()
                 is DrawingEvent.UpdateLayerTransform -> handleUpdateLayerTransform(event)
                 is DrawingEvent.ConfirmTransformLayer -> handleConfirmTransformLayer()
@@ -90,6 +88,7 @@ class DrawingScreenViewModel(
         // For now, we just exit the mode, losing the transformation
         _state.value = _state.value.copy(
             isInLayerTransformationMode = false,
+            transformLayerId = null,
             layerTransformState = LayerTransformState() // Reset
         )
     }
@@ -97,13 +96,16 @@ class DrawingScreenViewModel(
     private fun handleExitTransformLayerMode() {
         _state.value = _state.value.copy(
             isInLayerTransformationMode = false,
+            transformLayerId = null,
             layerTransformState = LayerTransformState() // Reset
         )
     }
 
-    private fun handleEnterTransformLayerMode() {
+    private fun handleEnterTransformLayerMode(event: DrawingEvent.EnterTransformLayerMode) {
+        val targetLayerId = event.layer?.id ?: _state.value.canvas.activeLayerId
         _state.value = _state.value.copy(
             isInLayerTransformationMode = true,
+            transformLayerId = targetLayerId,
             layerTransformState = LayerTransformState() // Start with identity
         )
     }
@@ -394,6 +396,10 @@ class DrawingScreenViewModel(
         )
     }
 }
+
+
+
+
 
 
 

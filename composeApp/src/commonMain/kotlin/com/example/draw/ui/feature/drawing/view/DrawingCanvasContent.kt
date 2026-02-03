@@ -194,6 +194,7 @@ fun DrawingCanvasContent(
                 state.layers.forEach { layer ->
                     if (layer.isVisible && layer is VectorLayer) {
                         val isActiveLayer = layer.id == state.canvas.activeLayerId
+                        val isTransformedLayer = layer.id == (state.transformLayerId ?: state.canvas.activeLayerId)
                         val pathBeingDrawn = if (isActiveLayer) state.currentDrawingPath else null
                         val touchPos = if (isActiveLayer) state.currentTouchPosition else null
 
@@ -205,7 +206,7 @@ fun DrawingCanvasContent(
                                     alpha = layer.opacity
                                     compositingStrategy = CompositingStrategy.Offscreen
 
-                                    if (isActiveLayer && state.isInLayerTransformationMode) {
+                                    if (isTransformedLayer && state.isInLayerTransformationMode) {
                                         scaleX = state.layerTransformState.scale
                                         scaleY = state.layerTransformState.scale
                                         rotationZ = state.layerTransformState.rotation
