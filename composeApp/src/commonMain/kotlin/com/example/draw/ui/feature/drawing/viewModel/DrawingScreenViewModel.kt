@@ -10,7 +10,6 @@ import com.example.draw.data.model.util.currentTimeMillis
 import com.example.draw.data.model.util.generateId
 import com.example.draw.data.repository.ImageRepository
 import com.example.draw.platform.util.toPngByteArray
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -53,6 +52,7 @@ class DrawingScreenViewModel(
                 is DrawingEvent.AddLayer -> handleAddLayer()
                 is DrawingEvent.DeleteLayer -> handleDeleteLayer(event)
                 is DrawingEvent.ToggleLayerVisibility -> handleToggleLayerVisibility(event)
+                is DrawingEvent.ChangeLayerOpacity -> handleChangeLayerOpacity(event)
                 is DrawingEvent.ReorderLayer -> handleReorderLayer(event)
                 is DrawingEvent.SelectLayer -> handleSelectLayer(event)
                 is DrawingEvent.InvertLayer -> handleInvertLayer(event)
@@ -242,6 +242,18 @@ class DrawingScreenViewModel(
         performCommand(command)
     }
 
+    private fun handleChangeLayerOpacity(event: DrawingEvent.ChangeLayerOpacity) {
+        val currentOpacity = event.layer.opacity
+        if (currentOpacity == event.opacity) return
+
+        val command = UpdateLayerOpacityCommand(
+            layerId = event.layer.id,
+            oldOpacity = currentOpacity,
+            newOpacity = event.opacity
+        )
+        performCommand(command)
+    }
+
     private fun handleReorderLayer(event: DrawingEvent.ReorderLayer) {
         val command = ReorderLayerCommand(event.fromIndex, event.toIndex)
         performCommand(command)
@@ -363,6 +375,9 @@ class DrawingScreenViewModel(
         )
     }
 }
+
+
+
 
 
 

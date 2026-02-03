@@ -47,6 +47,7 @@ fun LayerListPanel(
     onInvertLayer: (Layer) -> Unit = {},
     onFlipLayerHorizontal: (Layer) -> Unit = {},
     onFlipLayerVertical: (Layer) -> Unit = {},
+    onOpacityChange: (Layer, Float) -> Unit = { _, _ -> },
     onEnterTransformationMode: (Layer) -> Unit = {},
     onReorderLayer: (Int, Int) -> Unit,
     modifier: Modifier = Modifier
@@ -131,6 +132,7 @@ fun LayerListPanel(
                             onFlipHorizontal = { onFlipLayerHorizontal(layer) },
                             onFlipVertical = { onFlipLayerVertical(layer) },
                             onEnterTransformationMode = { onEnterTransformationMode(layer) },
+                            onOpacityChange = { newOpacity -> onOpacityChange(layer, newOpacity) },
                             showTransparentBackground = true // Show checkerboard for draggable layers
                         )
                         if (isDragging) {

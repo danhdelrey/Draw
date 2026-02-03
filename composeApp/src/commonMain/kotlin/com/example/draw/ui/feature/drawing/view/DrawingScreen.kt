@@ -2,10 +2,8 @@ package com.example.draw.ui.feature.drawing.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -234,9 +232,12 @@ class DrawingScreen(
                                         onFlipLayerVertical = {
                                             viewModel.onEvent(DrawingEvent.FlipLayerVertical(it))
                                         },
+                                        onOpacityChange = { layer, opacity ->
+                                            viewModel.onEvent(DrawingEvent.ChangeLayerOpacity(layer, opacity))
+                                        },
                                         onEnterTransformationMode = {
-                                            showLayerListPanel = false
                                             viewModel.onEvent(DrawingEvent.EnterTransformLayerMode)
+                                            showLayerListPanel = false
                                         },
                                         onReorderLayer = { fromIndex, toIndex ->
                                             viewModel.onEvent(

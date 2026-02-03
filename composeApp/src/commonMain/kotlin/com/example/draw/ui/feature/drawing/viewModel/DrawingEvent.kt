@@ -23,6 +23,7 @@ sealed interface DrawingEvent{
     data class SelectLayer(val layer: Layer) : DrawingEvent
     data class DeleteLayer(val layer: Layer) : DrawingEvent
     data class ToggleLayerVisibility(val layer: Layer) : DrawingEvent
+    data class ChangeLayerOpacity(val layer: Layer, val opacity: Float) : DrawingEvent
     data class InvertLayer(val layer: Layer) : DrawingEvent // Add InvertLayer event
     data class FlipLayerHorizontal(val layer: Layer) : DrawingEvent
     data class FlipLayerVertical(val layer: Layer) : DrawingEvent
