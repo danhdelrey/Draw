@@ -36,6 +36,7 @@ import androidx.compose.ui.platform.LocalDensity
 import com.example.draw.data.model.brush.EraserBrush
 import com.example.draw.data.model.layer.VectorLayer
 import com.example.draw.data.model.transform.LayerTransformState
+import com.example.draw.ui.common.canvasOverlay.RectBoundOverlay
 import com.example.draw.ui.feature.drawing.component.DrawingCanvas
 import com.example.draw.ui.feature.drawing.component.EllipseOverlay
 import com.example.draw.ui.feature.drawing.component.drawingInput
@@ -73,7 +74,6 @@ fun DrawingCanvasContent(
 
         // Scaling factors
         val inputScale = 1f / scale
-        val renderScale = scale
 
         val displayedWidth = canvasWidth * scale
         val displayedHeight = canvasHeight * scale
@@ -82,37 +82,6 @@ fun DrawingCanvasContent(
             .firstOrNull { it.id == (state.transformLayerId ?: state.canvas.activeLayerId) }
             as? VectorLayer
 
-        val layerPoints = activeTransformLayer
-            ?.paths
-            ?.flatMap { it.points }
-            ?.ifEmpty { null }
-
-        val boundsCanvas = layerPoints
-            ?.let { points ->
-                val minX = points.minOf { it.x }
-                val maxX = points.maxOf { it.x }
-                val minY = points.minOf { it.y }
-                val maxY = points.maxOf { it.y }
-
-                val maxStrokeRadius = activeTransformLayer
-                    ?.paths
-                    ?.maxOfOrNull { it.brush.size / 2f }
-                    ?: 0f
-
-                Rect(
-                    minX - maxStrokeRadius,
-                    minY - maxStrokeRadius,
-                    maxX + maxStrokeRadius,
-                    maxY + maxStrokeRadius
-                )
-            }
-
-        LaunchedEffect(state.isInLayerTransformationMode, boundsCanvas) {
-            if (state.isInLayerTransformationMode && state.layerTransformPivot == null && boundsCanvas != null) {
-                val center = boundsCanvas.center
-                viewModel.onEvent(DrawingEvent.UpdateLayerTransformPivot(center))
-            }
-        }
 
         val pivot = state.layerTransformPivot
         val layerTransformOrigin = if (pivot != null && canvasWidth != 0f && canvasHeight != 0f) {
@@ -179,7 +148,8 @@ fun DrawingCanvasContent(
                                     viewModel.onEvent(DrawingEvent.CancelDrawing)
 
                                     if (isLayerTransform && currentDrawingState.layerTransformPivot == null) {
-                                        val centroidCanvas = (centroid.rotateBy(-angle) / zoom) / renderScale
+                                        val centroidCanvas =
+                                            (centroid.rotateBy(-angle) / zoom) / scale
                                         viewModel.onEvent(DrawingEvent.UpdateLayerTransformPivot(centroidCanvas))
                                     }
                                 }
@@ -191,7 +161,7 @@ fun DrawingCanvasContent(
                                         val newScale = currentTransform.scale * zoomChangeStep
                                         val newRotation = currentTransform.rotation + rotationChangeStep
                                         // Adjust pan for view rotation/zoom and convert to canvas coordinates.
-                                        val correctedPan = (pan.rotateBy(-angle) / zoom) / renderScale
+                                        val correctedPan = (pan.rotateBy(-angle) / zoom) / scale
                                         val newTranslation = currentTransform.translation + correctedPan
 
                                         viewModel.onEvent(DrawingEvent.UpdateLayerTransform(
@@ -260,8 +230,10 @@ fun DrawingCanvasContent(
                                         scaleX = state.layerTransformState.scale
                                         scaleY = state.layerTransformState.scale
                                         rotationZ = state.layerTransformState.rotation
-                                        translationX = state.layerTransformState.translation.x * renderScale
-                                        translationY = state.layerTransformState.translation.y * renderScale
+                                        translationX =
+                                            state.layerTransformState.translation.x * scale
+                                        translationY =
+                                            state.layerTransformState.translation.y * scale
                                         transformOrigin = layerTransformOrigin
                                     }
                                 }
@@ -272,7 +244,7 @@ fun DrawingCanvasContent(
                                 isEraserMode = state.currentBrush is EraserBrush,
                                 currentTouchPosition = touchPos,
                                 brushSize = state.currentBrush.size,
-                                renderScale = renderScale,
+                                renderScale = scale,
                                 modifier = Modifier.fillMaxSize()
                             )
                         }
@@ -295,41 +267,29 @@ fun DrawingCanvasContent(
                 }
 
                 // --- TRANSFORM LAYER MODE INDICATOR ---
-                if (state.isInLayerTransformationMode && boundsCanvas != null) {
-                     val boundsScreen = Rect(
-                         left = boundsCanvas.left * renderScale,
-                         top = boundsCanvas.top * renderScale,
-                         right = boundsCanvas.right * renderScale,
-                         bottom = boundsCanvas.bottom * renderScale
-                     )
-
-                     androidx.compose.foundation.Canvas(
-                         modifier = Modifier
-                             .fillMaxSize()
-                             .graphicsLayer {
-                                 scaleX = state.layerTransformState.scale
-                                 scaleY = state.layerTransformState.scale
-                                 rotationZ = state.layerTransformState.rotation
-                                 translationX = state.layerTransformState.translation.x * renderScale
-                                 translationY = state.layerTransformState.translation.y * renderScale
-                                 transformOrigin = layerTransformOrigin
-                             }
-                     ) {
-                         drawRect(
-                             color = Color.Blue,
-                             topLeft = boundsScreen.topLeft,
-                             size = boundsScreen.size,
-                             style = Stroke(width = 8f)
-                         )
-                     }
-                }
+                RectBoundOverlay(
+                    shouldShowRectOverlay = state.isInLayerTransformationMode,
+                    drawingPaths = activeTransformLayer?.paths ?: emptyList(),
+                    sX = state.layerTransformState.scale,
+                    sY = state.layerTransformState.scale,
+                    rZ = state.layerTransformState.rotation,
+                    transX = state.layerTransformState.translation.x,
+                    transY = state.layerTransformState.translation.y,
+                    transform = layerTransformOrigin,
+                    canvasHeight = canvasHeight,
+                    canvasWidth = canvasWidth,
+                    layerTransformPivot = state.layerTransformPivot,
+                    onUpdateTransformPivot = { newPivot ->
+                        viewModel.onEvent(DrawingEvent.UpdateLayerTransformPivot(newPivot))
+                    },
+                )
 
                 // --- ELLIPSE OVERLAY (Inside transformed box for alignment) ---
                 val ellipseMode = state.ellipseMode
                 if (ellipseMode != null) {
                     EllipseOverlay(
                         ellipseState = ellipseMode,
-                        renderScale = renderScale,
+                        renderScale = scale,
                         inputScale = inputScale,
                         // Inside the canvas box, offset is 0
                         canvasOffsetX = 0f,
