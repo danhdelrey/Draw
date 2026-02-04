@@ -56,6 +56,7 @@ class DrawingScreenViewModel(
                 is DrawingEvent.ToggleLayerVisibility -> handleToggleLayerVisibility(event)
                 is DrawingEvent.ChangeLayerOpacity -> handleChangeLayerOpacity(event)
                 is DrawingEvent.ReorderLayer -> handleReorderLayer(event)
+                is DrawingEvent.MergeLayer -> handleMergeLayer(event)
                 is DrawingEvent.SelectLayer -> handleSelectLayer(event)
                 is DrawingEvent.InvertLayer -> handleInvertLayer(event)
                 is DrawingEvent.FlipLayerHorizontal -> handleFlipLayerHorizontal(event)
@@ -321,6 +322,26 @@ class DrawingScreenViewModel(
         performCommand(command)
     }
 
+    private fun handleMergeLayer(event: DrawingEvent.MergeLayer) {
+        val currentLayers = _state.value.layers
+        if (event.fromIndex !in currentLayers.indices || event.toIndex !in currentLayers.indices || event.fromIndex == event.toIndex) {
+            return
+        }
+
+        val fromLayer = currentLayers[event.fromIndex]
+        val toLayer = currentLayers[event.toIndex]
+
+        if (fromLayer is VectorLayer && toLayer is VectorLayer) {
+            val command = MergeLayerCommand(
+                fromLayer = fromLayer,
+                toLayer = toLayer,
+                fromIndex = event.fromIndex,
+                toIndex = event.toIndex
+            )
+            performCommand(command)
+        }
+    }
+
     private fun handleSelectLayer(event: DrawingEvent.SelectLayer) {
         val updatedCanvas = _state.value.canvas.setActiveLayer(event.layer.id)
         _state.value = _state.value.copy(canvas = updatedCanvas)
@@ -437,6 +458,10 @@ class DrawingScreenViewModel(
         )
     }
 }
+
+
+
+
 
 
 

@@ -260,6 +260,14 @@ class DrawingScreen(
                                                     toIndex
                                                 )
                                             )
+                                        },
+                                        onMergeLayer = { fromIndex, toIndex ->
+                                            viewModel.onEvent(
+                                                DrawingEvent.MergeLayer(
+                                                    fromIndex,
+                                                    toIndex
+                                                )
+                                            )
                                         }
                                     )
                                 }

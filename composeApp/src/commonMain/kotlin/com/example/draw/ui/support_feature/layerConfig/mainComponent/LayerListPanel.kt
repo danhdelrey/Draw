@@ -50,6 +50,7 @@ fun LayerListPanel(
     onOpacityChange: (Layer, Float) -> Unit = { _, _ -> },
     onEnterTransformationMode: (Layer) -> Unit = {},
     onReorderLayer: (Int, Int) -> Unit,
+    onMergeLayer: (Int, Int) -> Unit = { _, _ -> },
     modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
@@ -133,6 +134,20 @@ fun LayerListPanel(
                             onFlipVertical = { onFlipLayerVertical(layer) },
                             onEnterTransformationMode = { onEnterTransformationMode(layer) },
                             onOpacityChange = { newOpacity -> onOpacityChange(layer, newOpacity) },
+                            onMergeLayerUp = {
+                                val currentIndex = currentLayers.indexOfFirst { it.id == layer.id }
+                                if (currentIndex < currentLayers.size - 1) {
+                                    onMergeLayer(currentIndex, currentIndex + 1)
+                                }
+                            },
+                            onMergeLayerDown = if(draggableLayers.size > 1) {
+                                {
+                                    val currentIndex = currentLayers.indexOfFirst { it.id == layer.id }
+                                    if (currentIndex > 1) {
+                                        onMergeLayer(currentIndex, currentIndex - 1)
+                                    }
+                                }
+                            } else null,
                             showTransparentBackground = true // Show checkerboard for draggable layers
                         )
                         if (isDragging) {

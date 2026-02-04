@@ -349,3 +349,55 @@ data class TransformLayerCommand(
         return brush.updateSize(brush.size * scale)
     }
 }
+
+/**
+ * Command 12: Merge layers
+ */
+data class MergeLayerCommand(
+    val fromLayer: VectorLayer,
+    val toLayer: VectorLayer,
+    val fromIndex: Int,
+    val toIndex: Int
+) : DrawingCommand {
+
+    override fun execute(state: DrawingState): DrawingState {
+        val mergedPaths = if (toIndex < fromIndex) {
+            toLayer.paths + fromLayer.paths // Target is below Source
+        } else {
+            fromLayer.paths + toLayer.paths // Target is above Source
+        }
+
+        val newTargetLayer = toLayer.copy(paths = mergedPaths)
+        val currentLayers = state.layers.toMutableList()
+
+        if (fromIndex in currentLayers.indices && toIndex in currentLayers.indices) {
+            currentLayers[toIndex] = newTargetLayer
+            currentLayers.removeAt(fromIndex)
+        }
+
+        return state.copy(
+            canvas = state.canvas
+                .updateLayers(currentLayers)
+                .setActiveLayer(newTargetLayer.id)
+        )
+    }
+
+    override fun undo(state: DrawingState): DrawingState {
+        val currentLayers = state.layers.toMutableList()
+
+        // Reconstruct the original state
+        if (fromIndex >= 0 && fromIndex <= currentLayers.size) {
+             currentLayers.add(fromIndex, fromLayer)
+        }
+
+        if (toIndex in currentLayers.indices) {
+            currentLayers[toIndex] = toLayer
+        }
+
+        return state.copy(
+            canvas = state.canvas
+                .updateLayers(currentLayers)
+                .setActiveLayer(toLayer.id)
+        )
+    }
+}

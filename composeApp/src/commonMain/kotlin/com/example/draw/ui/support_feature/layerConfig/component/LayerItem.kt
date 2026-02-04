@@ -18,6 +18,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.InvertColors
+import androidx.compose.material.icons.filled.Merge
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material.icons.filled.SwapVert
@@ -60,6 +61,8 @@ fun LayerItem(
     onFlipVertical: (() -> Unit)? = null,
     onEnterTransformationMode: (() -> Unit)? = null,
     onOpacityChange: ((Float) -> Unit)? = null,
+    onMergeLayerUp: (() -> Unit)? = null,
+    onMergeLayerDown: (() -> Unit)? = null,
     showTransparentBackground: Boolean = false // New parameter
 ) {
     val backgroundColor = if (isSelected) Color(0xFF888888) else Color.Transparent
@@ -202,6 +205,32 @@ fun LayerItem(
                                         Icon(Icons.Default.SwapVert, null)
                                         Spacer(Modifier.width(16.dp))
                                         Text("Flip Vertical")
+                                    }
+                                }
+                            }
+                            if (onMergeLayerUp != null) {
+                                TextButton(
+                                    onClick = { showBottomSheet = false; onMergeLayerUp() },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onSurface)
+                                ) {
+                                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start) {
+                                        Icon(Icons.Default.Merge, null)
+                                        Spacer(Modifier.width(16.dp))
+                                        Text("Merge Layer Up")
+                                    }
+                                }
+                            }
+                            if (onMergeLayerDown != null) {
+                                TextButton(
+                                    onClick = { showBottomSheet = false; onMergeLayerDown() },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onSurface)
+                                ) {
+                                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start) {
+                                        Icon(Icons.Default.Merge, null)
+                                        Spacer(Modifier.width(16.dp))
+                                        Text("Merge Layer Down")
                                     }
                                 }
                             }
