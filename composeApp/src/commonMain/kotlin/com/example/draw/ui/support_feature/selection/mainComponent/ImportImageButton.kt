@@ -7,8 +7,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Circle
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.SelectAll
+import androidx.compose.material.icons.filled.UploadFile
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -18,11 +19,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.draw.ui.common.preview.PreviewComponent
-import kotlinx.coroutines.NonCancellable.isActive
 
 
 @Composable
-fun SelectionToolButton(
+fun ImportImageButton(
 
 ) {
     Box(
@@ -39,7 +39,7 @@ fun SelectionToolButton(
             modifier = Modifier
                 .width(24.dp)
                 .height(24.dp),
-            imageVector = Icons.Default.SelectAll,
+            imageVector = Icons.Default.Image,
             tint = MaterialTheme.colorScheme.onSurface,
             contentDescription = null
         )
@@ -48,9 +48,9 @@ fun SelectionToolButton(
 
 @Preview
 @Composable
-fun SelectionToolButtonPreview() {
+fun ImportImageButtonPreview() {
     PreviewComponent {
-        SelectionToolButton(
+        ImportImageButton(
 
         )
     }
