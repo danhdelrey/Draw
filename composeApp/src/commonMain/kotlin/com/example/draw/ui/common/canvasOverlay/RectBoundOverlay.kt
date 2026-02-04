@@ -1,8 +1,13 @@
 package com.example.draw.ui.common.canvasOverlay
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -14,6 +19,7 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.draw.data.model.base.DrawingPath
 import com.example.draw.ui.feature.drawing.viewModel.DrawingEvent
@@ -90,7 +96,7 @@ fun RectBoundOverlay(
                 bottom = boundsCanvas.bottom * scale
             )
 
-            Canvas(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .graphicsLayer {
@@ -102,11 +108,26 @@ fun RectBoundOverlay(
                         transformOrigin = transform
                     }
             ) {
-                drawRect(
-                    color = Color.Blue,
-                    topLeft = boundsScreen.topLeft,
-                    size = boundsScreen.size,
-                    style = Stroke(width = 8f)
+                Canvas(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    drawRect(
+                        color = Color.Blue,
+                        topLeft = boundsScreen.topLeft,
+                        size = boundsScreen.size,
+                        style = Stroke(width = 8f)
+                    )
+                }
+
+                Box(
+                    modifier = Modifier
+                        .offset(
+                            x = with(density) { boundsScreen.right.toDp() - 20.dp },
+                            y = with(density) { boundsScreen.top.toDp() - 20.dp }
+                        )
+                        .size(40.dp)
+                        .background(Color.Red)
+                        .clickable { println("pressed") }
                 )
             }
         }

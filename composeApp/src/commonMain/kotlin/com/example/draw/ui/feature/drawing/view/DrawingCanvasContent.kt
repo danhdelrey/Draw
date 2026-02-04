@@ -114,28 +114,55 @@ fun DrawingCanvasContent(
             modifier = Modifier
                 .fillMaxSize()
                 .pointerInput(Unit) {
+                    // View Transform (Initial Pass)
                     awaitEachGesture {
-                        var transformStarted = false
-                        // Use PointerEventPass.Initial to observe events BEFORE the child (DrawingCanvas)
-                        // This allows us to intercept 2-finger gestures and consume them so the child stops drawing.
                         awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
-
                         do {
                             val event = awaitPointerEvent(pass = PointerEventPass.Initial)
                             val pointerCount = event.changes.size
+                            val currentDrawingState = currentState
 
-                            // In layer mode, we handle ALL gestures (pan, zoom, rotate).
-                            // In normal mode, we only handle multi-touch (view panning/zooming).
+                            val isViewTransform = !currentDrawingState.isInLayerTransformationMode && pointerCount >= 2
+
+                            if (isViewTransform) {
+                                event.changes.forEach { it.consume() }
+                                viewModel.onEvent(DrawingEvent.CancelDrawing)
+
+                                val centroid = event.calculateCentroid(useCurrent = false)
+                                val pan = event.calculatePan()
+                                val zoomChangeStep = event.calculateZoom()
+                                val rotationChangeStep = event.calculateRotation()
+
+                                if (zoomChangeStep != 1f || rotationChangeStep != 0f || pan != Offset.Zero) {
+                                    val newZoom = zoom * zoomChangeStep
+                                    zoom = newZoom
+                                    angle += rotationChangeStep
+
+                                    val layoutPos = Offset(layoutOffsetX, layoutOffsetY)
+                                    val currentVisualPos = layoutPos + translation
+                                    val vectorToTopLeft = currentVisualPos - centroid
+                                    val newVector = vectorToTopLeft.rotateBy(rotationChangeStep) * zoomChangeStep
+                                    val newVisualPos = centroid + newVector + pan
+                                    translation = newVisualPos - layoutPos
+                                }
+                            }
+                        } while (event.changes.any { it.pressed })
+                    }
+                }
+                .pointerInput(Unit) {
+                    // Layer Transform (Main Pass)
+                    awaitEachGesture {
+                        awaitFirstDown(requireUnconsumed = false)
+                        var transformStarted = false
+
+                        do {
+                            val event = awaitPointerEvent()
                             val currentDrawingState = currentState
                             val isLayerTransform = currentDrawingState.isInLayerTransformationMode
-                            val isViewTransform = !isLayerTransform && pointerCount >= 2
+                            // Check if child (e.g. Button) consumed the event
+                            val isConsumed = event.changes.any { it.isConsumed }
 
-                            if (isLayerTransform || isViewTransform) {
-                                // Intercept! Consume all changes so child sees them as consumed in Main pass.
-                                event.changes.forEach {
-                                    it.consume()
-                                }
-
+                            if (isLayerTransform && !isConsumed) {
                                 val centroid = event.calculateCentroid(useCurrent = false)
                                 val pan = event.calculatePan()
                                 val zoomChangeStep = event.calculateZoom()
@@ -145,39 +172,26 @@ fun DrawingCanvasContent(
                                     transformStarted = true
                                     viewModel.onEvent(DrawingEvent.CancelDrawing)
 
-                                    if (isLayerTransform && currentDrawingState.layerTransformPivot == null) {
+                                    if (currentDrawingState.layerTransformPivot == null) {
                                         val centroidCanvas =
                                             (centroid.rotateBy(-angle) / zoom) / scale
                                         viewModel.onEvent(DrawingEvent.UpdateLayerTransformPivot(centroidCanvas))
                                     }
                                 }
 
-                                // Apply changes
                                 if (zoomChangeStep != 1f || rotationChangeStep != 0f || pan != Offset.Zero) {
-                                    if (isLayerTransform) {
-                                        val currentTransform = currentDrawingState.layerTransformState
-                                        val newScale = currentTransform.scale * zoomChangeStep
-                                        val newRotation = currentTransform.rotation + rotationChangeStep
-                                        // Adjust pan for view rotation/zoom and convert to canvas coordinates.
-                                        val correctedPan = (pan.rotateBy(-angle) / zoom) / scale
-                                        val newTranslation = currentTransform.translation + correctedPan
+                                    val currentTransform = currentDrawingState.layerTransformState
+                                    val newScale = currentTransform.scale * zoomChangeStep
+                                    val newRotation = currentTransform.rotation + rotationChangeStep
+                                    // Adjust pan for view rotation/zoom and convert to canvas coordinates.
+                                    val correctedPan = (pan.rotateBy(-angle) / zoom) / scale
+                                    val newTranslation = currentTransform.translation + correctedPan
 
-                                        viewModel.onEvent(DrawingEvent.UpdateLayerTransform(
-                                            LayerTransformState(newScale, newRotation, newTranslation)
-                                        ))
-                                    } else {
-                                        val newZoom = zoom * zoomChangeStep
-                                        zoom = newZoom
-                                        angle += rotationChangeStep
-
-                                        val layoutPos = Offset(layoutOffsetX, layoutOffsetY)
-                                        val currentVisualPos = layoutPos + translation
-                                        val vectorToTopLeft = currentVisualPos - centroid
-                                        val newVector = vectorToTopLeft.rotateBy(rotationChangeStep) * zoomChangeStep
-                                        val newVisualPos = centroid + newVector + pan
-                                        translation = newVisualPos - layoutPos
-                                    }
+                                    viewModel.onEvent(DrawingEvent.UpdateLayerTransform(
+                                        LayerTransformState(newScale, newRotation, newTranslation)
+                                    ))
                                 }
+                                event.changes.forEach { it.consume() }
                             } else {
                                 transformStarted = false
                             }
@@ -266,7 +280,7 @@ fun DrawingCanvasContent(
 
                 // --- TRANSFORM LAYER MODE INDICATOR ---
                 RectBoundOverlay(
-                    shouldShowRectOverlay = state.isInLayerTransformationMode,
+                    shouldShowRectOverlay = true,
                     drawingPaths = activeTransformLayer?.paths ?: emptyList(),
                     sX = state.layerTransformState.scale,
                     sY = state.layerTransformState.scale,
