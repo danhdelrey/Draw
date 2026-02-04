@@ -294,6 +294,9 @@ fun DrawingCanvasContent(
                     onUpdateTransformPivot = { newPivot ->
                         viewModel.onEvent(DrawingEvent.UpdateLayerTransformPivot(newPivot))
                     },
+                    onButtonClicked = {
+                        viewModel.onEvent(DrawingEvent.DeleteLayer(activeTransformLayer as VectorLayer))
+                    }
                 )
 
                 // --- ELLIPSE OVERLAY (Inside transformed box for alignment) ---

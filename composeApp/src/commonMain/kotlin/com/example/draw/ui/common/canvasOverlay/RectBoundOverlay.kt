@@ -39,6 +39,7 @@ fun RectBoundOverlay(
     transform: TransformOrigin = TransformOrigin.Center,
     layerTransformPivot: Offset? = null,
     onUpdateTransformPivot: (Offset) -> Unit = {},
+    onButtonClicked: () -> Unit = {}
 ) {
     BoxWithConstraints(
         modifier = Modifier.fillMaxSize(),
@@ -127,7 +128,7 @@ fun RectBoundOverlay(
                         )
                         .size(40.dp)
                         .background(Color.Red)
-                        .clickable { println("pressed") }
+                        .clickable { onButtonClicked() }
                 )
             }
         }
