@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.platform.LocalDensity
+import com.example.draw.ui.feature.drawing.view.gesture.CanvasGestureWrapper
 import com.example.draw.ui.feature.drawing.viewModel.DrawingScreenViewModel
 import com.example.draw.ui.feature.drawing.viewModel.DrawingState
 
