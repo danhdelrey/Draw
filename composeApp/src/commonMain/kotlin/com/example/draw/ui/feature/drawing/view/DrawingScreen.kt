@@ -15,12 +15,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ChevronLeft
-import androidx.compose.material.icons.filled.Download
-import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,14 +29,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.rememberGraphicsLayer
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
-import com.example.draw.ui.common.component.CustomIconButton
 import com.example.draw.ui.common.component.ToolPanel
 import com.example.draw.ui.common.preview.PreviewComponent
 import com.example.draw.ui.feature.drawing.viewModel.DrawingEvent
@@ -48,6 +43,7 @@ import com.example.draw.ui.feature.drawing.viewModel.DrawingState
 import com.example.draw.ui.support_feature.brushConfig.brush.mainComponent.BrushConfigButton
 import com.example.draw.ui.support_feature.brushConfig.color.mainComponent.ColorPickerButton
 import com.example.draw.ui.support_feature.ellipseTool.mainComponent.EllipseToolButton
+import com.example.draw.ui.support_feature.rectangleTool.mainComponent.RectangleToolButton
 import com.example.draw.ui.support_feature.layerConfig.mainComponent.LayerListPanel
 import com.example.draw.ui.support_feature.layerConfig.mainComponent.LayerListPanelButton
 import com.example.draw.ui.support_feature.saveImage.mainComponent.SaveImageButton
@@ -287,6 +283,16 @@ class DrawingScreen(
                                         viewModel.onEvent(DrawingEvent.ExitEllipseMode)
                                     } else {
                                         viewModel.onEvent(DrawingEvent.EnterEllipseMode)
+                                    }
+                                }
+                            )
+                            RectangleToolButton(
+                                isActive = state.rectangleMode != null,
+                                onToggleRectangleMode = {
+                                    if (state.rectangleMode != null) {
+                                        viewModel.onEvent(DrawingEvent.ExitRectangleMode)
+                                    } else {
+                                        viewModel.onEvent(DrawingEvent.EnterRectangleMode)
                                     }
                                 }
                             )

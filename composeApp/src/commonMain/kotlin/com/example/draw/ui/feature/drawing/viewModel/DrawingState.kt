@@ -6,6 +6,7 @@ import com.example.draw.data.model.brush.Brush
 import com.example.draw.data.model.brush.SolidBrush
 import com.example.draw.data.model.canvas.CanvasConfig
 import com.example.draw.data.model.shape.EllipseState
+import com.example.draw.data.model.shape.RectangleState
 import com.example.draw.data.model.canvas.CanvasMetadata
 import com.example.draw.data.model.canvas.DrawingCanvas
 import com.example.draw.data.model.layer.VectorLayer
@@ -42,6 +43,9 @@ data class DrawingState(
 
     // Ellipse Drawing Mode state
     val ellipseMode: EllipseState? = null,
+
+    // Rectangle Drawing Mode state
+    val rectangleMode: RectangleState? = null,
 
     //for UX purposes
     val isUserDrawing: Boolean = false,

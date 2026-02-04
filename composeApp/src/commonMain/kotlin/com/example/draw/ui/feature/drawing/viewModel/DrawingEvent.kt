@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import com.example.draw.data.model.brush.Brush
 import com.example.draw.data.model.layer.Layer
 import com.example.draw.data.model.shape.EllipseState
+import com.example.draw.data.model.shape.RectangleState
 import com.example.draw.data.model.transform.LayerTransformState
 
 sealed interface DrawingEvent{
@@ -52,4 +53,9 @@ sealed interface DrawingEvent{
     data class UpdateEllipseRotation(val rotation: Float) : DrawingEvent
     data class UpdateEllipseScale(val scaleFactor: Float) : DrawingEvent
     data class UpdateEllipseState(val ellipseState: EllipseState) : DrawingEvent
+
+    // Rectangle Drawing Mode
+    object EnterRectangleMode : DrawingEvent
+    object ExitRectangleMode : DrawingEvent
+    data class UpdateRectangleState(val rectangleState: RectangleState) : DrawingEvent
 }

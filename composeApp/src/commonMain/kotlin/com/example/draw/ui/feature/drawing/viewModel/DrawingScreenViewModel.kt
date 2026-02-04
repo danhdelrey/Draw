@@ -7,6 +7,7 @@ import com.example.draw.data.datasource.local.DrawingRepository
 import com.example.draw.data.model.base.DrawingPath
 import com.example.draw.data.model.layer.VectorLayer
 import com.example.draw.data.model.shape.EllipseState
+import com.example.draw.data.model.shape.RectangleState
 import com.example.draw.data.model.transform.LayerTransformState
 import com.example.draw.data.model.util.currentTimeMillis
 import com.example.draw.data.model.util.generateId
@@ -82,6 +83,11 @@ class DrawingScreenViewModel(
                 is DrawingEvent.UpdateEllipseRotation -> handleUpdateEllipseRotation(event)
                 is DrawingEvent.UpdateEllipseScale -> handleUpdateEllipseScale(event)
                 is DrawingEvent.UpdateEllipseState -> handleUpdateEllipseState(event)
+
+                // --- RECTANGLE DRAWING MODE ---
+                is DrawingEvent.EnterRectangleMode -> handleEnterRectangleMode()
+                is DrawingEvent.ExitRectangleMode -> handleExitRectangleMode()
+                is DrawingEvent.UpdateRectangleState -> handleUpdateRectangleState(event)
             }
         }
     }
@@ -369,7 +375,11 @@ class DrawingScreenViewModel(
             canvasWidth = _state.value.canvas.width,
             canvasHeight = _state.value.canvas.height
         )
-        _state.value = _state.value.copy(ellipseMode = ellipseState)
+        // Ensure Rectangle Mode is exited
+        _state.value = _state.value.copy(
+            ellipseMode = ellipseState,
+            rectangleMode = null
+        )
     }
 
     private fun handleExitEllipseMode() {
@@ -406,6 +416,28 @@ class DrawingScreenViewModel(
 
     private fun handleUpdateEllipseState(event: DrawingEvent.UpdateEllipseState) {
         _state.value = _state.value.copy(ellipseMode = event.ellipseState)
+    }
+
+    // --- RECTANGLE MODE HANDLERS ---
+
+    private fun handleEnterRectangleMode() {
+        val rectangleState = RectangleState.createDefault(
+            canvasWidth = _state.value.canvas.width,
+            canvasHeight = _state.value.canvas.height
+        )
+        // Ensure Ellipse Mode is exited
+        _state.value = _state.value.copy(
+            rectangleMode = rectangleState,
+            ellipseMode = null
+        )
+    }
+
+    private fun handleExitRectangleMode() {
+        _state.value = _state.value.copy(rectangleMode = null)
+    }
+
+    private fun handleUpdateRectangleState(event: DrawingEvent.UpdateRectangleState) {
+        _state.value = _state.value.copy(rectangleMode = event.rectangleState)
     }
 
     private fun handleChangeBrush(event: DrawingEvent.ChangeBrush) {
@@ -458,6 +490,8 @@ class DrawingScreenViewModel(
         )
     }
 }
+
+
 
 
 
