@@ -42,8 +42,8 @@ import com.example.draw.ui.feature.drawing.viewModel.DrawingScreenViewModel
 import com.example.draw.ui.feature.drawing.viewModel.DrawingState
 import com.example.draw.ui.support_feature.brushConfig.brush.mainComponent.BrushConfigButton
 import com.example.draw.ui.support_feature.brushConfig.color.mainComponent.ColorPickerButton
-import com.example.draw.ui.support_feature.ellipseTool.mainComponent.EllipseToolButton
-import com.example.draw.ui.support_feature.rectangleTool.mainComponent.RectangleToolButton
+import com.example.draw.ui.support_feature.shapeTool.mainComponent.ShapeToolButton
+import com.example.draw.ui.support_feature.shapeTool.mainComponent.ShapeType
 import com.example.draw.ui.support_feature.layerConfig.mainComponent.LayerListPanel
 import com.example.draw.ui.support_feature.layerConfig.mainComponent.LayerListPanelButton
 import com.example.draw.ui.support_feature.saveImage.mainComponent.SaveImageButton
@@ -276,23 +276,16 @@ class DrawingScreen(
                             SelectionToolButton(
 
                             )
-                            EllipseToolButton(
-                                isActive = state.ellipseMode != null,
-                                onToggleEllipseMode = {
-                                    if (state.ellipseMode != null) {
-                                        viewModel.onEvent(DrawingEvent.ExitEllipseMode)
-                                    } else {
-                                        viewModel.onEvent(DrawingEvent.EnterEllipseMode)
-                                    }
-                                }
-                            )
-                            RectangleToolButton(
-                                isActive = state.rectangleMode != null,
-                                onToggleRectangleMode = {
-                                    if (state.rectangleMode != null) {
-                                        viewModel.onEvent(DrawingEvent.ExitRectangleMode)
-                                    } else {
-                                        viewModel.onEvent(DrawingEvent.EnterRectangleMode)
+                            ShapeToolButton(
+                                activeShape = when {
+                                    state.ellipseMode != null -> ShapeType.ELLIPSE
+                                    state.rectangleMode != null -> ShapeType.RECTANGLE
+                                    else -> null
+                                },
+                                onShapeSelected = {
+                                    when (it) {
+                                        ShapeType.ELLIPSE -> viewModel.onEvent(DrawingEvent.EnterEllipseMode)
+                                        ShapeType.RECTANGLE -> viewModel.onEvent(DrawingEvent.EnterRectangleMode)
                                     }
                                 }
                             )
