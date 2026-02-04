@@ -18,6 +18,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.InvertColors
+import androidx.compose.material.icons.filled.KeyboardDoubleArrowDown
+import androidx.compose.material.icons.filled.KeyboardDoubleArrowUp
 import androidx.compose.material.icons.filled.Merge
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.SwapHoriz
@@ -215,7 +217,7 @@ fun LayerItem(
                                     colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onSurface)
                                 ) {
                                     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start) {
-                                        Icon(Icons.Default.Merge, null)
+                                        Icon(Icons.Default.KeyboardDoubleArrowUp, null)
                                         Spacer(Modifier.width(16.dp))
                                         Text("Merge Layer Up")
                                     }
@@ -228,7 +230,7 @@ fun LayerItem(
                                     colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onSurface)
                                 ) {
                                     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start) {
-                                        Icon(Icons.Default.Merge, null)
+                                        Icon(Icons.Default.KeyboardDoubleArrowDown, null)
                                         Spacer(Modifier.width(16.dp))
                                         Text("Merge Layer Down")
                                     }

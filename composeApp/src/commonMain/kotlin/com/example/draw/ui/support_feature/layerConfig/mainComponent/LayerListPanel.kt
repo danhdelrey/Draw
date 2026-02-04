@@ -134,13 +134,15 @@ fun LayerListPanel(
                             onFlipVertical = { onFlipLayerVertical(layer) },
                             onEnterTransformationMode = { onEnterTransformationMode(layer) },
                             onOpacityChange = { newOpacity -> onOpacityChange(layer, newOpacity) },
-                            onMergeLayerUp = {
-                                val currentIndex = currentLayers.indexOfFirst { it.id == layer.id }
-                                if (currentIndex < currentLayers.size - 1) {
-                                    onMergeLayer(currentIndex, currentIndex + 1)
+                            onMergeLayerUp = if(draggableLayers.size > 1 && currentLayers.indexOfFirst { it.id == layer.id } < currentLayers.size - 1) {
+                                {
+                                    val currentIndex = currentLayers.indexOfFirst { it.id == layer.id }
+                                    if (currentIndex < currentLayers.size - 1) {
+                                        onMergeLayer(currentIndex, currentIndex + 1)
+                                    }
                                 }
-                            },
-                            onMergeLayerDown = if(draggableLayers.size > 1) {
+                            } else null,
+                            onMergeLayerDown = if(draggableLayers.size > 1 && currentLayers.indexOfFirst { it.id == layer.id } > 1) {
                                 {
                                     val currentIndex = currentLayers.indexOfFirst { it.id == layer.id }
                                     if (currentIndex > 1) {
