@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.draw.ui.common.component.button.ElegantButton
 import com.example.draw.ui.common.preview.PreviewComponent
 import com.example.draw.ui.support_feature.text.component.TextFieldDialog
 
@@ -43,26 +44,12 @@ fun AddTextButton(
             }
         )
     }
-    Box(
-        modifier = Modifier
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.outlineVariant)
-            .width(40.dp)
-            .height(40.dp)
-            .clickable {
-                showTextFieldDialog = true
-            },
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            modifier = Modifier
-                .width(24.dp)
-                .height(24.dp),
-            imageVector = Icons.Default.TextFields,
-            tint = MaterialTheme.colorScheme.onSurface,
-            contentDescription = null
-        )
-    }
+    ElegantButton(
+        icon = Icons.Default.TextFields,
+        onClick = {
+            showTextFieldDialog = true
+        }
+    )
 }
 
 @Preview

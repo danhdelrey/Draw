@@ -37,6 +37,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.example.draw.ui.common.component.ToolPanel
+import com.example.draw.ui.common.component.toolPanel.BasicActionToolPanel
 import com.example.draw.ui.common.preview.PreviewComponent
 import com.example.draw.ui.feature.drawing.viewModel.DrawingEvent
 import com.example.draw.ui.feature.drawing.viewModel.DrawingScreenViewModel
@@ -48,6 +49,7 @@ import com.example.draw.ui.support_feature.shapeTool.mainComponent.ShapeType
 import com.example.draw.ui.support_feature.layerConfig.mainComponent.LayerListPanel
 import com.example.draw.ui.support_feature.layerConfig.mainComponent.LayerListPanelButton
 import com.example.draw.ui.support_feature.saveImage.mainComponent.SaveImageButton
+import com.example.draw.ui.support_feature.text.component.TextModeToolPanel
 import com.example.draw.ui.support_feature.text.mainComponent.AddTextButton
 import com.example.draw.ui.support_feature.undoRedo.mainComponent.RedoButton
 import com.example.draw.ui.support_feature.undoRedo.mainComponent.UndoButton
@@ -115,53 +117,27 @@ class DrawingScreen(
                         .fillMaxWidth()
                         .align(Alignment.TopCenter)
                 ) {
+                    BasicActionToolPanel(
+                        onCancel = {
+                            if(state.isInLayerTransformationMode){
+                                viewModel.onEvent(DrawingEvent.ExitTransformLayerMode)
+                            }
+                            if (state.isInTextMode){
+                                viewModel.onEvent(DrawingEvent.ExitTextMode)
+                            }
+                        },
+                        onConfirm = {
+                            if(state.isInLayerTransformationMode){
+                                viewModel.onEvent(DrawingEvent.ConfirmTransformLayer)
+                            }
+                            if (state.isInTextMode){
+                                viewModel.onEvent(DrawingEvent.ConfirmTextMode)
+                            }
+                        },
+                        shouldShowToolPanel = state.isInLayerTransformationMode || state.isInTextMode,
+                    )
                     ToolPanel(
-                        shouldHideToolPanel = !state.isInLayerTransformationMode,
-                    ){
-                        Box(
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.outlineVariant)
-                                .width(40.dp)
-                                .height(40.dp)
-                                .clickable {
-                                    viewModel.onEvent(DrawingEvent.ExitTransformLayerMode)
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                modifier = Modifier
-                                    .width(24.dp)
-                                    .height(24.dp),
-                                imageVector = Icons.Default.Cancel,
-                                tint = MaterialTheme.colorScheme.onSurface,
-                                contentDescription = null
-                            )
-                        }
-                        Box(
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.outlineVariant)
-                                .width(40.dp)
-                                .height(40.dp)
-                                .clickable {
-                                    viewModel.onEvent(DrawingEvent.ConfirmTransformLayer)
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                modifier = Modifier
-                                    .width(24.dp)
-                                    .height(24.dp),
-                                imageVector = Icons.Default.Check,
-                                tint = MaterialTheme.colorScheme.onSurface,
-                                contentDescription = null
-                            )
-                        }
-
-                    }
-                    ToolPanel(
-                        shouldHideToolPanel = state.isUserDrawing || state.isInLayerTransformationMode,
+                        shouldHideToolPanel = state.isUserDrawing || state.isInLayerTransformationMode || state.isInTextMode,
                     ){
                         Box(
                             modifier = Modifier
@@ -270,9 +246,10 @@ class DrawingScreen(
                                 }
                             }
                         }
+                        TextModeToolPanel(isInTextMode = state.isInTextMode)
                         ToolPanel(
                             appearFromBottom = true,
-                            shouldHideToolPanel = state.isUserDrawing || state.isInLayerTransformationMode,
+                            shouldHideToolPanel = state.isUserDrawing || state.isInLayerTransformationMode || state.isInTextMode,
                         ) {
                             AddTextButton(
                                 onConfirmText = { text ->
