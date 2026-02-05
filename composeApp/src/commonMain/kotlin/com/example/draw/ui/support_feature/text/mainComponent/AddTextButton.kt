@@ -1,4 +1,4 @@
-package com.example.draw.ui.support_feature.selection.mainComponent
+package com.example.draw.ui.support_feature.text.mainComponent
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Image
-import androidx.compose.material.icons.filled.SelectAll
-import androidx.compose.material.icons.filled.UploadFile
+import androidx.compose.material.icons.filled.TextFields
+import androidx.compose.material.icons.filled.TextFormat
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -22,7 +22,7 @@ import com.example.draw.ui.common.preview.PreviewComponent
 
 
 @Composable
-fun ImportImageButton(
+fun AddTextButton(
 
 ) {
     Box(
@@ -39,7 +39,7 @@ fun ImportImageButton(
             modifier = Modifier
                 .width(24.dp)
                 .height(24.dp),
-            imageVector = Icons.Default.Image,
+            imageVector = Icons.Default.TextFields,
             tint = MaterialTheme.colorScheme.onSurface,
             contentDescription = null
         )
@@ -48,9 +48,9 @@ fun ImportImageButton(
 
 @Preview
 @Composable
-fun ImportImageButtonPreview() {
+fun AddTextButtonPreview() {
     PreviewComponent {
-        ImportImageButton(
+        AddTextButton(
 
         )
     }
