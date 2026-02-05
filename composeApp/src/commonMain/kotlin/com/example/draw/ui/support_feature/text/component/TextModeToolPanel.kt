@@ -2,6 +2,7 @@ package com.example.draw.ui.support_feature.text.component
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.draw.data.model.brush.SolidBrush
 import com.example.draw.ui.common.component.ToolPanel
@@ -17,9 +18,11 @@ fun TextModeToolPanel(
         appearFromBottom = true,
         shouldHideToolPanel = !isInTextMode,
     ){
-        ColorPickerButton(
-            initialBrush = SolidBrush()
-        )
+        TextColorPickerButton(
+            initialColor = Color.Green
+        ){
+            // Handle color picked
+        }
 
     }
 }
