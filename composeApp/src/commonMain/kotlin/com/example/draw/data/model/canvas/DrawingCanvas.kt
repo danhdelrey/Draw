@@ -1,5 +1,6 @@
 package com.example.draw.data.model.canvas
 
+import androidx.compose.ui.geometry.Offset
 import com.example.draw.data.model.layer.Layer
 import com.example.draw.data.model.util.currentTimeMillis
 import com.example.draw.data.model.util.generateId
@@ -27,6 +28,8 @@ data class DrawingCanvas(
     val activeLayerId: String,
     val metadata: CanvasMetadata = CanvasMetadata()
 ) {
+    fun getCenterOffset(): Offset =
+        Offset(x = width / 2f, y = height / 2f)
     /**
      * Get the active layer (convenience property)
      */

@@ -58,4 +58,9 @@ sealed interface DrawingEvent{
     object EnterRectangleMode : DrawingEvent
     object ExitRectangleMode : DrawingEvent
     data class UpdateRectangleState(val rectangleState: RectangleState) : DrawingEvent
+
+    //Text
+    data class EnterTextMode(val text: String, val position: Offset) : DrawingEvent
+    object ConfirmTextMode : DrawingEvent
+    object ExitTextMode : DrawingEvent
 }

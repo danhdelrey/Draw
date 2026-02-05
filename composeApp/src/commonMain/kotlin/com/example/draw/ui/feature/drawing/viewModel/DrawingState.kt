@@ -52,7 +52,10 @@ data class DrawingState(
     val isInLayerTransformationMode: Boolean = false,
     val transformLayerId: String? = null,
     val layerTransformState: LayerTransformState = LayerTransformState(),
-    val layerTransformPivot: Offset? = null
+    val layerTransformPivot: Offset? = null,
+
+    val isInTextMode: Boolean = false
+
 ) {
     // Convenience accessors
 

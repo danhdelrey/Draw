@@ -88,8 +88,30 @@ class DrawingScreenViewModel(
                 is DrawingEvent.EnterRectangleMode -> handleEnterRectangleMode()
                 is DrawingEvent.ExitRectangleMode -> handleExitRectangleMode()
                 is DrawingEvent.UpdateRectangleState -> handleUpdateRectangleState(event)
+
+                //Text
+                is DrawingEvent.EnterTextMode -> handleEnterTextMode(event)
+                is DrawingEvent.ConfirmTextMode -> handleConfirmTextMode()
+                is DrawingEvent.ExitTextMode -> handleExitTextMode()
             }
         }
+    }
+
+    private fun handleConfirmTextMode(){
+        // For simplicity, we just exit text mode on confirm.
+        _state.value = _state.value.copy(
+            isInTextMode = false
+        )
+    }
+    private fun handleEnterTextMode(event: DrawingEvent.EnterTextMode){
+        _state.value = _state.value.copy(
+            isInTextMode = true
+        )
+    }
+    private fun handleExitTextMode(){
+        _state.value = _state.value.copy(
+            isInTextMode = false
+        )
     }
 
     private fun handleConfirmTransformLayer() {
